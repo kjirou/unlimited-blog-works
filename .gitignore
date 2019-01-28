@@ -9,3 +9,4 @@ testem.*.*.*.json
 
 
 /dist/
+/tmp/
