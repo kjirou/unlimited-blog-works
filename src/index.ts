@@ -1,3 +1,3 @@
-export function execute(arg: string): string {
+export function executeInit(arg: string): string {
   return arg;
 }

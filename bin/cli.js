@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const minimist = require('minimist');
+const {parseCommands} = require('minimist-subcommand');
 const path = require('path');
 
 let ubw;
@@ -22,21 +23,21 @@ function exitWithErrorMessage(message) {
 
 const cwd = process.cwd();
 
-const parsedArgv = minimist(process.argv.slice(2), {
-  boolean: [
-  ],
-  string: [
-  ],
-  default: {
+const parsedSubCommands = parseCommands(
+  {
+    commands: {
+      init: null,
+    },
   },
-  alias: {
-  },
-});
-const [
-  arg,
-] = parsedArgv._;
+  process.argv.slice(2)
+);
+const [subCommand] = parsedSubCommands.commands;
 
-const output = ubw.execute(arg);
-
-process.stdout.write(output);
-process.exit();
+if (subCommand === 'init') {
+  const options = minimist(parsedSubCommands.argv);
+  const output = ubw.executeInit(options._.toString());
+  process.stdout.write(output);
+  process.exit();
+} else {
+  exitWithErrorMessage('Unknown subcommand.');
+}
