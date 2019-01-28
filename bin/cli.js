@@ -39,11 +39,11 @@ const options = minimist(parsedSubCommands.argv);
 
 if (subCommand === 'init') {
   const [
-    destinationPathInput,
+    destinationDirPathInput,
   ] = options._;
   // TODO: validate
-  const destinationPath = toNormalizedAbsolutePath(destinationPathInput);
-  const output = ubw.executeInit(destinationPath);
+  const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
+  const output = ubw.executeInit(destinationDirPath);
   process.stdout.write(output);
   process.exit();
 } else {

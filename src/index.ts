@@ -1,8 +1,18 @@
-export function executeInit(destinationPath: string): string {
-  // TODO
-  // 1) ディレクトリありますか？
-  // 2) ディレクトリがないなら生成を試みる
-  // 3) 生成できなかったらエラーで落とす
-  // 4) src/index.md を生成する
-  return destinationPath;
+import * as fs from 'fs-extra';
+import * as path from 'path';
+
+const RELATIVE_SRC_DIR_PATH: string = 'src';
+
+export function executeInit(destinationDirPath: string): string {
+  fs.ensureDirSync(destinationDirPath);
+  const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
+  fs.ensureDirSync(srcDirPath);
+  fs.writeFileSync(
+    path.join(srcDirPath, 'index.md'),
+    [
+      '# Your blog',
+    ].join('\n')
+  );
+
+  return 'Done init\n';
 }
