@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "jsx": "preserve",
+    "lib": [
+      "es2015"
+    ],
+    "module": "commonjs",
+    // TODO: Not working?
+    "newLine": "LF",
+    "target": "es5",
+    /* Strict Type-Checking Options */
+    "strict": true,
+    /* Additional Checks */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": [
+    "../src"
+  ]
+}
