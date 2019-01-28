@@ -21,7 +21,10 @@ function exitWithErrorMessage(message) {
   process.exit(1);
 }
 
-const cwd = process.cwd();
+function toNormalizedAbsolutePath(pathInput) {
+  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
+  return path.normalize(absolutePath);
+}
 
 const parsedSubCommands = parseCommands(
   {
@@ -32,10 +35,15 @@ const parsedSubCommands = parseCommands(
   process.argv.slice(2)
 );
 const [subCommand] = parsedSubCommands.commands;
+const options = minimist(parsedSubCommands.argv);
 
 if (subCommand === 'init') {
-  const options = minimist(parsedSubCommands.argv);
-  const output = ubw.executeInit(options._.toString());
+  const [
+    destinationPathInput,
+  ] = options._;
+  // TODO: validate
+  const destinationPath = toNormalizedAbsolutePath(destinationPathInput);
+  const output = ubw.executeInit(destinationPath);
   process.stdout.write(output);
   process.exit();
 } else {

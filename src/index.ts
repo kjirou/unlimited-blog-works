@@ -1,3 +1,3 @@
-export function executeInit(arg: string): string {
-  return arg;
+export function executeInit(destinationPath: string): string {
+  return destinationPath;
 }
