@@ -1,0 +1,11 @@
+*.idea
+*.swp
+*.DS_Store
+.bundle
+.envrc
+/node_modules/
+npm-debug.log
+testem.*.*.*.json
+
+
+/dist/
