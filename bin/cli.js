@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const minimist = require('minimist');
+const {parseCommands} = require('minimist-subcommand');
 const path = require('path');
 
 let ubw;
@@ -20,23 +21,31 @@ function exitWithErrorMessage(message) {
   process.exit(1);
 }
 
-const cwd = process.cwd();
+function toNormalizedAbsolutePath(pathInput) {
+  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
+  return path.normalize(absolutePath);
+}
 
-const parsedArgv = minimist(process.argv.slice(2), {
-  boolean: [
-  ],
-  string: [
-  ],
-  default: {
+const parsedSubCommands = parseCommands(
+  {
+    commands: {
+      init: null,
+    },
   },
-  alias: {
-  },
-});
-const [
-  arg,
-] = parsedArgv._;
+  process.argv.slice(2)
+);
+const [subCommand] = parsedSubCommands.commands;
+const options = minimist(parsedSubCommands.argv);
 
-const output = ubw.execute(arg);
-
-process.stdout.write(output);
-process.exit();
+if (subCommand === 'init') {
+  const [
+    destinationDirPathInput,
+  ] = options._;
+  // TODO: validate
+  const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
+  const output = ubw.executeInit(destinationDirPath);
+  process.stdout.write(output);
+  process.exit();
+} else {
+  exitWithErrorMessage('Unknown subcommand.');
+}
