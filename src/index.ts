@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
 
 export function executeInit(destinationDirPath: string): string {
@@ -10,7 +11,7 @@ export function executeInit(destinationDirPath: string): string {
   fs.ensureDirSync(srcDirPath);
 
   fs.writeFileSync(
-    path.join(destinationDirPath, 'ubwconfigs.json'),
+    path.join(destinationDirPath, CONFIGS_FILE_NAME),
     JSON.stringify(
       {
         blogName: 'Your blog',
