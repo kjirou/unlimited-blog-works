@@ -5,8 +5,21 @@ const RELATIVE_SRC_DIR_PATH: string = 'src';
 
 export function executeInit(destinationDirPath: string): string {
   fs.ensureDirSync(destinationDirPath);
+
   const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
   fs.ensureDirSync(srcDirPath);
+
+  fs.writeFileSync(
+    path.join(destinationDirPath, 'ubwconfigs.json'),
+    JSON.stringify(
+      {
+        blogName: 'Your blog',
+      },
+      null,
+      2
+    ) + '\n'
+  );
+
   fs.writeFileSync(
     path.join(srcDirPath, 'index.md'),
     [
