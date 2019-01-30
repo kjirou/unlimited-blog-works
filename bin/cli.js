@@ -29,6 +29,7 @@ function toNormalizedAbsolutePath(pathInput) {
 const parsedSubCommands = parseCommands(
   {
     commands: {
+      compile: null,
       init: null,
     },
   },
@@ -44,6 +45,11 @@ if (subCommand === 'init') {
   // TODO: validate
   const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
   const output = ubw.executeInit(destinationDirPath);
+  process.stdout.write(output);
+  process.exit();
+} else if (subCommand === 'compile') {
+  // TODO: validate
+  const output = ubw.executeCompile();
   process.stdout.write(output);
   process.exit();
 } else {

@@ -16,3 +16,7 @@ export function executeInit(destinationDirPath: string): string {
 
   return 'Done init\n';
 }
+
+export function executeCompile(): string {
+  return 'Done compile\n';
+}
