@@ -6,7 +6,6 @@
       "es2015"
     ],
     "module": "commonjs",
-    // TODO: Not working?
     "newLine": "LF",
     "target": "es5",
     /* Strict Type-Checking Options */
