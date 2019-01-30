@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as remark from 'remark';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
