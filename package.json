@@ -48,6 +48,7 @@
   "dependencies": {
     "fs-extra": "^7.0.1",
     "minimist": "^1.2.0",
-    "minimist-subcommand": "^3.0.2"
+    "minimist-subcommand": "^3.0.2",
+    "remark": "^10.0.1"
   }
 }
