@@ -12,9 +12,10 @@
     "strict": true,
     /* Additional Checks */
     "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noImplicitReturns": true
+    // TODO: Comment out until development stabilizes.
+    //"noUnusedLocals": true,
+    //"noUnusedParameters": true
   },
   "include": [
     "../src"
