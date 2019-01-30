@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as remark from 'remark';
+//import * as remark from 'remark';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
@@ -9,12 +9,8 @@ const RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH: string = 'articles';
 
 export function executeInit(destinationDirPath: string): string {
   fs.ensureDirSync(destinationDirPath);
-
-  const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
-  fs.ensureDirSync(srcDirPath);
-
   fs.writeFileSync(
-    path.join(srcDirPath, CONFIGS_FILE_NAME),
+    path.join(destinationDirPath, CONFIGS_FILE_NAME),
     JSON.stringify(
       {
         blogName: 'Your blog',
@@ -23,6 +19,9 @@ export function executeInit(destinationDirPath: string): string {
       2
     ) + '\n'
   );
+
+  const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
+  fs.ensureDirSync(srcDirPath);
 
   const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH);
   fs.ensureDirSync(articleMarkdownsDirPath);
@@ -37,6 +36,18 @@ export function executeInit(destinationDirPath: string): string {
   return 'Done init\n';
 }
 
-export function executeCompile(): string {
+export function executeCompile(configsFilePath: string): string {
+  const configs = fs.readJsonSync(configsFilePath);
+  const repositoryDirPath = path.dirname(configsFilePath);
+  const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
+  const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH);
+
+  const articleMarkdownSources = fs.readdirSync(articleMarkdownsDirPath)
+    .map(relativeArticleMarkdownFilePath => {
+      const articleMarkdownFilePath = path.join(articleMarkdownsDirPath, relativeArticleMarkdownFilePath);
+      return fs.readFileSync(articleMarkdownFilePath).toString();
+    });
+  console.log(articleMarkdownSources);
+
   return 'Done compile\n';
 }

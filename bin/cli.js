@@ -48,8 +48,12 @@ if (subCommand === 'init') {
   process.stdout.write(output);
   process.exit();
 } else if (subCommand === 'compile') {
+  const [
+    configsFilePathInput,
+  ] = options._;
   // TODO: validate
-  const output = ubw.executeCompile();
+  const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
+  const output = ubw.executeCompile(configsFilePath);
   process.stdout.write(output);
   process.exit();
 } else {
