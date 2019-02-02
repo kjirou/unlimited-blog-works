@@ -8,6 +8,12 @@
     "module": "commonjs",
     "newLine": "LF",
     "target": "es5",
+    // "ts-node" doesn't use "files", "includes" or "exclude".
+    // https://github.com/TypeStrong/ts-node#help-my-types-are-missing
+    "typeRoots": [
+      "../node_modules/@types",
+      "../src/typings"
+    ],
     /* Strict Type-Checking Options */
     "strict": true,
     /* Additional Checks */

@@ -1,6 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-//import * as remark from 'remark';
+import rehypeDocument from 'rehype-document';
+import rehypeRaw from 'rehype-raw';
+import rehypeStringify from 'rehype-stringify';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import unified from 'unified';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
@@ -45,7 +50,11 @@ export function executeCompile(configsFilePath: string): string {
   const articleMarkdownSources = fs.readdirSync(articleMarkdownsDirPath)
     .map(relativeArticleMarkdownFilePath => {
       const articleMarkdownFilePath = path.join(articleMarkdownsDirPath, relativeArticleMarkdownFilePath);
-      return fs.readFileSync(articleMarkdownFilePath).toString();
+      return {
+        fileName: path.basename(articleMarkdownFilePath),
+        filePath: articleMarkdownFilePath,
+        source: fs.readFileSync(articleMarkdownFilePath).toString(),
+      };
     });
   console.log(articleMarkdownSources);
 
