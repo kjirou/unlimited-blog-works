@@ -30,7 +30,16 @@ export function convert(
   outputFilePath: string,
   html: string,
 }[] {
-  return allMarkdownSources.map(markdownSource => {
+  // TODO: 全体の情報を先に取得する。
+  // ここで生成した markdownSyntaxTrees を後に unified().stringify() で処理する方法が不明だった。
+  // 結果として、.md の解析は二回行っている。
+  //const markdownSyntaxTrees = allMarkdownSources.map(markdownSource => {
+  //  return unified()
+  //    .use(remarkParse)
+  //    .parse(markdownSource.source);
+  //});
+
+  const htmls = allMarkdownSources.map(markdownSource => {
     const htmlInfo = unified()
       .use(remarkParse)
       .use(remarkRehype, {
@@ -48,4 +57,6 @@ export function convert(
       html: htmlInfo.contents,
     };
   });
+
+  return htmls;
 }
