@@ -1,7 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {convert as convertToHtmls} from './lib/markdowns-converter';
+import {
+  Article,
+  processArticles,
+} from './lib/markdowns-processer';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
@@ -43,16 +46,20 @@ export function executeCompile(configsFilePath: string): string {
   const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
   const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH);
 
-  const articleMarkdownSources = fs.readdirSync(articleMarkdownsDirPath)
+  const articles = fs.readdirSync(articleMarkdownsDirPath)
     .map(relativeArticleMarkdownFilePath => {
       const articleMarkdownFilePath = path.join(articleMarkdownsDirPath, relativeArticleMarkdownFilePath);
       return {
-        filePath: articleMarkdownFilePath,
-        source: fs.readFileSync(articleMarkdownFilePath).toString(),
+        articleId: path.basename(articleMarkdownFilePath, '.md'),
+        inputFilePath: articleMarkdownFilePath,
+        outputFilePath: '',
+        href: '',
+        htmlSource: '',
+        markdownSource: fs.readFileSync(articleMarkdownFilePath).toString(),
       };
     });
-  const htmlsInformation = convertToHtmls(articleMarkdownSources);
-  console.log(htmlsInformation);
+  const processedArticles = processArticles(articles);
+  console.log(processedArticles);
 
   return 'Done compile\n';
 }

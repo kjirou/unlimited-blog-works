@@ -4,8 +4,8 @@
 //
 //   ```
 //   /path/to/unlimited-blog-works/src/lib/markdowns-converter.ts:17
-//     return allMarkdownSources.map(markdownSource => {
-//                               ^
+//     return hoge.map(markdownSource => {
+//                 ^
 //   TypeError: unified_1.default is not a function
 //   ```
 //
@@ -21,25 +21,26 @@ const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 
-export function convert(
-  allMarkdownSources: {
-    filePath: string,
-    source: string,
-  }[]
-): {
+export interface Article {
+  articleId: string,
+  inputFilePath: string,
   outputFilePath: string,
-  html: string,
-}[] {
+  href: string,
+  htmlSource: string,
+  markdownSource: string,
+}
+
+export function processArticles(articles: Article[]): Article[] {
   // TODO: 全体の情報を先に取得する。
   // ここで生成した markdownSyntaxTrees を後に unified().stringify() で処理する方法が不明だった。
   // 結果として、.md の解析は二回行っている。
-  //const markdownSyntaxTrees = allMarkdownSources.map(markdownSource => {
+  //const markdownSyntaxTrees = articles.map(markdownSource => {
   //  return unified()
   //    .use(remarkParse)
   //    .parse(markdownSource.source);
   //});
 
-  const htmls = allMarkdownSources.map(markdownSource => {
+  const processedArticles = articles.map(article => {
     const htmlInfo = unified()
       .use(remarkParse)
       .use(remarkRehype, {
@@ -50,13 +51,12 @@ export function convert(
         title: 'This is TITLE',
       })
       .use(rehypeStringify)
-      .processSync(markdownSource.source);
+      .processSync(article.markdownSource);
 
-    return {
-      outputFilePath: '',
-      html: htmlInfo.contents,
-    };
+    return Object.assign({}, article, {
+      htmlSource: htmlInfo.contents,
+    });
   });
 
-  return htmls;
+  return processedArticles;
 }
