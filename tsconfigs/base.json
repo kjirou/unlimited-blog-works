@@ -22,8 +22,5 @@
     // TODO: Comment out until development stabilizes.
     //"noUnusedLocals": true,
     //"noUnusedParameters": true
-  },
-  "include": [
-    "../src"
-  ]
+  }
 }
