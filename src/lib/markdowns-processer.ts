@@ -15,6 +15,7 @@
 //   Give up exact typing and confine the influence into this file.
 //
 const rehypeDocument = require('rehype-document');
+const rehypeFormat = require('rehype-format');
 const rehypeRaw = require('rehype-raw');
 const rehypeStringify = require('rehype-stringify');
 const remarkParse = require('remark-parse');
@@ -50,6 +51,7 @@ export function processArticles(articles: Article[]): Article[] {
       .use(rehypeDocument, {
         title: 'This is TITLE',
       })
+      .use(rehypeFormat)
       .use(rehypeStringify)
       .processSync(article.markdownSource);
 
