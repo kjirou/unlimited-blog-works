@@ -49,9 +49,10 @@ export function executeCompile(configsFilePath: string): string {
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
 
   const articles = fs.readdirSync(srcArticlesDirPath)
-    .map(relativeArticleMarkdownFilePath => {
-      const articleMarkdownFilePath = path.join(srcArticlesDirPath, relativeArticleMarkdownFilePath);
+    .map(relativeSrcArticleFilePath => {
+      const articleMarkdownFilePath = path.join(srcArticlesDirPath, relativeSrcArticleFilePath);
       const articleId = path.basename(articleMarkdownFilePath, '.md');
+
       return {
         articleId,
         inputFilePath: articleMarkdownFilePath,
