@@ -8,8 +8,8 @@ import {
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 const RELATIVE_SRC_DIR_PATH: string = 'src';
-
-const RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH: string = 'articles';
+const RELATIVE_DIST_DIR_PATH: string = 'dist';
+const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 
 export function executeInit(destinationDirPath: string): string {
   fs.ensureDirSync(destinationDirPath);
@@ -27,7 +27,7 @@ export function executeInit(destinationDirPath: string): string {
   const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
   fs.ensureDirSync(srcDirPath);
 
-  const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH);
+  const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   fs.ensureDirSync(articleMarkdownsDirPath);
 
   fs.writeFileSync(
@@ -44,16 +44,23 @@ export function executeCompile(configsFilePath: string): string {
   const configs = fs.readJsonSync(configsFilePath);
   const repositoryDirPath = path.dirname(configsFilePath);
   const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
-  const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLE_MARKDOWNS_DIR_PATH);
+  const distDirPath = path.join(repositoryDirPath, RELATIVE_DIST_DIR_PATH);
+  const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
+  const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
 
-  const articles = fs.readdirSync(articleMarkdownsDirPath)
+  const articles = fs.readdirSync(srcArticlesDirPath)
     .map(relativeArticleMarkdownFilePath => {
-      const articleMarkdownFilePath = path.join(articleMarkdownsDirPath, relativeArticleMarkdownFilePath);
+      const articleMarkdownFilePath = path.join(srcArticlesDirPath, relativeArticleMarkdownFilePath);
+      const articleId = path.basename(articleMarkdownFilePath, '.md');
       return {
-        articleId: path.basename(articleMarkdownFilePath, '.md'),
+        articleId,
         inputFilePath: articleMarkdownFilePath,
-        outputFilePath: '',
-        href: '',
+        // TODO: articleId を外向けに使わない
+        outputFilePath: path.join(distArticlesDirPath, articleId + '.html'),
+        // TODO: articleId を外向けに使わない
+        // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
+        // TODO: サブディレクトリ対応
+        href: `/${RELATIVE_ARTICLES_DIR_PATH}/${articleId}.html`,
         htmlSource: '',
         markdownSource: fs.readFileSync(articleMarkdownFilePath).toString(),
       };
