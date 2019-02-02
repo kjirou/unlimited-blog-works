@@ -65,8 +65,13 @@ export function executeCompile(configsFilePath: string): string {
         markdownSource: fs.readFileSync(articleMarkdownFilePath).toString(),
       };
     });
+
   const processedArticles = processArticles(articles);
-  console.log(processedArticles);
+
+  fs.ensureDirSync(distArticlesDirPath);
+  processedArticles.forEach(article => {
+    fs.writeFileSync(article.outputFilePath, article.htmlSource);
+  });
 
   return 'Done compile\n';
 }
