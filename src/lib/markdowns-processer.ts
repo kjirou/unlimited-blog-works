@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as yaml from 'js-yaml';
 
 //
@@ -27,6 +28,7 @@ const unified = require('unified');
 
 export interface Article {
   articleId: string,
+  publicId: string,
   inputFilePath: string,
   outputFilePath: string,
   href: string,
@@ -34,7 +36,14 @@ export interface Article {
   markdownSource: string,
 }
 
-export function processArticles(articles: Article[]): Article[] {
+interface ArticleFrontMatters {
+  publicId: string,
+}
+
+export function processArticles(
+  articles: Article[],
+  repositoryDirPath: string
+): Article[] {
   function createMarkdownParser(): any {
     return unified()
       .use(remarkParse)
@@ -47,14 +56,18 @@ export function processArticles(articles: Article[]): Article[] {
     const ast = createMarkdownParser()
       .parse(article.markdownSource);
 
-    const frontMatterNode = ast.children[0];
-    if (frontMatterNode.type !== 'yaml') {
+    const frontMattersNode = ast.children[0];
+    if (frontMattersNode.type !== 'yaml') {
       throw new Error('Can not find a Front-matter block in an article.');
     }
-    const frontMatters = yaml.safeLoad(frontMatterNode.value);
+    const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
-    return article;
+    return Object.assign({}, article, {
+      // TODO: "dis/articles" is duplicated definition
+      outputFilePath: path.join(repositoryDirPath, 'dist/articles', frontMatters.publicId + '.html'),
+    });
   });
+  console.log(preprocessedArticles);
 
   const processedArticles = preprocessedArticles.map(article => {
     const htmlInfo = createMarkdownParser()

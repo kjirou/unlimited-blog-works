@@ -34,7 +34,8 @@ export function executeInit(destinationDirPath: string): string {
     path.join(articleMarkdownsDirPath, '00000001.md'),
     [
       '---',
-      '- publicId: 00000001',
+      'publicId: "00000001"',
+      'testValue: "Hello"',
       '---',
       '',
       '# My First Article\n',
@@ -59,9 +60,9 @@ export function executeCompile(configsFilePath: string): string {
 
       return {
         articleId,
+        publicId: '',
         inputFilePath: articleMarkdownFilePath,
-        // TODO: articleId を外向けに使わない
-        outputFilePath: path.join(distArticlesDirPath, articleId + '.html'),
+        outputFilePath: '',
         // TODO: articleId を外向けに使わない
         // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
         // TODO: サブディレクトリ対応
@@ -71,7 +72,7 @@ export function executeCompile(configsFilePath: string): string {
       };
     });
 
-  const processedArticles = processArticles(articles);
+  const processedArticles = processArticles(articles, repositoryDirPath);
 
   fs.ensureDirSync(distArticlesDirPath);
   processedArticles.forEach(article => {
