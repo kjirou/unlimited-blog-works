@@ -4,7 +4,10 @@ import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
 import TopPage from './templates/TopPage';
-import {generatePaths} from './utils';
+import {
+  UbwConfigs,
+  generatePaths,
+} from './utils';
 
 //
 // TODO:
@@ -66,8 +69,9 @@ function createRehypePlugins(): any[] {
 }
 
 export function processArticles(
-  articles: Article[],
-  repositoryDirPath: string
+  repositoryDirPath: string,
+  configs: UbwConfigs,
+  articles: Article[]
 ): Article[] {
   const paths = generatePaths(repositoryDirPath);
 
@@ -125,8 +129,9 @@ interface NonArticlePage {
 }
 
 export function generateNonArticlePages(
-  articles: Article[],
-  repositoryDirPath: string
+  repositoryDirPath: string,
+  configs: UbwConfigs,
+  articles: Article[]
 ): NonArticlePage[] {
   const topPageHtml = ReactDOMServer.renderToStaticMarkup(
     React.createElement(TopPage)

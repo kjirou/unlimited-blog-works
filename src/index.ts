@@ -6,23 +6,19 @@ import {
   generateNonArticlePages,
   processArticles,
 } from './lib/markdowns-processer';
-import {generatePaths} from './lib/utils';
-
-const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
+import {
+  UbwConfigs,
+  defaultUbwConfigs,
+  generatePaths,
+} from './lib/utils';
 
 export function executeInit(repositoryDirPath: string): string {
   const paths = generatePaths(repositoryDirPath);
 
   fs.ensureDirSync(repositoryDirPath);
   fs.writeFileSync(
-    path.join(repositoryDirPath, CONFIGS_FILE_NAME),
-    JSON.stringify(
-      {
-        blogName: 'Your blog',
-      },
-      null,
-      2
-    ) + '\n'
+    paths.srcConfigsFilePath,
+    JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
   fs.ensureDirSync(paths.srcDirPath);
@@ -43,7 +39,9 @@ export function executeInit(repositoryDirPath: string): string {
 }
 
 export function executeCompile(configsFilePath: string): string {
-  const configs = fs.readJsonSync(configsFilePath);
+  const rawConfigs = fs.readJsonSync(configsFilePath);
+  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+
   const repositoryDirPath = path.dirname(configsFilePath);
   const paths = generatePaths(repositoryDirPath);
 
@@ -62,8 +60,8 @@ export function executeCompile(configsFilePath: string): string {
       };
     });
 
-  const processedArticles = processArticles(articles, repositoryDirPath);
-  const nonArticlePages = generateNonArticlePages(articles, repositoryDirPath);
+  const processedArticles = processArticles(repositoryDirPath, configs, articles);
+  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articles);
   console.log(nonArticlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
