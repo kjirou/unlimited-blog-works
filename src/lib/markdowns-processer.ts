@@ -43,19 +43,21 @@ export function processArticles(articles: Article[]): Article[] {
   // 結果として、.md の解析は二回行っている。
   const preprocessedArticles = articles.map(article => {
     const mdAst = createMarkdownParser()
-      // For debugging
-      .use(() => {
-        return (tree: object[], file: object) => {
-          console.log(tree);
-          //console.log(JSON.stringify(tree, null, 2));
-        };
-      });
+      .parse(article.markdownSource);
 
     return article;
   });
 
   const processedArticles = preprocessedArticles.map(article => {
     const htmlInfo = createMarkdownParser()
+      .use(() => {
+        return (tree: object[], file: object) => {
+          console.log('====  Debug Transformer  ====');
+          console.log(tree);
+          //console.log(JSON.stringify(tree, null, 2));
+          console.log('==== /Debug Transformer  ====');
+        };
+      })
       .use(remarkRehype, {
         allowDangerousHTML: true,
       })
