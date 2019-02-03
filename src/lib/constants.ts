@@ -9,16 +9,19 @@ export function generatePaths(repositoryDirPath: string): {
   distDirPath: string,
   srcArticlesDirPath: string,
   distArticlesDirPath: string,
+  permalinkRootPath: string,
 } {
   const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
   const distDirPath = path.join(repositoryDirPath, RELATIVE_DIST_DIR_PATH);
   const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
+  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
 
   return {
     srcDirPath,
     distDirPath,
     srcArticlesDirPath,
     distArticlesDirPath,
+    permalinkRootPath,
   };
 }

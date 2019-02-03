@@ -50,17 +50,13 @@ export function executeCompile(configsFilePath: string): string {
   const articles = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
       const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
-      const articleId = path.basename(articleFilePath, '.md');
 
       return {
-        articleId,
+        articleId: path.basename(articleFilePath, '.md'),
         publicId: '',
         inputFilePath: articleFilePath,
         outputFilePath: '',
-        // TODO: articleId を外向けに使わない
-        // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
-        // TODO: サブディレクトリ対応
-        href: `/permalink/${articleId}.html`,
+        permalink: '',
         htmlSource: '',
         markdownSource: fs.readFileSync(articleFilePath).toString(),
       };

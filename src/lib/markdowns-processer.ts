@@ -33,7 +33,7 @@ export interface Article {
   publicId: string,
   inputFilePath: string,
   outputFilePath: string,
-  href: string,
+  permalink: string,
   htmlSource: string,
   markdownSource: string,
 }
@@ -56,7 +56,7 @@ export function processArticles(
 
   // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
   // 結果として、.md の解析は二回行っている。
-  const preprocessedArticles = articles.map(article => {
+  const preprocessedArticles: Article[] = articles.map(article => {
     const ast = createMarkdownParser()
       .parse(article.markdownSource);
 
@@ -67,12 +67,15 @@ export function processArticles(
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
     return Object.assign({}, article, {
+      // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
+      // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
+      permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
     });
   });
   console.log(preprocessedArticles);
 
-  const processedArticles = preprocessedArticles.map(article => {
+  const processedArticles: Article[] = preprocessedArticles.map(article => {
     const htmlInfo = createMarkdownParser()
       .use(() => {
         return (tree: object[], file: object) => {
