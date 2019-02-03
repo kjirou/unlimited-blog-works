@@ -18,6 +18,7 @@ const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
 const rehypeRaw = require('rehype-raw');
 const rehypeStringify = require('rehype-stringify');
+const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
@@ -44,6 +45,14 @@ export function processArticles(articles: Article[]): Article[] {
   const processedArticles = articles.map(article => {
     const htmlInfo = unified()
       .use(remarkParse)
+      .use(remarkFrontmatter, ['yaml'])
+      // For debugging
+      .use(() => {
+        return (tree: object[], file: object) => {
+          console.log(tree);
+          //console.log(JSON.stringify(tree, null, 2));
+        };
+      })
       .use(remarkRehype, {
         allowDangerousHTML: true,
       })
