@@ -3,8 +3,8 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
-import {generatePaths} from './constants';
 import TopPage from './templates/TopPage';
+import {generatePaths} from './utils';
 
 //
 // TODO:

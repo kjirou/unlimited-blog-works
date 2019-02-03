@@ -1,12 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {generatePaths} from './lib/constants';
 import {
   Article,
   processArticles,
   processFramePages,
 } from './lib/markdowns-processer';
+import {generatePaths} from './lib/utils';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
 
