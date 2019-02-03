@@ -1,27 +1,24 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import {generatePaths} from './lib/constants';
 import {
   Article,
+  generateNonArticlePages,
   processArticles,
-} from './lib/markdowns-processer';
-
-const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
+} from './lib/page-generator';
+import {
+  UbwConfigs,
+  defaultUbwConfigs,
+  generatePaths,
+} from './lib/utils';
 
 export function executeInit(repositoryDirPath: string): string {
   const paths = generatePaths(repositoryDirPath);
 
   fs.ensureDirSync(repositoryDirPath);
   fs.writeFileSync(
-    path.join(repositoryDirPath, CONFIGS_FILE_NAME),
-    JSON.stringify(
-      {
-        blogName: 'Your blog',
-      },
-      null,
-      2
-    ) + '\n'
+    paths.srcConfigsFilePath,
+    JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
   fs.ensureDirSync(paths.srcDirPath);
@@ -32,10 +29,9 @@ export function executeInit(repositoryDirPath: string): string {
     [
       '---',
       'publicId: "00000001"',
-      'testValue: "Hello"',
       '---',
       '',
-      '# My First Article\n',
+      '# My First Article & **Bold**\n',
     ].join('\n')
   );
 
@@ -43,7 +39,9 @@ export function executeInit(repositoryDirPath: string): string {
 }
 
 export function executeCompile(configsFilePath: string): string {
-  const configs = fs.readJsonSync(configsFilePath);
+  const rawConfigs = fs.readJsonSync(configsFilePath);
+  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+
   const repositoryDirPath = path.dirname(configsFilePath);
   const paths = generatePaths(repositoryDirPath);
 
@@ -59,14 +57,19 @@ export function executeCompile(configsFilePath: string): string {
         permalink: '',
         htmlSource: '',
         markdownSource: fs.readFileSync(articleFilePath).toString(),
+        pageName: '',
       };
     });
 
-  const processedArticles = processArticles(articles, repositoryDirPath);
+  const processedArticles = processArticles(repositoryDirPath, configs, articles);
+  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, processedArticles);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
+  });
+  nonArticlePages.forEach(nonArticlePage => {
+    fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
   return 'Done compile\n';
