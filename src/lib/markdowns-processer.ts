@@ -43,10 +43,19 @@ export interface Article {
   permalink: string,
   htmlSource: string,
   markdownSource: string,
+  pageName: string,
 }
 
 interface ArticleFrontMatters {
   publicId: string,
+  pageName?: string,
+}
+
+interface RemarkAstNode {
+  type: string,
+  value?: string,
+  depth?: number,
+  children?: RemarkAstNode[],
 }
 
 function createRemarkPlugins(): any[] {
@@ -57,15 +66,40 @@ function createRemarkPlugins(): any[] {
 
 function createRehypePlugins(): any[] {
   return [
-    [remarkRehype, {
-      allowDangerousHTML: true,
-    }],
     [rehypeRaw],
     [rehypeDocument, {
       title: 'This is TITLE',
     }],
     [rehypeFormat],
   ];
+}
+
+export function scanRemarkAstNode(
+  node: RemarkAstNode,
+  callback: (node: RemarkAstNode) => void
+): void {
+  callback(node);
+  if (node.children) {
+    node.children.forEach(childNode => {
+      scanRemarkAstNode(childNode, callback);
+    });
+  }
+}
+
+export function extractPageName(node: RemarkAstNode): string {
+  const fragments: string[] = [];
+  scanRemarkAstNode(node, (heading1Node) => {
+    if (heading1Node.type === 'heading' && heading1Node.depth === 1) {
+      scanRemarkAstNode(heading1Node, (node_) => {
+        const trimmed = (node_.value || '').trim();
+        if (trimmed) {
+          fragments.push(trimmed);
+        }
+      });
+    }
+  });
+  console.log(fragments);
+  return fragments.join(' ');
 }
 
 export function processArticles(
@@ -94,6 +128,7 @@ export function processArticles(
       // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
       permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
+      pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
     });
   });
   console.log(preprocessedArticles);
@@ -104,6 +139,9 @@ export function processArticles(
     const htmlInfo = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
+      .use(remarkRehype, {
+        allowDangerousHTML: true,
+      })
       .use(() => {
         return (tree: object[], file: object) => {
           console.log('====  Debug Transformer  ====');

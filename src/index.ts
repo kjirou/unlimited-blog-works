@@ -31,7 +31,7 @@ export function executeInit(repositoryDirPath: string): string {
       'publicId: "00000001"',
       '---',
       '',
-      '# My First Article\n',
+      '# My First Article & **Bold**\n',
     ].join('\n')
   );
 
@@ -57,6 +57,7 @@ export function executeCompile(configsFilePath: string): string {
         permalink: '',
         htmlSource: '',
         markdownSource: fs.readFileSync(articleFilePath).toString(),
+        pageName: '',
       };
     });
 
