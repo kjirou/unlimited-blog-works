@@ -5,7 +5,7 @@ import {
   Article,
   generateNonArticlePages,
   processArticles,
-} from './lib/markdowns-processer';
+} from './lib/page-generator';
 import {
   UbwConfigs,
   defaultUbwConfigs,
