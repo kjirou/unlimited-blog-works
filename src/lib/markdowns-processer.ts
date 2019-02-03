@@ -33,26 +33,29 @@ export interface Article {
 }
 
 export function processArticles(articles: Article[]): Article[] {
-  // TODO: 全体の情報を先に取得する。
-  // ここで生成した markdownSyntaxTrees を後に unified().stringify() で処理する方法が不明だった。
-  // 結果として、.md の解析は二回行っている。
-  //const markdownSyntaxTrees = articles.map(markdownSource => {
-  //  return unified()
-  //    .use(remarkParse)
-  //    .parse(markdownSource.source);
-  //});
-
-  const processedArticles = articles.map(article => {
-    const htmlInfo = unified()
+  function createMarkdownParser(): any {
+    return unified()
       .use(remarkParse)
-      .use(remarkFrontmatter, ['yaml'])
+      .use(remarkFrontmatter, ['yaml']);
+  }
+
+  // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
+  // 結果として、.md の解析は二回行っている。
+  const preprocessedArticles = articles.map(article => {
+    const mdAst = createMarkdownParser()
       // For debugging
       .use(() => {
         return (tree: object[], file: object) => {
           console.log(tree);
           //console.log(JSON.stringify(tree, null, 2));
         };
-      })
+      });
+
+    return article;
+  });
+
+  const processedArticles = preprocessedArticles.map(article => {
+    const htmlInfo = createMarkdownParser()
       .use(remarkRehype, {
         allowDangerousHTML: true,
       })
