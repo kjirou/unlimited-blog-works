@@ -62,12 +62,14 @@ export function executeCompile(configsFilePath: string): string {
     });
 
   const processedArticles = processArticles(repositoryDirPath, configs, articles);
-  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articles);
-  console.log(nonArticlePages);
+  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, processedArticles);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
+  });
+  nonArticlePages.forEach(nonArticlePage => {
+    fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
   return 'Done compile\n';

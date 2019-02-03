@@ -4,6 +4,7 @@ import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
 import TopPage from './templates/TopPage';
+import {NonArticlePageProps} from './templates/shared';
 import {
   UbwConfigs,
   generatePaths,
@@ -130,7 +131,6 @@ export function processArticles(
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
     });
   });
-  console.log(preprocessedArticles);
 
   const rehypePlugins = createRehypePlugins();
 
@@ -162,6 +162,9 @@ export function processArticles(
 }
 
 interface NonArticlePage {
+  component: React.ComponentClass<NonArticlePageProps>,
+  relativeOutputFilePath: string,
+  outputFilePath: string,
   html: string,
 }
 
@@ -170,23 +173,45 @@ export function generateNonArticlePages(
   configs: UbwConfigs,
   articles: Article[]
 ): NonArticlePage[] {
-  const topPageHtml = ReactDOMServer.renderToStaticMarkup(
-    React.createElement(TopPage)
-  );
+  const paths = generatePaths(repositoryDirPath);
 
   const nonArticlePages: NonArticlePage[] = [
-    topPageHtml,
-  ].map(html => {
+    {
+      component: TopPage,
+      relativeOutputFilePath: 'index.html',
+      outputFilePath: '',
+      html: '',
+    },
+  ];
+
+  const articlesProps: NonArticlePageProps['articles'] = articles.map(article => {
+    return {
+      articleId: article.articleId,
+      pageName: article.pageName,
+      permalink: article.permalink,
+    };
+  });
+
+  const processedNonArticlePages: NonArticlePage[] = nonArticlePages.map(nonArticlePage => {
+    const html = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(nonArticlePage.component, {
+        articles: articlesProps,
+      })
+    );
+
     const unifiedResult = unified()
-      .use(rehypeParse)
+      .use(rehypeParse, {
+        fragment: true,
+      })
       .use(createRehypePlugins())
       .use(rehypeStringify)
       .processSync(html);
 
-    return {
+    return Object.assign({}, nonArticlePage, {
+      outputFilePath: path.join(paths.distDirPath, nonArticlePage.relativeOutputFilePath),
       html: unifiedResult.contents,
-    };
+    });
   });
 
-  return nonArticlePages;
+  return processedNonArticlePages;
 }
