@@ -24,6 +24,7 @@ import {generatePaths} from './utils';
 //
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
+const rehypeParse = require('rehype-parse');
 const rehypeRaw = require('rehype-raw');
 const rehypeStringify = require('rehype-stringify');
 const remarkFrontmatter = require('remark-frontmatter');
@@ -119,11 +120,31 @@ export function processArticles(
   return processedArticles;
 }
 
+interface FramePage {
+  html: string,
+}
+
 export function processFramePages(
   articles: Article[],
   repositoryDirPath: string
-): {}[] {
-  const output = ReactDOMServer.renderToStaticMarkup(React.createElement(TopPage));
-  console.log(output);
-  return [];
+): FramePage[] {
+  const topPageHtml = ReactDOMServer.renderToStaticMarkup(
+    React.createElement(TopPage)
+  );
+
+  const framePages: FramePage[] = [
+    topPageHtml,
+  ].map(html => {
+    const unifiedResult = unified()
+      .use(rehypeParse)
+      .use(createRehypePlugins())
+      .use(rehypeStringify)
+      .processSync(html);
+
+    return {
+      html: unifiedResult.contents,
+    };
+  });
+
+  return framePages;
 }

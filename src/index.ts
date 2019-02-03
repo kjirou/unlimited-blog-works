@@ -64,6 +64,7 @@ export function executeCompile(configsFilePath: string): string {
 
   const processedArticles = processArticles(articles, repositoryDirPath);
   const framePages = processFramePages(articles, repositoryDirPath);
+  console.log(framePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {
