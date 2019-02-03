@@ -65,11 +65,13 @@ function createRemarkPlugins(): any[] {
   ];
 }
 
-function createRehypePlugins(): any[] {
+function createRehypePlugins(params: {
+  title: string,
+}): any[] {
   return [
     [rehypeRaw],
     [rehypeDocument, {
-      title: 'This is TITLE',
+      title: params.title,
     }],
     [rehypeFormat],
   ];
@@ -132,8 +134,6 @@ export function processArticles(
     });
   });
 
-  const rehypePlugins = createRehypePlugins();
-
   const processedArticles: Article[] = preprocessedArticles.map(article => {
     const htmlInfo = unified()
       .use(remarkParse)
@@ -143,13 +143,16 @@ export function processArticles(
       })
       .use(() => {
         return (tree: object[], file: object) => {
+          return;
           console.log('====  Debug Transformer  ====');
           console.log(tree);
           //console.log(JSON.stringify(tree, null, 2));
           console.log('==== /Debug Transformer  ====');
         };
       })
-      .use(rehypePlugins)
+      .use(createRehypePlugins({
+        title: `${article.pageName} | ${configs.blogName}`,
+      }))
       .use(rehypeStringify)
       .processSync(article.markdownSource);
 
@@ -203,7 +206,9 @@ export function generateNonArticlePages(
       .use(rehypeParse, {
         fragment: true,
       })
-      .use(createRehypePlugins())
+      .use(createRehypePlugins({
+        title: configs.blogName,
+      }))
       .use(rehypeStringify)
       .processSync(html);
 

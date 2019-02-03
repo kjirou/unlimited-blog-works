@@ -1,3 +1,6 @@
+/*
+ * This file MUST NOT depend on any file in the project.
+ */
 import * as path from 'path';
 
 const RELATIVE_SRC_DIR_PATH: string = 'src';
