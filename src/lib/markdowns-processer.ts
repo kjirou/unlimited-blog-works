@@ -1,3 +1,5 @@
+import * as yaml from 'js-yaml';
+
 //
 // TODO:
 //   When executing via reqiure("ts-node").register, the following error occurs.
@@ -42,8 +44,14 @@ export function processArticles(articles: Article[]): Article[] {
   // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
   // 結果として、.md の解析は二回行っている。
   const preprocessedArticles = articles.map(article => {
-    const mdAst = createMarkdownParser()
+    const ast = createMarkdownParser()
       .parse(article.markdownSource);
+
+    const frontMatterNode = ast.children[0];
+    if (frontMatterNode.type !== 'yaml') {
+      throw new Error('Can not find a Front-matter block in an article.');
+    }
+    const frontMatters = yaml.safeLoad(frontMatterNode.value);
 
     return article;
   });
