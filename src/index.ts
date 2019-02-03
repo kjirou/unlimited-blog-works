@@ -33,7 +33,6 @@ export function executeInit(repositoryDirPath: string): string {
     [
       '---',
       'publicId: "00000001"',
-      'testValue: "Hello"',
       '---',
       '',
       '# My First Article\n',
