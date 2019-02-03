@@ -33,6 +33,10 @@ export function executeInit(destinationDirPath: string): string {
   fs.writeFileSync(
     path.join(articleMarkdownsDirPath, '00000001.md'),
     [
+      '---',
+      '- publicId: 00000001',
+      '---',
+      '',
       '# My First Article\n',
     ].join('\n')
   );
