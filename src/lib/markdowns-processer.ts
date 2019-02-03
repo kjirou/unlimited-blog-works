@@ -45,22 +45,37 @@ interface ArticleFrontMatters {
   publicId: string,
 }
 
+function createRemarkPlugins(): any[] {
+  return [
+    [remarkFrontmatter, ['yaml']],
+  ];
+}
+
+function createRehypePlugins(): any[] {
+  return [
+    [remarkRehype, {
+      allowDangerousHTML: true,
+    }],
+    [rehypeRaw],
+    [rehypeDocument, {
+      title: 'This is TITLE',
+    }],
+    [rehypeFormat],
+  ];
+}
+
 export function processArticles(
   articles: Article[],
   repositoryDirPath: string
 ): Article[] {
-  function createMarkdownParser(): any {
-    return unified()
-      .use(remarkParse)
-      .use(remarkFrontmatter, ['yaml']);
-  }
-
   const paths = generatePaths(repositoryDirPath);
 
   // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
   // 結果として、.md の解析は二回行っている。
   const preprocessedArticles: Article[] = articles.map(article => {
-    const ast = createMarkdownParser()
+    const ast = unified()
+      .use(remarkParse)
+      .use(createRemarkPlugins())
       .parse(article.markdownSource);
 
     const frontMattersNode = ast.children[0];
@@ -78,8 +93,12 @@ export function processArticles(
   });
   console.log(preprocessedArticles);
 
+  const rehypePlugins = createRehypePlugins();
+
   const processedArticles: Article[] = preprocessedArticles.map(article => {
-    const htmlInfo = createMarkdownParser()
+    const htmlInfo = unified()
+      .use(remarkParse)
+      .use(createRemarkPlugins())
       .use(() => {
         return (tree: object[], file: object) => {
           console.log('====  Debug Transformer  ====');
@@ -88,14 +107,7 @@ export function processArticles(
           console.log('==== /Debug Transformer  ====');
         };
       })
-      .use(remarkRehype, {
-        allowDangerousHTML: true,
-      })
-      .use(rehypeRaw)
-      .use(rehypeDocument, {
-        title: 'This is TITLE',
-      })
-      .use(rehypeFormat)
+      .use(rehypePlugins)
       .use(rehypeStringify)
       .processSync(article.markdownSource);
 
