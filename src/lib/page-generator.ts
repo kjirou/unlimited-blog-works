@@ -168,21 +168,21 @@ interface NonArticlePage {
   html: string,
 }
 
+const nonArticlePages: NonArticlePage[] = [
+  {
+    component: TopPage,
+    relativeOutputFilePath: 'index.html',
+    outputFilePath: '',
+    html: '',
+  },
+];
+
 export function generateNonArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
   articles: Article[]
 ): NonArticlePage[] {
   const paths = generatePaths(repositoryDirPath);
-
-  const nonArticlePages: NonArticlePage[] = [
-    {
-      component: TopPage,
-      relativeOutputFilePath: 'index.html',
-      outputFilePath: '',
-      html: '',
-    },
-  ];
 
   const articlesProps: NonArticlePageProps['articles'] = articles.map(article => {
     return {
