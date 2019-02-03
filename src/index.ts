@@ -5,6 +5,7 @@ import {generatePaths} from './lib/constants';
 import {
   Article,
   processArticles,
+  processFramePages,
 } from './lib/markdowns-processer';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
@@ -63,6 +64,7 @@ export function executeCompile(configsFilePath: string): string {
     });
 
   const processedArticles = processArticles(articles, repositoryDirPath);
+  const framePages = processFramePages(articles, repositoryDirPath);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {

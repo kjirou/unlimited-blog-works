@@ -1,7 +1,10 @@
 import * as path from 'path';
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
 import {generatePaths} from './constants';
+import TopPage from './templates/TopPage';
 
 //
 // TODO:
@@ -102,4 +105,13 @@ export function processArticles(
   });
 
   return processedArticles;
+}
+
+export function processFramePages(
+  articles: Article[],
+  repositoryDirPath: string
+): {}[] {
+  const output = ReactDOMServer.renderToStaticMarkup(React.createElement(TopPage));
+  console.log(output);
+  return [];
 }

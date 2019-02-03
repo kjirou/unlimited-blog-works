@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Basic Options */
-    "jsx": "preserve",
+    "jsx": "react",
     "lib": [
       "es2015"
     ],
