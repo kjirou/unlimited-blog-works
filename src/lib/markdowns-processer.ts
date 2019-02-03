@@ -120,19 +120,19 @@ export function processArticles(
   return processedArticles;
 }
 
-interface FramePage {
+interface NonArticlePage {
   html: string,
 }
 
-export function processFramePages(
+export function generateNonArticlePages(
   articles: Article[],
   repositoryDirPath: string
-): FramePage[] {
+): NonArticlePage[] {
   const topPageHtml = ReactDOMServer.renderToStaticMarkup(
     React.createElement(TopPage)
   );
 
-  const framePages: FramePage[] = [
+  const nonArticlePages: NonArticlePage[] = [
     topPageHtml,
   ].map(html => {
     const unifiedResult = unified()
@@ -146,5 +146,5 @@ export function processFramePages(
     };
   });
 
-  return framePages;
+  return nonArticlePages;
 }

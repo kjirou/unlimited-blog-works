@@ -3,8 +3,8 @@ import * as path from 'path';
 
 import {
   Article,
+  generateNonArticlePages,
   processArticles,
-  processFramePages,
 } from './lib/markdowns-processer';
 import {generatePaths} from './lib/utils';
 
@@ -63,8 +63,8 @@ export function executeCompile(configsFilePath: string): string {
     });
 
   const processedArticles = processArticles(articles, repositoryDirPath);
-  const framePages = processFramePages(articles, repositoryDirPath);
-  console.log(framePages);
+  const nonArticlePages = generateNonArticlePages(articles, repositoryDirPath);
+  console.log(nonArticlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {
