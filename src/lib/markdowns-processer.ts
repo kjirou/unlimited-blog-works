@@ -98,7 +98,6 @@ export function extractPageName(node: RemarkAstNode): string {
       });
     }
   });
-  console.log(fragments);
   return fragments.join(' ');
 }
 
