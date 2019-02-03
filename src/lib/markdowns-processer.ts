@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
+import {generatePaths} from './constants';
+
 //
 // TODO:
 //   When executing via reqiure("ts-node").register, the following error occurs.
@@ -50,6 +52,8 @@ export function processArticles(
       .use(remarkFrontmatter, ['yaml']);
   }
 
+  const paths = generatePaths(repositoryDirPath);
+
   // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
   // 結果として、.md の解析は二回行っている。
   const preprocessedArticles = articles.map(article => {
@@ -63,8 +67,7 @@ export function processArticles(
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
     return Object.assign({}, article, {
-      // TODO: "dis/articles" is duplicated definition
-      outputFilePath: path.join(repositoryDirPath, 'dist/articles', frontMatters.publicId + '.html'),
+      outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
     });
   });
   console.log(preprocessedArticles);

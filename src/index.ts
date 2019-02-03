@@ -1,20 +1,20 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {generatePaths} from './lib/constants';
 import {
   Article,
   processArticles,
 } from './lib/markdowns-processer';
 
 const CONFIGS_FILE_NAME: string = 'ubwconfigs.json';
-const RELATIVE_SRC_DIR_PATH: string = 'src';
-const RELATIVE_DIST_DIR_PATH: string = 'dist';
-const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 
-export function executeInit(destinationDirPath: string): string {
-  fs.ensureDirSync(destinationDirPath);
+export function executeInit(repositoryDirPath: string): string {
+  const paths = generatePaths(repositoryDirPath);
+
+  fs.ensureDirSync(repositoryDirPath);
   fs.writeFileSync(
-    path.join(destinationDirPath, CONFIGS_FILE_NAME),
+    path.join(repositoryDirPath, CONFIGS_FILE_NAME),
     JSON.stringify(
       {
         blogName: 'Your blog',
@@ -24,14 +24,11 @@ export function executeInit(destinationDirPath: string): string {
     ) + '\n'
   );
 
-  const srcDirPath = path.join(destinationDirPath, RELATIVE_SRC_DIR_PATH);
-  fs.ensureDirSync(srcDirPath);
-
-  const articleMarkdownsDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  fs.ensureDirSync(articleMarkdownsDirPath);
+  fs.ensureDirSync(paths.srcDirPath);
+  fs.ensureDirSync(paths.srcArticlesDirPath);
 
   fs.writeFileSync(
-    path.join(articleMarkdownsDirPath, '00000001.md'),
+    path.join(paths.srcArticlesDirPath, '00000001.md'),
     [
       '---',
       'publicId: "00000001"',
@@ -48,33 +45,30 @@ export function executeInit(destinationDirPath: string): string {
 export function executeCompile(configsFilePath: string): string {
   const configs = fs.readJsonSync(configsFilePath);
   const repositoryDirPath = path.dirname(configsFilePath);
-  const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
-  const distDirPath = path.join(repositoryDirPath, RELATIVE_DIST_DIR_PATH);
-  const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
+  const paths = generatePaths(repositoryDirPath);
 
-  const articles = fs.readdirSync(srcArticlesDirPath)
+  const articles = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
-      const articleMarkdownFilePath = path.join(srcArticlesDirPath, relativeSrcArticleFilePath);
-      const articleId = path.basename(articleMarkdownFilePath, '.md');
+      const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
+      const articleId = path.basename(articleFilePath, '.md');
 
       return {
         articleId,
         publicId: '',
-        inputFilePath: articleMarkdownFilePath,
+        inputFilePath: articleFilePath,
         outputFilePath: '',
         // TODO: articleId を外向けに使わない
         // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
         // TODO: サブディレクトリ対応
-        href: `/${RELATIVE_ARTICLES_DIR_PATH}/${articleId}.html`,
+        href: `/permalink/${articleId}.html`,
         htmlSource: '',
-        markdownSource: fs.readFileSync(articleMarkdownFilePath).toString(),
+        markdownSource: fs.readFileSync(articleFilePath).toString(),
       };
     });
 
   const processedArticles = processArticles(articles, repositoryDirPath);
 
-  fs.ensureDirSync(distArticlesDirPath);
+  fs.ensureDirSync(paths.distArticlesDirPath);
   processedArticles.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
