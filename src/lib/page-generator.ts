@@ -57,6 +57,7 @@ function createRehypePlugins(params: {
     [rehypeDocument, {
       title: params.title,
       language: params.language,
+      css: '/github-markdown.css',
     }],
     [rehypeFormat],
   ];

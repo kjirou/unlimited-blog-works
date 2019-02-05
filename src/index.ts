@@ -11,6 +11,7 @@ import {
 } from './lib/page-generator';
 import {
   UbwConfigs,
+  STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generatePaths,
 } from './lib/utils';
@@ -87,6 +88,11 @@ export function executeCompile(configsFilePath: string): string {
   nonArticlePages.forEach(nonArticlePage => {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
+
+  fs.copySync(
+    path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
+    path.join(paths.distDirPath, 'github-markdown.css')
+  );
 
   return 'Done compile\n';
 }
