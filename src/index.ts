@@ -3,15 +3,18 @@ import * as path from 'path';
 
 import {
   ArticlePage,
+  NonArticlePage,
   generateArticlePages,
   generateNonArticlePages,
   preprocessArticlePages,
+  preprocessNonArticlePages,
 } from './lib/page-generator';
 import {
   UbwConfigs,
   defaultUbwConfigs,
   generatePaths,
 } from './lib/utils';
+import TopPage from './lib/templates/TopPage';
 
 export function executeInit(repositoryDirPath: string): string {
   const paths = generatePaths(repositoryDirPath);
@@ -61,11 +64,20 @@ export function executeCompile(configsFilePath: string): string {
         pageName: '',
       };
     });
+  let nonArticlePages: NonArticlePage[] = [
+    {
+      component: TopPage,
+      relativeOutputFilePath: 'index.html',
+      outputFilePath: '',
+      html: '',
+    },
+  ];
 
   articlePages = preprocessArticlePages(repositoryDirPath, configs, articlePages);
+  nonArticlePages = preprocessNonArticlePages(repositoryDirPath, configs, nonArticlePages);
 
-  articlePages = generateArticlePages(repositoryDirPath, configs, articlePages);
-  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articlePages);
+  articlePages = generateArticlePages(repositoryDirPath, configs, articlePages, nonArticlePages);
+  nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articlePages, nonArticlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   articlePages.forEach(article => {

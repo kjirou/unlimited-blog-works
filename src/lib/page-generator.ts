@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
-import TopPage from './templates/TopPage';
 import {NonArticlePageProps} from './templates/shared';
 import {
   UbwConfigs,
@@ -138,7 +137,8 @@ export function preprocessArticlePages(
 export function generateArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
-  articlePages: ArticlePage[]
+  articlePages: ArticlePage[],
+  nonArticlePages: NonArticlePage[]
 ): ArticlePage[] {
   return articlePages.map(articlePage => {
     // TODO: Assign each article into layout
@@ -169,26 +169,26 @@ export function generateArticlePages(
   });
 }
 
-interface NonArticlePage {
+export interface NonArticlePage {
   component: React.ComponentClass<NonArticlePageProps>,
   relativeOutputFilePath: string,
   outputFilePath: string,
   html: string,
 }
 
-const nonArticlePages: NonArticlePage[] = [
-  {
-    component: TopPage,
-    relativeOutputFilePath: 'index.html',
-    outputFilePath: '',
-    html: '',
-  },
-];
+export function preprocessNonArticlePages(
+  repositoryDirPath: string,
+  configs: UbwConfigs,
+  nonArticlePages: NonArticlePage[]
+): NonArticlePage[] {
+  return nonArticlePages;
+}
 
 export function generateNonArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
-  articlePages: ArticlePage[]
+  articlePages: ArticlePage[],
+  nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
   const paths = generatePaths(repositoryDirPath);
 
@@ -200,7 +200,7 @@ export function generateNonArticlePages(
     };
   });
 
-  const processedNonArticlePages: NonArticlePage[] = nonArticlePages.map(nonArticlePage => {
+  return nonArticlePages.map(nonArticlePage => {
     const html = ReactDOMServer.renderToStaticMarkup(
       React.createElement(nonArticlePage.component, {
         articles: articlesProps,
@@ -222,6 +222,4 @@ export function generateNonArticlePages(
       html: unifiedResult.contents,
     });
   });
-
-  return processedNonArticlePages;
 }
