@@ -42,6 +42,15 @@ interface RemarkAstNode {
   children?: RemarkAstNode[],
 }
 
+interface RehypeAstNode {
+  type: string,
+  tagName: string,
+  properties: {
+    className?: string[],
+  },
+  children?: RehypeAstNode[],
+}
+
 function createRemarkPlugins(): any[] {
   return [
     [remarkFrontmatter, ['yaml']],
@@ -54,6 +63,21 @@ function createRehypePlugins(params: {
 }): any[] {
   return [
     [rehypeRaw],
+    [() => {
+      return function transformer(tree: RehypeAstNode): void {
+        const mainContents = tree.children;
+        tree.children = [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: {
+              className: ['markdown-body'],
+            },
+            children: mainContents,
+          },
+        ];
+      };
+    }],
     [rehypeDocument, {
       title: params.title,
       language: params.language,
