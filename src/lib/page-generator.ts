@@ -141,6 +141,7 @@ export function generateArticlePages(
   articlePages: ArticlePage[]
 ): ArticlePage[] {
   return articlePages.map(articlePage => {
+    // TODO: Assign each article into layout
     const htmlData = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
