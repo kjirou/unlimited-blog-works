@@ -104,11 +104,11 @@ interface ArticleFrontMatters {
 }
 
 export function preprocessArticlePages(
-  repositoryDirPath: string,
+  blogRoot: string,
   configs: UbwConfigs,
   articlePages: ArticlePage[]
 ): ArticlePage[] {
-  const paths = generatePaths(repositoryDirPath);
+  const paths = generatePaths(blogRoot);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
@@ -135,7 +135,7 @@ export function preprocessArticlePages(
 }
 
 export function generateArticlePages(
-  repositoryDirPath: string,
+  blogRoot: string,
   configs: UbwConfigs,
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
@@ -177,7 +177,7 @@ export interface NonArticlePage {
 }
 
 export function preprocessNonArticlePages(
-  repositoryDirPath: string,
+  blogRoot: string,
   configs: UbwConfigs,
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
@@ -185,12 +185,12 @@ export function preprocessNonArticlePages(
 }
 
 export function generateNonArticlePages(
-  repositoryDirPath: string,
+  blogRoot: string,
   configs: UbwConfigs,
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generatePaths(repositoryDirPath);
+  const paths = generatePaths(blogRoot);
 
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {

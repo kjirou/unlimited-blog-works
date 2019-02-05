@@ -16,10 +16,10 @@ import {
 } from './lib/utils';
 import TopPage from './lib/templates/TopPage';
 
-export function executeInit(repositoryDirPath: string): string {
-  const paths = generatePaths(repositoryDirPath);
+export function executeInit(blogRoot: string): string {
+  const paths = generatePaths(blogRoot);
 
-  fs.ensureDirSync(repositoryDirPath);
+  fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
     paths.srcConfigsFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
@@ -46,8 +46,8 @@ export function executeCompile(configsFilePath: string): string {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const repositoryDirPath = path.dirname(configsFilePath);
-  const paths = generatePaths(repositoryDirPath);
+  const blogRoot = path.dirname(configsFilePath);
+  const paths = generatePaths(blogRoot);
 
   let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
@@ -73,11 +73,11 @@ export function executeCompile(configsFilePath: string): string {
     },
   ];
 
-  articlePages = preprocessArticlePages(repositoryDirPath, configs, articlePages);
-  nonArticlePages = preprocessNonArticlePages(repositoryDirPath, configs, nonArticlePages);
+  articlePages = preprocessArticlePages(blogRoot, configs, articlePages);
+  nonArticlePages = preprocessNonArticlePages(blogRoot, configs, nonArticlePages);
 
-  articlePages = generateArticlePages(repositoryDirPath, configs, articlePages, nonArticlePages);
-  nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articlePages, nonArticlePages);
+  articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
+  nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
   articlePages.forEach(article => {
