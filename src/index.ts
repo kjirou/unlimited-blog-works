@@ -68,6 +68,7 @@ export function executeCompile(configsFilePath: string): string {
     {
       layoutComponent: TopLayout,
       relativeOutputFilePath: 'index.html',
+      permalink: '/index.html',
       outputFilePath: '',
       html: '',
     },

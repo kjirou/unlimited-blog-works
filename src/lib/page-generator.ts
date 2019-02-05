@@ -172,6 +172,7 @@ export function generateArticlePages(
 export interface NonArticlePage {
   layoutComponent: React.ComponentClass<NonArticlePageProps>,
   relativeOutputFilePath: string,
+  permalink: string,
   outputFilePath: string,
   html: string,
 }
