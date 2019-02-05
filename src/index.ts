@@ -14,7 +14,7 @@ import {
   defaultUbwConfigs,
   generatePaths,
 } from './lib/utils';
-import TopPage from './lib/templates/TopPage';
+import TopLayout from './lib/templates/TopLayout';
 
 export function executeInit(blogRoot: string): string {
   const paths = generatePaths(blogRoot);
@@ -66,7 +66,7 @@ export function executeCompile(configsFilePath: string): string {
     });
   let nonArticlePages: NonArticlePage[] = [
     {
-      component: TopPage,
+      component: TopLayout,
       relativeOutputFilePath: 'index.html',
       outputFilePath: '',
       html: '',
