@@ -3,8 +3,9 @@ import * as path from 'path';
 
 import {
   Article,
+  generateArticles,
   generateNonArticlePages,
-  processArticles,
+  preprocessArticles,
 } from './lib/page-generator';
 import {
   UbwConfigs,
@@ -45,7 +46,7 @@ export function executeCompile(configsFilePath: string): string {
   const repositoryDirPath = path.dirname(configsFilePath);
   const paths = generatePaths(repositoryDirPath);
 
-  const articles = fs.readdirSync(paths.srcArticlesDirPath)
+  let articles = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
       const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
 
@@ -61,11 +62,13 @@ export function executeCompile(configsFilePath: string): string {
       };
     });
 
-  const processedArticles = processArticles(repositoryDirPath, configs, articles);
-  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, processedArticles);
+  articles = preprocessArticles(repositoryDirPath, configs, articles);
+
+  articles = generateArticles(repositoryDirPath, configs, articles);
+  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articles);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
-  processedArticles.forEach(article => {
+  articles.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
   nonArticlePages.forEach(nonArticlePage => {

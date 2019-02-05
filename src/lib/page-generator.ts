@@ -36,22 +36,6 @@ const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 
-export interface Article {
-  articleId: string,
-  publicId: string,
-  inputFilePath: string,
-  outputFilePath: string,
-  permalink: string,
-  htmlSource: string,
-  markdownSource: string,
-  pageName: string,
-}
-
-interface ArticleFrontMatters {
-  publicId: string,
-  pageName?: string,
-}
-
 interface RemarkAstNode {
   type: string,
   value?: string,
@@ -104,16 +88,32 @@ export function extractPageName(node: RemarkAstNode): string {
   return fragments.join(' ');
 }
 
-export function processArticles(
+export interface Article {
+  articleId: string,
+  publicId: string,
+  inputFilePath: string,
+  outputFilePath: string,
+  permalink: string,
+  htmlSource: string,
+  markdownSource: string,
+  pageName: string,
+}
+
+interface ArticleFrontMatters {
+  publicId: string,
+  pageName?: string,
+}
+
+export function preprocessArticles(
   repositoryDirPath: string,
   configs: UbwConfigs,
   articles: Article[]
 ): Article[] {
   const paths = generatePaths(repositoryDirPath);
 
-  // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
-  // 結果として、.md の解析は二回行っている。
-  const preprocessedArticles: Article[] = articles.map(article => {
+  // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
+  //       unified().stringify() で処理する方法が不明だった。
+  return articles.map(article => {
     const ast = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
@@ -133,9 +133,15 @@ export function processArticles(
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
     });
   });
+}
 
-  const processedArticles: Article[] = preprocessedArticles.map(article => {
-    const htmlInfo = unified()
+export function generateArticles(
+  repositoryDirPath: string,
+  configs: UbwConfigs,
+  articles: Article[]
+): Article[] {
+  return articles.map(article => {
+    const htmlData = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
       .use(remarkRehype, {
@@ -157,11 +163,9 @@ export function processArticles(
       .processSync(article.markdownSource);
 
     return Object.assign({}, article, {
-      htmlSource: htmlInfo.contents,
+      htmlSource: htmlData.contents,
     });
   });
-
-  return processedArticles;
 }
 
 interface NonArticlePage {
