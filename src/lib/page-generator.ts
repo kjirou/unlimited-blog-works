@@ -42,6 +42,15 @@ interface RemarkAstNode {
   children?: RemarkAstNode[],
 }
 
+interface RehypeAstNode {
+  type: string,
+  tagName: string,
+  properties: {
+    className?: string[],
+  },
+  children?: RehypeAstNode[],
+}
+
 function createRemarkPlugins(): any[] {
   return [
     [remarkFrontmatter, ['yaml']],
@@ -50,11 +59,29 @@ function createRemarkPlugins(): any[] {
 
 function createRehypePlugins(params: {
   title: string,
+  language: string,
 }): any[] {
   return [
     [rehypeRaw],
+    [() => {
+      return function transformer(tree: RehypeAstNode): void {
+        const mainContents = tree.children;
+        tree.children = [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: {
+              className: ['markdown-body'],
+            },
+            children: mainContents,
+          },
+        ];
+      };
+    }],
     [rehypeDocument, {
       title: params.title,
+      language: params.language,
+      css: '/github-markdown.css',
     }],
     [rehypeFormat],
   ];
@@ -159,6 +186,7 @@ export function generateArticlePages(
       })
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
+        language: configs.language,
       }))
       .use(rehypeStringify)
       .processSync(articlePage.markdownSource);
@@ -172,6 +200,7 @@ export function generateArticlePages(
 export interface NonArticlePage {
   layoutComponent: React.ComponentClass<NonArticlePageProps>,
   relativeOutputFilePath: string,
+  permalink: string,
   outputFilePath: string,
   html: string,
 }
@@ -213,6 +242,7 @@ export function generateNonArticlePages(
       })
       .use(createRehypePlugins({
         title: configs.blogName,
+        language: configs.language,
       }))
       .use(rehypeStringify)
       .processSync(html);

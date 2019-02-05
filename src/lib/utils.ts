@@ -3,6 +3,9 @@
  */
 import * as path from 'path';
 
+const PROJECT_ROOT: string = path.join(__dirname, '../..');
+export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
+
 const RELATIVE_SRC_DIR_PATH: string = 'src';
 const RELATIVE_DIST_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
@@ -34,8 +37,10 @@ export function generatePaths(repositoryDirPath: string): {
 
 export interface UbwConfigs {
   blogName: string,
+  language: string,
 }
 
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
+  language: 'en',
 };
