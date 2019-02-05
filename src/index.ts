@@ -66,7 +66,7 @@ export function executeCompile(configsFilePath: string): string {
     });
   let nonArticlePages: NonArticlePage[] = [
     {
-      component: TopLayout,
+      layoutComponent: TopLayout,
       relativeOutputFilePath: 'index.html',
       outputFilePath: '',
       html: '',

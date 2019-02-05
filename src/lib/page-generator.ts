@@ -170,7 +170,7 @@ export function generateArticlePages(
 }
 
 export interface NonArticlePage {
-  component: React.ComponentClass<NonArticlePageProps>,
+  layoutComponent: React.ComponentClass<NonArticlePageProps>,
   relativeOutputFilePath: string,
   outputFilePath: string,
   html: string,
@@ -202,7 +202,7 @@ export function generateNonArticlePages(
 
   return nonArticlePages.map(nonArticlePage => {
     const html = ReactDOMServer.renderToStaticMarkup(
-      React.createElement(nonArticlePage.component, {
+      React.createElement(nonArticlePage.layoutComponent, {
         articles: articlesProps,
       })
     );
