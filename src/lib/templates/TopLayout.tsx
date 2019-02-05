@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {NonArticlePageProps} from './shared';
 
-export default class TopPage extends React.Component<NonArticlePageProps> {
+export default class TopLayout extends React.Component<NonArticlePageProps> {
   render(): JSX.Element {
     return (
       <React.Fragment>

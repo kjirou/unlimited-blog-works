@@ -2,20 +2,24 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {
-  Article,
+  ArticlePage,
+  NonArticlePage,
+  generateArticlePages,
   generateNonArticlePages,
-  processArticles,
+  preprocessArticlePages,
+  preprocessNonArticlePages,
 } from './lib/page-generator';
 import {
   UbwConfigs,
   defaultUbwConfigs,
   generatePaths,
 } from './lib/utils';
+import TopLayout from './lib/templates/TopLayout';
 
-export function executeInit(repositoryDirPath: string): string {
-  const paths = generatePaths(repositoryDirPath);
+export function executeInit(blogRoot: string): string {
+  const paths = generatePaths(blogRoot);
 
-  fs.ensureDirSync(repositoryDirPath);
+  fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
     paths.srcConfigsFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
@@ -42,10 +46,10 @@ export function executeCompile(configsFilePath: string): string {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const repositoryDirPath = path.dirname(configsFilePath);
-  const paths = generatePaths(repositoryDirPath);
+  const blogRoot = path.dirname(configsFilePath);
+  const paths = generatePaths(blogRoot);
 
-  const articles = fs.readdirSync(paths.srcArticlesDirPath)
+  let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
       const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
 
@@ -60,12 +64,23 @@ export function executeCompile(configsFilePath: string): string {
         pageName: '',
       };
     });
+  let nonArticlePages: NonArticlePage[] = [
+    {
+      layoutComponent: TopLayout,
+      relativeOutputFilePath: 'index.html',
+      outputFilePath: '',
+      html: '',
+    },
+  ];
 
-  const processedArticles = processArticles(repositoryDirPath, configs, articles);
-  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, processedArticles);
+  articlePages = preprocessArticlePages(blogRoot, configs, articlePages);
+  nonArticlePages = preprocessNonArticlePages(blogRoot, configs, nonArticlePages);
+
+  articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
+  nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
-  processedArticles.forEach(article => {
+  articlePages.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
   nonArticlePages.forEach(nonArticlePage => {

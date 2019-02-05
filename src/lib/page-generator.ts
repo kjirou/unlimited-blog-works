@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
-import TopPage from './templates/TopPage';
 import {NonArticlePageProps} from './templates/shared';
 import {
   UbwConfigs,
@@ -35,22 +34,6 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
-
-export interface Article {
-  articleId: string,
-  publicId: string,
-  inputFilePath: string,
-  outputFilePath: string,
-  permalink: string,
-  htmlSource: string,
-  markdownSource: string,
-  pageName: string,
-}
-
-interface ArticleFrontMatters {
-  publicId: string,
-  pageName?: string,
-}
 
 interface RemarkAstNode {
   type: string,
@@ -104,28 +87,44 @@ export function extractPageName(node: RemarkAstNode): string {
   return fragments.join(' ');
 }
 
-export function processArticles(
-  repositoryDirPath: string,
-  configs: UbwConfigs,
-  articles: Article[]
-): Article[] {
-  const paths = generatePaths(repositoryDirPath);
+export interface ArticlePage {
+  articleId: string,
+  publicId: string,
+  inputFilePath: string,
+  outputFilePath: string,
+  permalink: string,
+  htmlSource: string,
+  markdownSource: string,
+  pageName: string,
+}
 
-  // ここで生成した Markdown の Syntax Tree を再利用して unified().stringify() で処理する方法が不明だった。
-  // 結果として、.md の解析は二回行っている。
-  const preprocessedArticles: Article[] = articles.map(article => {
+interface ArticleFrontMatters {
+  publicId: string,
+  pageName?: string,
+}
+
+export function preprocessArticlePages(
+  blogRoot: string,
+  configs: UbwConfigs,
+  articlePages: ArticlePage[]
+): ArticlePage[] {
+  const paths = generatePaths(blogRoot);
+
+  // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
+  //       unified().stringify() で処理する方法が不明だった。
+  return articlePages.map(articlePage => {
     const ast = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
-      .parse(article.markdownSource);
+      .parse(articlePage.markdownSource);
 
     const frontMattersNode = ast.children[0];
     if (frontMattersNode.type !== 'yaml') {
-      throw new Error('Can not find a Front-matter block in an article.');
+      throw new Error('Can not find a Front-matter block in an articlePage.');
     }
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
-    return Object.assign({}, article, {
+    return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
@@ -133,9 +132,17 @@ export function processArticles(
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
     });
   });
+}
 
-  const processedArticles: Article[] = preprocessedArticles.map(article => {
-    const htmlInfo = unified()
+export function generateArticlePages(
+  blogRoot: string,
+  configs: UbwConfigs,
+  articlePages: ArticlePage[],
+  nonArticlePages: NonArticlePage[]
+): ArticlePage[] {
+  return articlePages.map(articlePage => {
+    // TODO: Assign each article into layout
+    const htmlData = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
       .use(remarkRehype, {
@@ -151,53 +158,51 @@ export function processArticles(
         };
       })
       .use(createRehypePlugins({
-        title: `${article.pageName} | ${configs.blogName}`,
+        title: `${articlePage.pageName} | ${configs.blogName}`,
       }))
       .use(rehypeStringify)
-      .processSync(article.markdownSource);
+      .processSync(articlePage.markdownSource);
 
-    return Object.assign({}, article, {
-      htmlSource: htmlInfo.contents,
+    return Object.assign({}, articlePage, {
+      htmlSource: htmlData.contents,
     });
   });
-
-  return processedArticles;
 }
 
-interface NonArticlePage {
-  component: React.ComponentClass<NonArticlePageProps>,
+export interface NonArticlePage {
+  layoutComponent: React.ComponentClass<NonArticlePageProps>,
   relativeOutputFilePath: string,
   outputFilePath: string,
   html: string,
 }
 
-const nonArticlePages: NonArticlePage[] = [
-  {
-    component: TopPage,
-    relativeOutputFilePath: 'index.html',
-    outputFilePath: '',
-    html: '',
-  },
-];
+export function preprocessNonArticlePages(
+  blogRoot: string,
+  configs: UbwConfigs,
+  nonArticlePages: NonArticlePage[]
+): NonArticlePage[] {
+  return nonArticlePages;
+}
 
 export function generateNonArticlePages(
-  repositoryDirPath: string,
+  blogRoot: string,
   configs: UbwConfigs,
-  articles: Article[]
+  articlePages: ArticlePage[],
+  nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generatePaths(repositoryDirPath);
+  const paths = generatePaths(blogRoot);
 
-  const articlesProps: NonArticlePageProps['articles'] = articles.map(article => {
+  const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
-      articleId: article.articleId,
-      pageName: article.pageName,
-      permalink: article.permalink,
+      articleId: articlePage.articleId,
+      pageName: articlePage.pageName,
+      permalink: articlePage.permalink,
     };
   });
 
-  const processedNonArticlePages: NonArticlePage[] = nonArticlePages.map(nonArticlePage => {
+  return nonArticlePages.map(nonArticlePage => {
     const html = ReactDOMServer.renderToStaticMarkup(
-      React.createElement(nonArticlePage.component, {
+      React.createElement(nonArticlePage.layoutComponent, {
         articles: articlesProps,
       })
     );
@@ -217,6 +222,4 @@ export function generateNonArticlePages(
       html: unifiedResult.contents,
     });
   });
-
-  return processedNonArticlePages;
 }
