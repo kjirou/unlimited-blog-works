@@ -2,10 +2,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import {
-  Article,
-  generateArticles,
+  ArticlePage,
+  generateArticlePages,
   generateNonArticlePages,
-  preprocessArticles,
+  preprocessArticlePages,
 } from './lib/page-generator';
 import {
   UbwConfigs,
@@ -46,7 +46,7 @@ export function executeCompile(configsFilePath: string): string {
   const repositoryDirPath = path.dirname(configsFilePath);
   const paths = generatePaths(repositoryDirPath);
 
-  let articles = fs.readdirSync(paths.srcArticlesDirPath)
+  let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
     .map(relativeSrcArticleFilePath => {
       const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
 
@@ -62,13 +62,13 @@ export function executeCompile(configsFilePath: string): string {
       };
     });
 
-  articles = preprocessArticles(repositoryDirPath, configs, articles);
+  articlePages = preprocessArticlePages(repositoryDirPath, configs, articlePages);
 
-  articles = generateArticles(repositoryDirPath, configs, articles);
-  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articles);
+  articlePages = generateArticlePages(repositoryDirPath, configs, articlePages);
+  const nonArticlePages = generateNonArticlePages(repositoryDirPath, configs, articlePages);
 
   fs.ensureDirSync(paths.distArticlesDirPath);
-  articles.forEach(article => {
+  articlePages.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
   nonArticlePages.forEach(nonArticlePage => {

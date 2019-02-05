@@ -88,7 +88,7 @@ export function extractPageName(node: RemarkAstNode): string {
   return fragments.join(' ');
 }
 
-export interface Article {
+export interface ArticlePage {
   articleId: string,
   publicId: string,
   inputFilePath: string,
@@ -104,28 +104,28 @@ interface ArticleFrontMatters {
   pageName?: string,
 }
 
-export function preprocessArticles(
+export function preprocessArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
-  articles: Article[]
-): Article[] {
+  articlePages: ArticlePage[]
+): ArticlePage[] {
   const paths = generatePaths(repositoryDirPath);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
-  return articles.map(article => {
+  return articlePages.map(articlePage => {
     const ast = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
-      .parse(article.markdownSource);
+      .parse(articlePage.markdownSource);
 
     const frontMattersNode = ast.children[0];
     if (frontMattersNode.type !== 'yaml') {
-      throw new Error('Can not find a Front-matter block in an article.');
+      throw new Error('Can not find a Front-matter block in an articlePage.');
     }
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
-    return Object.assign({}, article, {
+    return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
@@ -135,12 +135,12 @@ export function preprocessArticles(
   });
 }
 
-export function generateArticles(
+export function generateArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
-  articles: Article[]
-): Article[] {
-  return articles.map(article => {
+  articlePages: ArticlePage[]
+): ArticlePage[] {
+  return articlePages.map(articlePage => {
     const htmlData = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
@@ -157,12 +157,12 @@ export function generateArticles(
         };
       })
       .use(createRehypePlugins({
-        title: `${article.pageName} | ${configs.blogName}`,
+        title: `${articlePage.pageName} | ${configs.blogName}`,
       }))
       .use(rehypeStringify)
-      .processSync(article.markdownSource);
+      .processSync(articlePage.markdownSource);
 
-    return Object.assign({}, article, {
+    return Object.assign({}, articlePage, {
       htmlSource: htmlData.contents,
     });
   });
@@ -187,15 +187,15 @@ const nonArticlePages: NonArticlePage[] = [
 export function generateNonArticlePages(
   repositoryDirPath: string,
   configs: UbwConfigs,
-  articles: Article[]
+  articlePages: ArticlePage[]
 ): NonArticlePage[] {
   const paths = generatePaths(repositoryDirPath);
 
-  const articlesProps: NonArticlePageProps['articles'] = articles.map(article => {
+  const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
-      articleId: article.articleId,
-      pageName: article.pageName,
-      permalink: article.permalink,
+      articleId: articlePage.articleId,
+      pageName: articlePage.pageName,
+      permalink: articlePage.permalink,
     };
   });
 
