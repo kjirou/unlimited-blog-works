@@ -34,8 +34,10 @@ export function generatePaths(repositoryDirPath: string): {
 
 export interface UbwConfigs {
   blogName: string,
+  language: string,
 }
 
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
+  language: 'en',
 };

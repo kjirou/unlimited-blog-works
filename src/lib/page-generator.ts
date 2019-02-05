@@ -50,11 +50,13 @@ function createRemarkPlugins(): any[] {
 
 function createRehypePlugins(params: {
   title: string,
+  language: string,
 }): any[] {
   return [
     [rehypeRaw],
     [rehypeDocument, {
       title: params.title,
+      language: params.language,
     }],
     [rehypeFormat],
   ];
@@ -159,6 +161,7 @@ export function generateArticlePages(
       })
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
+        language: configs.language,
       }))
       .use(rehypeStringify)
       .processSync(articlePage.markdownSource);
@@ -214,6 +217,7 @@ export function generateNonArticlePages(
       })
       .use(createRehypePlugins({
         title: configs.blogName,
+        language: configs.language,
       }))
       .use(rehypeStringify)
       .processSync(html);
