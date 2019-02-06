@@ -50,6 +50,8 @@
     "typescript": "^3.2.4"
   },
   "dependencies": {
+    "date-fns": "^2.0.0-alpha.13",
+    "date-fns-tz": "^1.0.6",
     "fs-extra": "^7.0.1",
     "js-yaml": "^3.12.1",
     "minimist": "^1.2.0",
