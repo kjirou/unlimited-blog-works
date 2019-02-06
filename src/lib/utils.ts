@@ -37,10 +37,14 @@ export function generatePaths(repositoryDirPath: string): {
 
 export interface UbwConfigs {
   blogName: string,
+  // Used <html lang="{here}">
   language: string,
+  // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
+  timeZone: string,
 }
 
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
   language: 'en',
+  timeZone: 'UTC',
 };
