@@ -130,6 +130,28 @@ interface ArticleFrontMatters {
   pageName?: string,
 }
 
+export function initializeArticlePages(
+  blogRoot: string,
+  articleFileNames: string[]
+): ArticlePage[] {
+  const paths = generatePaths(blogRoot);
+
+  return articleFileNames.map(articleFileName => {
+    const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
+
+    return {
+      articleId: path.basename(articleFilePath, '.md'),
+      publicId: '',
+      inputFilePath: articleFilePath,
+      outputFilePath: '',
+      permalink: '',
+      htmlSource: '',
+      markdownSource: '',
+      pageName: '',
+    };
+  });
+}
+
 export function preprocessArticlePages(
   blogRoot: string,
   configs: UbwConfigs,

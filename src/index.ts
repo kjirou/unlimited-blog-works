@@ -6,6 +6,7 @@ import {
   NonArticlePage,
   generateArticlePages,
   generateNonArticlePages,
+  initializeArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
 } from './lib/page-generator';
@@ -50,20 +51,11 @@ export function executeCompile(configsFilePath: string): string {
   const blogRoot = path.dirname(configsFilePath);
   const paths = generatePaths(blogRoot);
 
-  let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
-    .map(articleFileName => {
-      const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
-
-      return {
-        articleId: path.basename(articleFilePath, '.md'),
-        publicId: '',
-        inputFilePath: articleFilePath,
-        outputFilePath: '',
-        permalink: '',
-        htmlSource: '',
-        markdownSource: fs.readFileSync(articleFilePath).toString(),
-        pageName: '',
-      };
+  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+    .map(articlePage => {
+      return Object.assign({}, articlePage, {
+        markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
+      });
     });
   let nonArticlePages: NonArticlePage[] = [
     {
