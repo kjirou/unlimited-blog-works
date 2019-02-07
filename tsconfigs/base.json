@@ -3,7 +3,7 @@
     /* Basic Options */
     "jsx": "react",
     "lib": [
-      "es2015"
+      "es2017"
     ],
     "module": "commonjs",
     "newLine": "LF",
