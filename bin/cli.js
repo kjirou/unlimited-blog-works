@@ -43,12 +43,12 @@ const parsedSubCommands = parseCommands(
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 const options = minimist(parsedSubCommands.argv);
 
+// TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
     const [
       configsFilePathInput,
     ] = options._;
-    // TODO: validate
     const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
     const output = ubw.executeArticleNew(configsFilePath);
     process.stdout.write(output);
@@ -58,7 +58,6 @@ if (subCommand === 'article') {
   const [
     destinationDirPathInput,
   ] = options._;
-  // TODO: validate
   const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
   const output = ubw.executeInit(destinationDirPath);
   process.stdout.write(output);
@@ -67,7 +66,6 @@ if (subCommand === 'article') {
   const [
     configsFilePathInput,
   ] = options._;
-  // TODO: validate
   const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
   const output = ubw.executeCompile(configsFilePath);
   process.stdout.write(output);
