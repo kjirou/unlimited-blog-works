@@ -27,20 +27,6 @@ export function executeInit(blogRoot: string): string {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  fs.ensureDirSync(paths.srcDirPath);
-  fs.ensureDirSync(paths.srcArticlesDirPath);
-
-  fs.writeFileSync(
-    path.join(paths.srcArticlesDirPath, '00000001.md'),
-    [
-      '---',
-      'publicId: "00000001"',
-      '---',
-      '',
-      '# My First Article & **Bold**\n',
-    ].join('\n')
-  );
-
   return 'Done init\n';
 }
 
@@ -90,5 +76,25 @@ export function executeCompile(configsFilePath: string): string {
 }
 
 export function executeArticleNew(configsFilePath: string): string {
+  const rawConfigs = fs.readJsonSync(configsFilePath);
+  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+
+  const blogRoot = path.dirname(configsFilePath);
+  const paths = generatePaths(blogRoot);
+
+  fs.ensureDirSync(paths.srcDirPath);
+  fs.ensureDirSync(paths.srcArticlesDirPath);
+
+  fs.writeFileSync(
+    path.join(paths.srcArticlesDirPath, '00000001.md'),
+    [
+      '---',
+      'publicId: "00000001"',
+      '---',
+      '',
+      '# My First Article & **Bold**\n',
+    ].join('\n')
+  );
+
   return 'Done article new\n';
 }
