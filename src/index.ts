@@ -88,3 +88,7 @@ export function executeCompile(configsFilePath: string): string {
 
   return 'Done compile\n';
 }
+
+export function executeArticleNew(configsFilePath: string): string {
+  return 'Done article new\n';
+}
