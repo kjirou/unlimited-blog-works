@@ -125,9 +125,17 @@ export interface ArticlePage {
   pageName: string,
 }
 
-interface ArticleFrontMatters {
-  publicId: string,
-  pageName?: string,
+export function createArticlePage(): ArticlePage {
+  return {
+    articleId: '',
+    publicId: '',
+    inputFilePath: '',
+    outputFilePath: '',
+    permalink: '',
+    htmlSource: '',
+    markdownSource: '',
+    pageName: '',
+  };
 }
 
 export function initializeArticlePages(
@@ -139,17 +147,37 @@ export function initializeArticlePages(
   return articleFileNames.map(articleFileName => {
     const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
 
-    return {
+    return Object.assign(createArticlePage(), {
       articleId: path.basename(articleFilePath, '.md'),
-      publicId: '',
       inputFilePath: articleFilePath,
-      outputFilePath: '',
-      permalink: '',
-      htmlSource: '',
-      markdownSource: '',
-      pageName: '',
-    };
+    });
   });
+}
+
+// e.g. "20191231-0001"
+// Each part is called "{dateString}-{serialString}".
+const AUTOMATIC_ARTICLE_ID = /^(\d{8})-(\d{4})$/;
+
+export function getNextAutomaticArticleId(
+  articlePages: ArticlePage[],
+  dateString: string
+): string {
+  let lastSerial = 0;
+  articlePages.forEach(articlePage => {
+    const matched = AUTOMATIC_ARTICLE_ID.exec(articlePage.articleId);
+    if (matched !== null && matched[1] === dateString) {
+      const foundSerial = parseInt(matched[2]);
+      if (foundSerial >= lastSerial) {
+        lastSerial = foundSerial;
+      }
+    }
+  });
+  return `${dateString}-${(lastSerial + 1).toString().padStart(4, '0')}`;
+}
+
+interface ArticleFrontMatters {
+  publicId: string,
+  pageName?: string,
 }
 
 export function preprocessArticlePages(
