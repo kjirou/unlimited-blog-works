@@ -51,8 +51,8 @@ export function executeCompile(configsFilePath: string): string {
   const paths = generatePaths(blogRoot);
 
   let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
-    .map(relativeSrcArticleFilePath => {
-      const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
+    .map(articleFileName => {
+      const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
 
       return {
         articleId: path.basename(articleFilePath, '.md'),
