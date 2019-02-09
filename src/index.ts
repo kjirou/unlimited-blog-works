@@ -47,11 +47,11 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   });
 }
 
-export function executeCompile(configsFilePath: string): Promise<CommandResult> {
-  const rawConfigs = fs.readJsonSync(configsFilePath);
+export function executeCompile(configFilePath: string): Promise<CommandResult> {
+  const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configsFilePath);
+  const blogRoot = path.dirname(configFilePath);
   const paths = generatePaths(blogRoot);
 
   let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
@@ -95,11 +95,11 @@ export function executeCompile(configsFilePath: string): Promise<CommandResult> 
   });
 }
 
-export function executeArticleNew(configsFilePath: string): Promise<CommandResult> {
-  const rawConfigs = fs.readJsonSync(configsFilePath);
+export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
+  const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configsFilePath);
+  const blogRoot = path.dirname(configFilePath);
   const paths = generatePaths(blogRoot);
 
   fs.ensureDirSync(paths.srcDirPath);
