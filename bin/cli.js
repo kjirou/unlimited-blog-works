@@ -60,7 +60,9 @@ if (subCommand === 'article') {
   ] = options._;
   const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
   promise = ubw.executeCompile(configsFilePath);
-} else {
+}
+
+if (!promise) {
   promise = Promise.resolve({
     exitCode: 1,
     message: 'Unknown subcommand.',
