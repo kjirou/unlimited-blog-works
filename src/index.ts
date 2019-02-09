@@ -27,7 +27,12 @@ export const cliUtils = {
   toNormalizedAbsolutePath,
 };
 
-export function executeInit(blogRoot: string): string {
+interface CommandResult {
+  exitCode: number,
+  message: string,
+}
+
+export function executeInit(blogRoot: string): CommandResult {
   const paths = generatePaths(blogRoot);
 
   fs.ensureDirSync(blogRoot);
@@ -36,10 +41,13 @@ export function executeInit(blogRoot: string): string {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  return 'Done init\n';
+  return {
+    exitCode: 0,
+    message: 'Done "init"',
+  };
 }
 
-export function executeCompile(configsFilePath: string): string {
+export function executeCompile(configsFilePath: string): CommandResult {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
@@ -81,10 +89,13 @@ export function executeCompile(configsFilePath: string): string {
     path.join(paths.distDirPath, 'github-markdown.css')
   );
 
-  return 'Done compile\n';
+  return {
+    exitCode: 0,
+    message: 'Done "compile"',
+  };
 }
 
-export function executeArticleNew(configsFilePath: string): string {
+export function executeArticleNew(configsFilePath: string): CommandResult {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
@@ -110,5 +121,8 @@ export function executeArticleNew(configsFilePath: string): string {
     ].join('\n')
   );
 
-  return 'Done article new\n';
+  return {
+    exitCode: 0,
+    message: 'Done "article new"',
+  };
 }

@@ -14,11 +14,10 @@ if (fs.existsSync(path.join(__dirname, '../dist/index.js'))) {
   ubw = require('../src');
 }
 
-function exitWithErrorMessage(message) {
+function printErrorMessage(message) {
   const ansiEscapeColorRed = '\x1b[31m';
   const ansiEscapeColorReset = '\x1b[0m';
   process.stderr.write(`${ansiEscapeColorRed}${message}${ansiEscapeColorReset}\n`);
-  process.exit(1);
 }
 
 const parsedSubCommands = parseCommands(
@@ -38,6 +37,8 @@ const parsedSubCommands = parseCommands(
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 const options = minimist(parsedSubCommands.argv);
 
+let commandResult;
+
 // TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
@@ -45,26 +46,35 @@ if (subCommand === 'article') {
       configsFilePathInput,
     ] = options._;
     const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-    const output = ubw.executeArticleNew(configsFilePath);
-    process.stdout.write(output);
-    process.exit();
+    commandResult = ubw.executeArticleNew(configsFilePath);
   }
 } else if (subCommand === 'init') {
   const [
     destinationDirPathInput,
   ] = options._;
   const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
-  const output = ubw.executeInit(destinationDirPath);
-  process.stdout.write(output);
-  process.exit();
+  commandResult = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
   const [
     configsFilePathInput,
   ] = options._;
   const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-  const output = ubw.executeCompile(configsFilePath);
-  process.stdout.write(output);
-  process.exit();
+  commandResult = ubw.executeCompile(configsFilePath);
 } else {
-  exitWithErrorMessage('Unknown subcommand.');
+  commandResult = {
+    exitCode: 1,
+    message: 'Unknown subcommand.',
+  };
+}
+
+if (commandResult.exitCode === 0) {
+  if (commandResult.message) {
+    process.stdout.write(`${commandResult.message}\n`);
+  }
+  process.exit(commandResult.exitCode);
+} else {
+  if (commandResult.message) {
+    printErrorMessage(commandResult.message);
+  }
+  process.exit(commandResult.exitCode);
 }
