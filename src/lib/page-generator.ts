@@ -6,7 +6,10 @@ import * as yaml from 'js-yaml';
 import ArticleLayout from './templates/ArticleLayout';
 import {NonArticlePageProps} from './templates/shared';
 import {
+  RehypeAstNode,
+  RemarkAstNode,
   UbwConfigs,
+  extractPageName,
   generateBlogPaths,
 } from './utils';
 
@@ -36,22 +39,6 @@ const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 
-interface RemarkAstNode {
-  type: string,
-  value?: string,
-  depth?: number,
-  children?: RemarkAstNode[],
-}
-
-interface RehypeAstNode {
-  type: string,
-  tagName: string,
-  properties: {
-    className?: string[],
-  },
-  children?: RehypeAstNode[],
-}
-
 function createRemarkPlugins(): any[] {
   return [
     [remarkFrontmatter, ['yaml']],
@@ -73,35 +60,9 @@ function createRehypePlugins(params: {
   ];
 }
 
-export function scanRemarkAstNode(
-  node: RemarkAstNode,
-  callback: (node: RemarkAstNode) => void
-): void {
-  callback(node);
-  if (node.children) {
-    node.children.forEach(childNode => {
-      scanRemarkAstNode(childNode, callback);
-    });
-  }
-}
-
-export function extractPageName(node: RemarkAstNode): string {
-  const fragments: string[] = [];
-  scanRemarkAstNode(node, (heading1Node) => {
-    if (heading1Node.type === 'heading' && heading1Node.depth === 1) {
-      scanRemarkAstNode(heading1Node, (node_) => {
-        const trimmed = (node_.value || '').trim();
-        if (trimmed) {
-          fragments.push(trimmed);
-        }
-      });
-    }
-  });
-  return fragments.join(' ');
-}
-
 export interface ArticleFrontMatters {
-  // Last update date, e.g. "2019-12-31 23:59:59"
+  // Last updated date time, time zone is "UTC"
+  // e.g. "2019-12-31 23:59:59"
   lastUpdatedAt: string,
   pageName?: string,
   publicId: string,
@@ -270,6 +231,7 @@ export function generateNonArticlePages(
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
       articleId: articlePage.articleId,
+      lastUpdatedAt: articlePage.lastUpdatedAt,
       pageName: articlePage.pageName,
       permalink: articlePage.permalink,
     };
@@ -279,6 +241,7 @@ export function generateNonArticlePages(
     const html = ReactDOMServer.renderToStaticMarkup(
       React.createElement(nonArticlePage.layoutComponent, {
         articles: articlesProps,
+        blogName: configs.blogName,
       })
     );
 
