@@ -119,6 +119,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   fs.writeFileSync(
     path.join(paths.srcArticlesDirPath, articleId + '.md'),
     [
+      // TODO: Want to wrap string variables with double quotes always.
       '---\n' + yaml.safeDump(frontMatters) + '---',
       '',
       '# My First Article & **Bold**\n',
