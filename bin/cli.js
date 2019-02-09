@@ -35,13 +35,13 @@ const parsedSubCommands = parseCommands(
   process.argv.slice(2)
 );
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
-const options = minimist(parsedSubCommands.argv);
 
 let promise;
 
 // TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
+    const options = minimist(parsedSubCommands.argv);
     const [
       configsFilePathInput,
     ] = options._;
@@ -49,12 +49,14 @@ if (subCommand === 'article') {
     promise = ubw.executeArticleNew(configsFilePath);
   }
 } else if (subCommand === 'init') {
+  const options = minimist(parsedSubCommands.argv);
   const [
     destinationDirPathInput,
   ] = options._;
   const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
   promise = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
+  const options = minimist(parsedSubCommands.argv);
   const [
     configsFilePathInput,
   ] = options._;
