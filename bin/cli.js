@@ -36,17 +36,28 @@ const parsedSubCommands = parseCommands(
 );
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 
+const defaultConfigFilePath = path.join(process.cwd(), 'ubw-configs.json');
+
 let promise;
 
 // TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
-    const options = minimist(parsedSubCommands.argv);
-    const [
-      configsFilePathInput,
-    ] = options._;
-    const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-    promise = ubw.executeArticleNew(configsFilePath);
+    const options = minimist(parsedSubCommands.argv, {
+      string: [
+        'config-file',
+      ],
+      default: {
+        'config-file': '',
+      },
+      alias: {
+        c: 'config-file',
+      },
+    });
+    const configFilePath = options['config-file']
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+      : defaultConfigFilePath;
+    promise = ubw.executeArticleNew(configFilePath);
   }
 } else if (subCommand === 'init') {
   const options = minimist(parsedSubCommands.argv);
