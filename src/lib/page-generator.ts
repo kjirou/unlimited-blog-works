@@ -231,6 +231,7 @@ export function generateNonArticlePages(
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
       articleId: articlePage.articleId,
+      lastUpdatedAt: articlePage.lastUpdatedAt,
       pageName: articlePage.pageName,
       permalink: articlePage.permalink,
     };
