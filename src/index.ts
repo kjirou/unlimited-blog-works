@@ -42,6 +42,11 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
+  const paths = generateBlogPaths(blogRoot);
+
+  fs.ensureDirSync(paths.srcStaticFilesDirPath);
+  fs.writeFileSync(path.join(paths.srcStaticFilesDirPath, '.keep'), '');
+
   return Promise.resolve({
     exitCode: 0,
     message: 'Done "init"',
@@ -84,6 +89,9 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   nonArticlePages.forEach(nonArticlePage => {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
+
+  fs.removeSync(paths.distStaticFilesDirPath);
+  fs.copySync(paths.srcStaticFilesDirPath, paths.distStaticFilesDirPath);
 
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
