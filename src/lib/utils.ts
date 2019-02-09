@@ -15,7 +15,7 @@ export function toNormalizedAbsolutePath(pathInput: string): string {
   return path.normalize(absolutePath);
 }
 
-export function generatePaths(repositoryDirPath: string): {
+export function generatePaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
   srcConfigFilePath: string,
@@ -23,9 +23,9 @@ export function generatePaths(repositoryDirPath: string): {
   distArticlesDirPath: string,
   permalinkRootPath: string,
 } {
-  const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
-  const distDirPath = path.join(repositoryDirPath, RELATIVE_DIST_DIR_PATH);
-  const srcConfigFilePath = path.join(repositoryDirPath, 'ubw-configs.json');
+  const srcDirPath = path.join(blogRoot, RELATIVE_SRC_DIR_PATH);
+  const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
+  const srcConfigFilePath = path.join(blogRoot, 'ubw-configs.json');
   const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
