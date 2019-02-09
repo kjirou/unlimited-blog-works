@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
+import ArticleLayout from './templates/ArticleLayout';
 import {NonArticlePageProps} from './templates/shared';
 import {
   UbwConfigs,
@@ -130,6 +131,7 @@ export interface ArticlePage {
   htmlSource: string,
   markdownSource: string,
   pageName: string,
+  lastUpdatedAt: Date,
 }
 
 export function createArticlePage(): ArticlePage {
@@ -142,6 +144,7 @@ export function createArticlePage(): ArticlePage {
     htmlSource: '',
     markdownSource: '',
     pageName: '',
+    lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
   };
 }
 
@@ -209,6 +212,7 @@ export function preprocessArticlePages(
       outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
       permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
+      lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
   });
 }
@@ -220,31 +224,35 @@ export function generateArticlePages(
   nonArticlePages: NonArticlePage[]
 ): ArticlePage[] {
   return articlePages.map(articlePage => {
-    // TODO: Assign each article into layout
-    const htmlData = unified()
+    const contentHtmlData = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
       .use(remarkRehype, {
         allowDangerousHTML: true,
       })
-      .use(() => {
-        return (tree: object[], file: object) => {
-          return;
-          console.log('====  Debug Transformer  ====');
-          console.log(tree);
-          //console.log(JSON.stringify(tree, null, 2));
-          console.log('==== /Debug Transformer  ====');
-        };
+      .use(rehypeStringify)
+      .processSync(articlePage.markdownSource);
+
+    const articleHtml = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(ArticleLayout, {
+        contentHtml: contentHtmlData.contents,
+        lastUpdatedAt: articlePage.lastUpdatedAt,
+      })
+    );
+
+    const unifiedResult = unified()
+      .use(rehypeParse, {
+        fragment: true,
       })
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
         language: configs.language,
       }))
       .use(rehypeStringify)
-      .processSync(articlePage.markdownSource);
+      .processSync(articleHtml);
 
     return Object.assign({}, articlePage, {
-      htmlSource: htmlData.contents,
+      htmlSource: unifiedResult.contents,
     });
   });
 }
