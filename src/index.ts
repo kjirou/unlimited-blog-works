@@ -51,7 +51,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configFilePath);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generatePaths(blogRoot);
 
   let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
@@ -99,7 +99,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configFilePath);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generatePaths(blogRoot);
 
   fs.ensureDirSync(paths.srcDirPath);
