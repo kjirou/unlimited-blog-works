@@ -125,6 +125,56 @@ export interface ArticlePage {
   pageName: string,
 }
 
+export function createArticlePage(): ArticlePage {
+  return {
+    articleId: '',
+    publicId: '',
+    inputFilePath: '',
+    outputFilePath: '',
+    permalink: '',
+    htmlSource: '',
+    markdownSource: '',
+    pageName: '',
+  };
+}
+
+export function initializeArticlePages(
+  blogRoot: string,
+  articleFileNames: string[]
+): ArticlePage[] {
+  const paths = generatePaths(blogRoot);
+
+  return articleFileNames.map(articleFileName => {
+    const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
+
+    return Object.assign(createArticlePage(), {
+      articleId: path.basename(articleFilePath, '.md'),
+      inputFilePath: articleFilePath,
+    });
+  });
+}
+
+// e.g. "20191231-0001"
+// Each part is called "{dateString}-{serialString}".
+const AUTOMATIC_ARTICLE_ID = /^(\d{8})-(\d{4})$/;
+
+export function getNextAutomaticArticleId(
+  articlePages: ArticlePage[],
+  dateString: string
+): string {
+  let lastSerial = 0;
+  articlePages.forEach(articlePage => {
+    const matched = AUTOMATIC_ARTICLE_ID.exec(articlePage.articleId);
+    if (matched !== null && matched[1] === dateString) {
+      const foundSerial = parseInt(matched[2]);
+      if (foundSerial >= lastSerial) {
+        lastSerial = foundSerial;
+      }
+    }
+  });
+  return `${dateString}-${(lastSerial + 1).toString().padStart(4, '0')}`;
+}
+
 interface ArticleFrontMatters {
   publicId: string,
   pageName?: string,

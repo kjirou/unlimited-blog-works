@@ -6,6 +6,8 @@ import {
   NonArticlePage,
   generateArticlePages,
   generateNonArticlePages,
+  getNextAutomaticArticleId,
+  initializeArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
 } from './lib/page-generator';
@@ -17,6 +19,9 @@ import {
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
 
+// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
+const dateFnsTz = require('date-fns-tz');
+
 export function executeInit(blogRoot: string): string {
   const paths = generatePaths(blogRoot);
 
@@ -24,20 +29,6 @@ export function executeInit(blogRoot: string): string {
   fs.writeFileSync(
     paths.srcConfigsFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
-  );
-
-  fs.ensureDirSync(paths.srcDirPath);
-  fs.ensureDirSync(paths.srcArticlesDirPath);
-
-  fs.writeFileSync(
-    path.join(paths.srcArticlesDirPath, '00000001.md'),
-    [
-      '---',
-      'publicId: "00000001"',
-      '---',
-      '',
-      '# My First Article & **Bold**\n',
-    ].join('\n')
   );
 
   return 'Done init\n';
@@ -50,20 +41,11 @@ export function executeCompile(configsFilePath: string): string {
   const blogRoot = path.dirname(configsFilePath);
   const paths = generatePaths(blogRoot);
 
-  let articlePages: ArticlePage[] = fs.readdirSync(paths.srcArticlesDirPath)
-    .map(relativeSrcArticleFilePath => {
-      const articleFilePath = path.join(paths.srcArticlesDirPath, relativeSrcArticleFilePath);
-
-      return {
-        articleId: path.basename(articleFilePath, '.md'),
-        publicId: '',
-        inputFilePath: articleFilePath,
-        outputFilePath: '',
-        permalink: '',
-        htmlSource: '',
-        markdownSource: fs.readFileSync(articleFilePath).toString(),
-        pageName: '',
-      };
+  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+    .map(articlePage => {
+      return Object.assign({}, articlePage, {
+        markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
+      });
     });
   let nonArticlePages: NonArticlePage[] = [
     {
@@ -95,4 +77,33 @@ export function executeCompile(configsFilePath: string): string {
   );
 
   return 'Done compile\n';
+}
+
+export function executeArticleNew(configsFilePath: string): string {
+  const rawConfigs = fs.readJsonSync(configsFilePath);
+  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+
+  const blogRoot = path.dirname(configsFilePath);
+  const paths = generatePaths(blogRoot);
+
+  fs.ensureDirSync(paths.srcDirPath);
+  fs.ensureDirSync(paths.srcArticlesDirPath);
+
+  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+
+  const todayDateString: string = dateFnsTz.format(new Date(), 'YYYYMMdd', {timeZone: configs.timeZone});
+  const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
+
+  fs.writeFileSync(
+    path.join(paths.srcArticlesDirPath, articleId + '.md'),
+    [
+      '---',
+      `publicId: "${articleId}"`,
+      '---',
+      '',
+      '# My First Article & **Bold**\n',
+    ].join('\n')
+  );
+
+  return 'Done article new\n';
 }
