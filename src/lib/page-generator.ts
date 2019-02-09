@@ -279,6 +279,7 @@ export function generateNonArticlePages(
     const html = ReactDOMServer.renderToStaticMarkup(
       React.createElement(nonArticlePage.layoutComponent, {
         articles: articlesProps,
+        blogName: configs.blogName,
       })
     );
 

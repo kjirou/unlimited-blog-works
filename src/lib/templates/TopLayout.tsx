@@ -6,7 +6,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
   render(): JSX.Element {
     return (
       <div className="markdown-body">
-        <h1>My Blog</h1>
+        <h1>{this.props.blogName}</h1>
         <ul>
           {
             this.props.articles.map(article => {
