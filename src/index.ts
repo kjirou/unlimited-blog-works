@@ -15,7 +15,7 @@ import {
   UbwConfigs,
   STATIC_FILES_ROOT,
   defaultUbwConfigs,
-  generatePaths,
+  generateBlogPaths,
   toNormalizedAbsolutePath,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
@@ -52,7 +52,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generatePaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot);
 
   let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
     .map(articlePage => {
@@ -100,7 +100,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generatePaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot);
 
   fs.ensureDirSync(paths.srcDirPath);
   fs.ensureDirSync(paths.srcArticlesDirPath);

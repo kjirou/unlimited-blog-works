@@ -15,7 +15,7 @@ export function toNormalizedAbsolutePath(pathInput: string): string {
   return path.normalize(absolutePath);
 }
 
-export function generatePaths(blogRoot: string): {
+export function generateBlogPaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
   srcArticlesDirPath: string,
