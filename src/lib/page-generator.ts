@@ -101,7 +101,8 @@ export function extractPageName(node: RemarkAstNode): string {
 }
 
 export interface ArticleFrontMatters {
-  // Last update date, e.g. "2019-12-31 23:59:59"
+  // Last updated date time, time zone is "UTC"
+  // e.g. "2019-12-31 23:59:59"
   lastUpdatedAt: string,
   pageName?: string,
   publicId: string,
