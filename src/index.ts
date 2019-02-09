@@ -37,7 +37,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
-    paths.srcConfigsFilePath,
+    paths.srcConfigFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
