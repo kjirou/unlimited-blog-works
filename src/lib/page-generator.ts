@@ -64,21 +64,6 @@ function createRehypePlugins(params: {
 }): any[] {
   return [
     [rehypeRaw],
-    [() => {
-      return function transformer(tree: RehypeAstNode): void {
-        const mainContents = tree.children;
-        tree.children = [
-          {
-            type: 'element',
-            tagName: 'div',
-            properties: {
-              className: ['markdown-body'],
-            },
-            children: mainContents,
-          },
-        ];
-      };
-    }],
     [rehypeDocument, {
       title: params.title,
       language: params.language,
