@@ -42,6 +42,11 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
+  const paths = generateBlogPaths(blogRoot);
+
+  fs.ensureDirSync(paths.srcStaticFilesDirPath);
+  fs.writeFileSync(path.join(paths.srcStaticFilesDirPath, '.keep'), '');
+
   return Promise.resolve({
     exitCode: 0,
     message: 'Done "init"',
