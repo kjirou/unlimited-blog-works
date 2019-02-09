@@ -32,7 +32,7 @@ interface CommandResult {
   message: string,
 }
 
-export function executeInit(blogRoot: string): CommandResult {
+export function executeInit(blogRoot: string): Promise<CommandResult> {
   const paths = generatePaths(blogRoot);
 
   fs.ensureDirSync(blogRoot);
@@ -41,13 +41,13 @@ export function executeInit(blogRoot: string): CommandResult {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  return {
+  return Promise.resolve({
     exitCode: 0,
     message: 'Done "init"',
-  };
+  });
 }
 
-export function executeCompile(configsFilePath: string): CommandResult {
+export function executeCompile(configsFilePath: string): Promise<CommandResult> {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
@@ -89,13 +89,13 @@ export function executeCompile(configsFilePath: string): CommandResult {
     path.join(paths.distDirPath, 'github-markdown.css')
   );
 
-  return {
+  return Promise.resolve({
     exitCode: 0,
     message: 'Done "compile"',
-  };
+  });
 }
 
-export function executeArticleNew(configsFilePath: string): CommandResult {
+export function executeArticleNew(configsFilePath: string): Promise<CommandResult> {
   const rawConfigs = fs.readJsonSync(configsFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
@@ -121,8 +121,8 @@ export function executeArticleNew(configsFilePath: string): CommandResult {
     ].join('\n')
   );
 
-  return {
+  return Promise.resolve({
     exitCode: 0,
     message: 'Done "article new"',
-  };
+  });
 }

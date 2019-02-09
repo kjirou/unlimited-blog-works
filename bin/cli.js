@@ -37,7 +37,7 @@ const parsedSubCommands = parseCommands(
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 const options = minimist(parsedSubCommands.argv);
 
-let commandResult;
+let promise;
 
 // TODO: Validate args and options
 if (subCommand === 'article') {
@@ -46,35 +46,34 @@ if (subCommand === 'article') {
       configsFilePathInput,
     ] = options._;
     const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-    commandResult = ubw.executeArticleNew(configsFilePath);
+    promise = ubw.executeArticleNew(configsFilePath);
   }
 } else if (subCommand === 'init') {
   const [
     destinationDirPathInput,
   ] = options._;
   const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
-  commandResult = ubw.executeInit(destinationDirPath);
+  promise = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
   const [
     configsFilePathInput,
   ] = options._;
   const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-  commandResult = ubw.executeCompile(configsFilePath);
+  promise = ubw.executeCompile(configsFilePath);
 } else {
-  commandResult = {
+  promise = Promise.resolve({
     exitCode: 1,
     message: 'Unknown subcommand.',
-  };
+  });
 }
 
-if (commandResult.exitCode === 0) {
-  if (commandResult.message) {
-    process.stdout.write(`${commandResult.message}\n`);
+promise.then(result => {
+  if (result.message) {
+    if (result.exitCode === 0) {
+      process.stdout.write(`${result.message}\n`);
+    } else {
+      printErrorMessage(result.message);
+    }
   }
-  process.exit(commandResult.exitCode);
-} else {
-  if (commandResult.message) {
-    printErrorMessage(commandResult.message);
-  }
-  process.exit(commandResult.exitCode);
-}
+  process.exit(result.exitCode);
+});
