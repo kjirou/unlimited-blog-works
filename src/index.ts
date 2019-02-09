@@ -16,11 +16,16 @@ import {
   STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generatePaths,
+  toNormalizedAbsolutePath,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
 
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
+
+export const cliUtils = {
+  toNormalizedAbsolutePath,
+};
 
 export function executeInit(blogRoot: string): string {
   const paths = generatePaths(blogRoot);

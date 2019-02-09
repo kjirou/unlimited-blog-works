@@ -10,6 +10,11 @@ const RELATIVE_SRC_DIR_PATH: string = 'src';
 const RELATIVE_DIST_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 
+export function toNormalizedAbsolutePath(pathInput: string): string {
+  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
+  return path.normalize(absolutePath);
+}
+
 export function generatePaths(repositoryDirPath: string): {
   srcDirPath: string,
   distDirPath: string,

@@ -21,11 +21,6 @@ function exitWithErrorMessage(message) {
   process.exit(1);
 }
 
-function toNormalizedAbsolutePath(pathInput) {
-  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
-  return path.normalize(absolutePath);
-}
-
 const parsedSubCommands = parseCommands(
   {
     commands: {
@@ -49,7 +44,7 @@ if (subCommand === 'article') {
     const [
       configsFilePathInput,
     ] = options._;
-    const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
+    const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
     const output = ubw.executeArticleNew(configsFilePath);
     process.stdout.write(output);
     process.exit();
@@ -58,7 +53,7 @@ if (subCommand === 'article') {
   const [
     destinationDirPathInput,
   ] = options._;
-  const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
+  const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
   const output = ubw.executeInit(destinationDirPath);
   process.stdout.write(output);
   process.exit();
@@ -66,7 +61,7 @@ if (subCommand === 'article') {
   const [
     configsFilePathInput,
   ] = options._;
-  const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
+  const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
   const output = ubw.executeCompile(configsFilePath);
   process.stdout.write(output);
   process.exit();
