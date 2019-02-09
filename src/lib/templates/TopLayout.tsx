@@ -5,7 +5,7 @@ import {NonArticlePageProps} from './shared';
 export default class TopLayout extends React.Component<NonArticlePageProps> {
   render(): JSX.Element {
     return (
-      <React.Fragment>
+      <div className="markdown-body">
         <h1>My Blog</h1>
         <ul>
           {
@@ -18,7 +18,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
             })
           }
         </ul>
-      </React.Fragment>
+      </div>
     );
   }
 }
