@@ -18,14 +18,12 @@ export function toNormalizedAbsolutePath(pathInput: string): string {
 export function generatePaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
-  srcConfigFilePath: string,
   srcArticlesDirPath: string,
   distArticlesDirPath: string,
   permalinkRootPath: string,
 } {
   const srcDirPath = path.join(blogRoot, RELATIVE_SRC_DIR_PATH);
   const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
-  const srcConfigFilePath = path.join(blogRoot, 'ubw-configs.json');
   const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
@@ -33,7 +31,6 @@ export function generatePaths(blogRoot: string): {
   return {
     srcDirPath,
     distDirPath,
-    srcConfigFilePath,
     srcArticlesDirPath,
     distArticlesDirPath,
     permalinkRootPath,

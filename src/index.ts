@@ -33,11 +33,11 @@ interface CommandResult {
 }
 
 export function executeInit(blogRoot: string): Promise<CommandResult> {
-  const paths = generatePaths(blogRoot);
+  const configFilePath = path.join(blogRoot, 'ubw-configs.json');
 
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
-    paths.srcConfigFilePath,
+    configFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
