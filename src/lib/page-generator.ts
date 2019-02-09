@@ -114,6 +114,13 @@ export function extractPageName(node: RemarkAstNode): string {
   return fragments.join(' ');
 }
 
+export interface ArticleFrontMatters {
+  // Last update date, e.g. "2019-12-31 23:59:59"
+  lastUpdatedAt: string,
+  pageName?: string,
+  publicId: string,
+}
+
 export interface ArticlePage {
   articleId: string,
   publicId: string,
@@ -173,11 +180,6 @@ export function getNextAutomaticArticleId(
     }
   });
   return `${dateString}-${(lastSerial + 1).toString().padStart(4, '0')}`;
-}
-
-interface ArticleFrontMatters {
-  publicId: string,
-  pageName?: string,
 }
 
 export function preprocessArticlePages(

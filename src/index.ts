@@ -1,7 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as yaml from 'js-yaml';
 
 import {
+  ArticleFrontMatters,
   ArticlePage,
   NonArticlePage,
   generateArticlePages,
@@ -107,15 +109,18 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
 
   const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
 
-  const todayDateString: string = dateFnsTz.format(new Date(), 'YYYYMMdd', {timeZone: configs.timeZone});
+  const now = new Date();
+  const todayDateString: string = dateFnsTz.format(now, 'YYYYMMdd', {timeZone: configs.timeZone});
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
+  const frontMatters: ArticleFrontMatters = {
+    publicId: articleId,
+    lastUpdatedAt: dateFnsTz.format(now, 'YYYY-MM-dd HH:mm:ss', {timeZone: 'UTC'}),
+  };
 
   fs.writeFileSync(
     path.join(paths.srcArticlesDirPath, articleId + '.md'),
     [
-      '---',
-      `publicId: "${articleId}"`,
-      '---',
+      '---\n' + yaml.safeDump(frontMatters) + '---',
       '',
       '# My First Article & **Bold**\n',
     ].join('\n')
