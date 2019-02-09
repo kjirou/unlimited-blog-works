@@ -15,31 +15,44 @@ import {
   UbwConfigs,
   STATIC_FILES_ROOT,
   defaultUbwConfigs,
-  generatePaths,
+  generateBlogPaths,
+  toNormalizedAbsolutePath,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
 
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
 
-export function executeInit(blogRoot: string): string {
-  const paths = generatePaths(blogRoot);
+export const cliUtils = {
+  toNormalizedAbsolutePath,
+};
+
+interface CommandResult {
+  exitCode: number,
+  message: string,
+}
+
+export function executeInit(blogRoot: string): Promise<CommandResult> {
+  const configFilePath = path.join(blogRoot, 'ubw-configs.json');
 
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
-    paths.srcConfigsFilePath,
+    configFilePath,
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  return 'Done init\n';
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "init"',
+  });
 }
 
-export function executeCompile(configsFilePath: string): string {
-  const rawConfigs = fs.readJsonSync(configsFilePath);
+export function executeCompile(configFilePath: string): Promise<CommandResult> {
+  const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configsFilePath);
-  const paths = generatePaths(blogRoot);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
+  const paths = generateBlogPaths(blogRoot);
 
   let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
     .map(articlePage => {
@@ -76,15 +89,18 @@ export function executeCompile(configsFilePath: string): string {
     path.join(paths.distDirPath, 'github-markdown.css')
   );
 
-  return 'Done compile\n';
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "compile"',
+  });
 }
 
-export function executeArticleNew(configsFilePath: string): string {
-  const rawConfigs = fs.readJsonSync(configsFilePath);
+export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
+  const rawConfigs = fs.readJsonSync(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
-  const blogRoot = path.dirname(configsFilePath);
-  const paths = generatePaths(blogRoot);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
+  const paths = generateBlogPaths(blogRoot);
 
   fs.ensureDirSync(paths.srcDirPath);
   fs.ensureDirSync(paths.srcArticlesDirPath);
@@ -105,5 +121,8 @@ export function executeArticleNew(configsFilePath: string): string {
     ].join('\n')
   );
 
-  return 'Done article new\n';
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "article new"',
+  });
 }

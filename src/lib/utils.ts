@@ -10,17 +10,20 @@ const RELATIVE_SRC_DIR_PATH: string = 'src';
 const RELATIVE_DIST_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 
-export function generatePaths(repositoryDirPath: string): {
+export function toNormalizedAbsolutePath(pathInput: string): string {
+  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
+  return path.normalize(absolutePath);
+}
+
+export function generateBlogPaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
-  srcConfigsFilePath: string,
   srcArticlesDirPath: string,
   distArticlesDirPath: string,
   permalinkRootPath: string,
 } {
-  const srcDirPath = path.join(repositoryDirPath, RELATIVE_SRC_DIR_PATH);
-  const distDirPath = path.join(repositoryDirPath, RELATIVE_DIST_DIR_PATH);
-  const srcConfigsFilePath = path.join(repositoryDirPath, 'ubw-configs.json');
+  const srcDirPath = path.join(blogRoot, RELATIVE_SRC_DIR_PATH);
+  const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
   const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
@@ -28,7 +31,6 @@ export function generatePaths(repositoryDirPath: string): {
   return {
     srcDirPath,
     distDirPath,
-    srcConfigsFilePath,
     srcArticlesDirPath,
     distArticlesDirPath,
     permalinkRootPath,
@@ -37,6 +39,8 @@ export function generatePaths(repositoryDirPath: string): {
 
 export interface UbwConfigs {
   blogName: string,
+  // A relative path from the ubw-configs.json file to the blog container directory
+  blogPath: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -45,6 +49,7 @@ export interface UbwConfigs {
 
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
+  blogPath: '.',
   language: 'en',
   timeZone: 'UTC',
 };

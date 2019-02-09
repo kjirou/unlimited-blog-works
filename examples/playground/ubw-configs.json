@@ -1,5 +1,6 @@
 {
   "blogName": "My Blog",
+  "blogPath": ".",
   "language": "en",
   "timeZone": "UTC"
 }

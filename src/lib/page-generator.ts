@@ -6,7 +6,7 @@ import * as yaml from 'js-yaml';
 import {NonArticlePageProps} from './templates/shared';
 import {
   UbwConfigs,
-  generatePaths,
+  generateBlogPaths,
 } from './utils';
 
 //
@@ -142,7 +142,7 @@ export function initializeArticlePages(
   blogRoot: string,
   articleFileNames: string[]
 ): ArticlePage[] {
-  const paths = generatePaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot);
 
   return articleFileNames.map(articleFileName => {
     const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
@@ -185,7 +185,7 @@ export function preprocessArticlePages(
   configs: UbwConfigs,
   articlePages: ArticlePage[]
 ): ArticlePage[] {
-  const paths = generatePaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
@@ -269,7 +269,7 @@ export function generateNonArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generatePaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot);
 
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {

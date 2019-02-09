@@ -14,16 +14,19 @@ if (fs.existsSync(path.join(__dirname, '../dist/index.js'))) {
   ubw = require('../src');
 }
 
-function exitWithErrorMessage(message) {
+function printErrorMessage(message) {
   const ansiEscapeColorRed = '\x1b[31m';
   const ansiEscapeColorReset = '\x1b[0m';
   process.stderr.write(`${ansiEscapeColorRed}${message}${ansiEscapeColorReset}\n`);
-  process.exit(1);
 }
 
-function toNormalizedAbsolutePath(pathInput) {
-  const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
-  return path.normalize(absolutePath);
+function appendConfigFileParser(minimistOptions) {
+  return Object.assign({
+    boolean: minimistOptions.boolean || [],
+    string: (minimistOptions.string || []).concat(['config-file']),
+    default: Object.assign({}, {'config-file': ''}, minimistOptions.default || {}),
+    alias: Object.assign({}, {c: 'config-file'}, minimistOptions.alias || {}),
+  });
 }
 
 const parsedSubCommands = parseCommands(
@@ -41,35 +44,49 @@ const parsedSubCommands = parseCommands(
   process.argv.slice(2)
 );
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
-const options = minimist(parsedSubCommands.argv);
+
+const defaultConfigFilePath = path.join(process.cwd(), 'ubw-configs.json');
+
+let promise;
 
 // TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
-    const [
-      configsFilePathInput,
-    ] = options._;
-    const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
-    const output = ubw.executeArticleNew(configsFilePath);
-    process.stdout.write(output);
-    process.exit();
+    const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
+    const configFilePath = options['config-file']
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+      : defaultConfigFilePath;
+    promise = ubw.executeArticleNew(configFilePath);
   }
 } else if (subCommand === 'init') {
+  const options = minimist(parsedSubCommands.argv);
   const [
     destinationDirPathInput,
   ] = options._;
-  const destinationDirPath = toNormalizedAbsolutePath(destinationDirPathInput);
-  const output = ubw.executeInit(destinationDirPath);
-  process.stdout.write(output);
-  process.exit();
+  const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
+  promise = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
-  const [
-    configsFilePathInput,
-  ] = options._;
-  const configsFilePath = toNormalizedAbsolutePath(configsFilePathInput);
-  const output = ubw.executeCompile(configsFilePath);
-  process.stdout.write(output);
-  process.exit();
-} else {
-  exitWithErrorMessage('Unknown subcommand.');
+  const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
+  const configFilePath = options['config-file']
+    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+    : defaultConfigFilePath;
+  promise = ubw.executeCompile(configFilePath);
 }
+
+if (!promise) {
+  promise = Promise.resolve({
+    exitCode: 1,
+    message: 'Unknown subcommand.',
+  });
+}
+
+promise.then(result => {
+  if (result.message) {
+    if (result.exitCode === 0) {
+      process.stdout.write(`${result.message}\n`);
+    } else {
+      printErrorMessage(result.message);
+    }
+  }
+  process.exit(result.exitCode);
+});
