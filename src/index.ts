@@ -6,6 +6,7 @@ import {
   NonArticlePage,
   generateArticlePages,
   generateNonArticlePages,
+  getNextAutomaticArticleId,
   initializeArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
@@ -17,6 +18,9 @@ import {
   generatePaths,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
+
+// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
+const dateFnsTz = require('date-fns-tz');
 
 export function executeInit(blogRoot: string): string {
   const paths = generatePaths(blogRoot);
@@ -85,11 +89,16 @@ export function executeArticleNew(configsFilePath: string): string {
   fs.ensureDirSync(paths.srcDirPath);
   fs.ensureDirSync(paths.srcArticlesDirPath);
 
+  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+
+  const todayDateString: string = dateFnsTz.format(new Date(), 'YYYYMMdd', {timeZone: configs.timeZone});
+  const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
+
   fs.writeFileSync(
-    path.join(paths.srcArticlesDirPath, '00000001.md'),
+    path.join(paths.srcArticlesDirPath, articleId + '.md'),
     [
       '---',
-      'publicId: "00000001"',
+      `publicId: "${articleId}"`,
       '---',
       '',
       '# My First Article & **Bold**\n',
