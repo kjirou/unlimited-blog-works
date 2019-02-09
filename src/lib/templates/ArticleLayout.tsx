@@ -1,8 +1,11 @@
 import * as React from 'react';
 
+import {generateDateTimeString} from '../utils';
+
 interface ArticlePageProps {
   contentHtml: string,
   lastUpdatedAt: Date,
+  timeZone: string,
 }
 
 export default class ArticleLayout extends React.Component<ArticlePageProps> {
@@ -12,8 +15,7 @@ export default class ArticleLayout extends React.Component<ArticlePageProps> {
         <div dangerouslySetInnerHTML={{__html: this.props.contentHtml}} />
         <div>
           <ul>
-            {/* TODO: Time Zone */}
-            <li>Last updated at: {this.props.lastUpdatedAt.toString()}</li>
+            <li>Last updated at: {generateDateTimeString(this.props.lastUpdatedAt, this.props.timeZone)}</li>
           </ul>
         </div>
       </React.Fragment>

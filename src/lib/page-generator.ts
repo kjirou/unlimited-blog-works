@@ -237,6 +237,7 @@ export function generateArticlePages(
       React.createElement(ArticleLayout, {
         contentHtml: contentHtmlData.contents,
         lastUpdatedAt: articlePage.lastUpdatedAt,
+        timeZone: configs.timeZone,
       })
     );
 

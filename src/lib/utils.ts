@@ -3,6 +3,9 @@
  */
 import * as path from 'path';
 
+// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
+const dateFnsTz = require('date-fns-tz');
+
 const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
@@ -53,3 +56,11 @@ export const defaultUbwConfigs: UbwConfigs = {
   language: 'en',
   timeZone: 'UTC',
 };
+
+export function generateTodayDateString(date: Date, timeZone: string): string {
+  return dateFnsTz.format(date, 'YYYYMMdd', {timeZone});
+}
+
+export function generateDateTimeString(date: Date, timeZone: string): string {
+  return dateFnsTz.format(date, 'YYYY-MM-dd HH:mm:ss', {timeZone});
+}

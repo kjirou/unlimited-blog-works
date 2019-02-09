@@ -18,12 +18,11 @@ import {
   STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
+  generateDateTimeString,
+  generateTodayDateString,
   toNormalizedAbsolutePath,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
-
-// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
-const dateFnsTz = require('date-fns-tz');
 
 export const cliUtils = {
   toNormalizedAbsolutePath,
@@ -110,11 +109,11 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
 
   const now = new Date();
-  const todayDateString: string = dateFnsTz.format(now, 'YYYYMMdd', {timeZone: configs.timeZone});
+  const todayDateString = generateTodayDateString(now, configs.timeZone);
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
   const frontMatters: ArticleFrontMatters = {
     publicId: articleId,
-    lastUpdatedAt: dateFnsTz.format(now, 'YYYY-MM-dd HH:mm:ss', {timeZone: 'UTC'}),
+    lastUpdatedAt: generateDateTimeString(now, 'UTC'),
   };
 
   fs.writeFileSync(
