@@ -1,4 +1,5 @@
 {
   "blogName": "My Blog",
-  "language": "en"
+  "language": "en",
+  "timeZone": "UTC"
 }
