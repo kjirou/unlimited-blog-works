@@ -1,7 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as yaml from 'js-yaml';
 
 import {
+  ArticleFrontMatters,
   ArticlePage,
   NonArticlePage,
   generateArticlePages,
@@ -16,12 +18,11 @@ import {
   STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
+  generateDateTimeString,
+  generateTodayDateString,
   toNormalizedAbsolutePath,
 } from './lib/utils';
 import TopLayout from './lib/templates/TopLayout';
-
-// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
-const dateFnsTz = require('date-fns-tz');
 
 export const cliUtils = {
   toNormalizedAbsolutePath,
@@ -107,15 +108,19 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
 
   const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
 
-  const todayDateString: string = dateFnsTz.format(new Date(), 'YYYYMMdd', {timeZone: configs.timeZone});
+  const now = new Date();
+  const todayDateString = generateTodayDateString(now, configs.timeZone);
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
+  const frontMatters: ArticleFrontMatters = {
+    publicId: articleId,
+    lastUpdatedAt: generateDateTimeString(now, 'UTC'),
+  };
 
   fs.writeFileSync(
     path.join(paths.srcArticlesDirPath, articleId + '.md'),
     [
-      '---',
-      `publicId: "${articleId}"`,
-      '---',
+      // TODO: Want to wrap string variables with double quotes always.
+      '---\n' + yaml.safeDump(frontMatters) + '---',
       '',
       '# My First Article & **Bold**\n',
     ].join('\n')
