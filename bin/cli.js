@@ -20,6 +20,15 @@ function printErrorMessage(message) {
   process.stderr.write(`${ansiEscapeColorRed}${message}${ansiEscapeColorReset}\n`);
 }
 
+function appendConfigFileParser(minimistOptions) {
+  return Object.assign({
+    boolean: minimistOptions.boolean || [],
+    string: (minimistOptions.string || []).concat(['config-file']),
+    default: Object.assign({}, {'config-file': ''}, minimistOptions.default || {}),
+    alias: Object.assign({}, {c: 'config-file'}, minimistOptions.alias || {}),
+  });
+}
+
 const parsedSubCommands = parseCommands(
   {
     commands: {
@@ -43,17 +52,7 @@ let promise;
 // TODO: Validate args and options
 if (subCommand === 'article') {
   if (subSubCommand === 'new') {
-    const options = minimist(parsedSubCommands.argv, {
-      string: [
-        'config-file',
-      ],
-      default: {
-        'config-file': '',
-      },
-      alias: {
-        c: 'config-file',
-      },
-    });
+    const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
     const configFilePath = options['config-file']
       ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
       : defaultConfigFilePath;
@@ -67,12 +66,11 @@ if (subCommand === 'article') {
   const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
   promise = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
-  const options = minimist(parsedSubCommands.argv);
-  const [
-    configsFilePathInput,
-  ] = options._;
-  const configsFilePath = ubw.cliUtils.toNormalizedAbsolutePath(configsFilePathInput);
-  promise = ubw.executeCompile(configsFilePath);
+  const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
+  const configFilePath = options['config-file']
+    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+    : defaultConfigFilePath;
+  promise = ubw.executeCompile(configFilePath);
 }
 
 if (!promise) {
