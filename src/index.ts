@@ -90,6 +90,9 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
+  fs.removeSync(paths.distStaticFilesDirPath);
+  fs.copySync(paths.srcStaticFilesDirPath, paths.distStaticFilesDirPath);
+
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
     path.join(paths.distDirPath, 'github-markdown.css')
