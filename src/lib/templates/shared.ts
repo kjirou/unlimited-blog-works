@@ -6,4 +6,5 @@ export interface NonArticlePageProps {
     permalink: string,
   }[],
   blogName: string,
+  permalink: string,
 }

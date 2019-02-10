@@ -242,6 +242,7 @@ export function generateNonArticlePages(
       React.createElement(nonArticlePage.layoutComponent, {
         articles: articlesProps,
         blogName: configs.blogName,
+        permalink: nonArticlePage.permalink,
       })
     );
 
