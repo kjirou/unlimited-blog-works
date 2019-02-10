@@ -111,7 +111,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot);
 
-  fs.ensureDirSync(paths.srcDirPath);
+  fs.ensureDirSync(paths.sourceRoot);
   fs.ensureDirSync(paths.sourceArticlesRoot);
 
   const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
