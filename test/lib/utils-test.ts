@@ -2,10 +2,29 @@ import * as assert from 'assert';
 
 import {
   extractPageName,
+  permalinksToRelativeUrl,
   scanRemarkAstNode,
 } from '../../src/lib/utils';
 
 describe('lib/utils', function() {
+  describe('permalinksToRelativeUrl', function() {
+    [
+      ['/index.html', '/articles/20190101-0001.html', 'articles/20190101-0001.html'],
+      ['/articles/20190101-0001.html', '/index.html', '../index.html'],
+      ['/', '/index', 'index'],
+      ['/index', '/', '.'],
+      ['/', '/', '.'],
+      ['/same', '/same', 'same'],
+      ['/samedir/same', '/samedir/same', 'same'],
+      ['/samedir/foo', '/samedir/bar', 'bar'],
+      ['/samedir/foo', '/samedir/bar/x', 'bar/x'],
+    ].forEach(([fromPermalink, toPermalink, expected]) => {
+      it(`From "${fromPermalink}" to "${toPermalink}" -> "${expected}"`, function() {
+        assert.strictEqual(permalinksToRelativeUrl(fromPermalink, toPermalink), expected);
+      });
+    });
+  });
+
   describe('scanRemarkAstNode', function() {
     it('can evalute children recursively', function() {
       const results: string[] = [];

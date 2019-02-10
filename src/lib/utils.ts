@@ -2,6 +2,7 @@
  * This file MUST NOT depend on any file in the project.
  */
 import * as path from 'path';
+import * as url from 'url';
 
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
@@ -17,6 +18,16 @@ const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 export function toNormalizedAbsolutePath(pathInput: string): string {
   const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(process.cwd(), pathInput);
   return path.normalize(absolutePath);
+}
+
+export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
+  // NOTICE: Originally `path.relative()` should not be used for URLs.
+  //         In this time, there is probably no inconsistency, so there is no problem.
+  const relativeDir = path.relative(
+    path.dirname('.' + fromPermalink),
+    path.dirname('.' + toPermalink)
+  );
+  return path.join(relativeDir, path.basename(toPermalink));
 }
 
 export function generateBlogPaths(blogRoot: string): {
