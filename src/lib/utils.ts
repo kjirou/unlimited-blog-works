@@ -33,7 +33,7 @@ export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: stri
 export function generateBlogPaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
-  srcArticlesDirPath: string,
+  sourceArticlesRoot: string,
   srcStaticFilesDirPath: string,
   distArticlesDirPath: string,
   distStaticFilesDirPath: string,
@@ -41,7 +41,7 @@ export function generateBlogPaths(blogRoot: string): {
 } {
   const srcDirPath = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
-  const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
+  const sourceArticlesRoot = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const srcStaticFilesDirPath = path.join(srcDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distStaticFilesDirPath = path.join(distDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
@@ -50,7 +50,7 @@ export function generateBlogPaths(blogRoot: string): {
   return {
     srcDirPath,
     distDirPath,
-    srcArticlesDirPath,
+    sourceArticlesRoot,
     srcStaticFilesDirPath,
     distArticlesDirPath,
     distStaticFilesDirPath,
