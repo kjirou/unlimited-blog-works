@@ -44,8 +44,8 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   const paths = generateBlogPaths(blogRoot);
 
-  fs.ensureDirSync(paths.srcStaticFilesDirPath);
-  fs.writeFileSync(path.join(paths.srcStaticFilesDirPath, '.keep'), '');
+  fs.ensureDirSync(paths.sourceStaticFilesRoot);
+  fs.writeFileSync(path.join(paths.sourceStaticFilesRoot, '.keep'), '');
 
   return Promise.resolve({
     exitCode: 0,
@@ -91,7 +91,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   });
 
   fs.removeSync(paths.distStaticFilesDirPath);
-  fs.copySync(paths.srcStaticFilesDirPath, paths.distStaticFilesDirPath);
+  fs.copySync(paths.sourceStaticFilesRoot, paths.distStaticFilesDirPath);
 
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),

@@ -34,7 +34,7 @@ export function generateBlogPaths(blogRoot: string): {
   srcDirPath: string,
   distDirPath: string,
   sourceArticlesRoot: string,
-  srcStaticFilesDirPath: string,
+  sourceStaticFilesRoot: string,
   distArticlesDirPath: string,
   distStaticFilesDirPath: string,
   permalinkRootPath: string,
@@ -42,7 +42,7 @@ export function generateBlogPaths(blogRoot: string): {
   const srcDirPath = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
   const sourceArticlesRoot = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  const srcStaticFilesDirPath = path.join(srcDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
+  const sourceStaticFilesRoot = path.join(srcDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distStaticFilesDirPath = path.join(distDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
@@ -51,7 +51,7 @@ export function generateBlogPaths(blogRoot: string): {
     srcDirPath,
     distDirPath,
     sourceArticlesRoot,
-    srcStaticFilesDirPath,
+    sourceStaticFilesRoot,
     distArticlesDirPath,
     distStaticFilesDirPath,
     permalinkRootPath,
