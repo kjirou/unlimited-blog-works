@@ -82,7 +82,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
   nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
 
-  fs.ensureDirSync(paths.distArticlesDirPath);
+  fs.ensureDirSync(paths.publicationArticlesRoot);
   articlePages.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
@@ -90,12 +90,12 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
-  fs.removeSync(paths.distStaticFilesDirPath);
-  fs.copySync(paths.sourceStaticFilesRoot, paths.distStaticFilesDirPath);
+  fs.removeSync(paths.publicationStaticFilesRoot);
+  fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
 
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
-    path.join(paths.distDirPath, 'github-markdown.css')
+    path.join(paths.publicationRoot, 'github-markdown.css')
   );
 
   return Promise.resolve({

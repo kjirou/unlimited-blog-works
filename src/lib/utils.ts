@@ -32,28 +32,28 @@ export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: stri
 
 export function generateBlogPaths(blogRoot: string): {
   sourceRoot: string,
-  distDirPath: string,
+  publicationRoot: string,
   sourceArticlesRoot: string,
   sourceStaticFilesRoot: string,
-  distArticlesDirPath: string,
-  distStaticFilesDirPath: string,
+  publicationArticlesRoot: string,
+  publicationStaticFilesRoot: string,
   permalinkRootPath: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
-  const distDirPath = path.join(blogRoot, RELATIVE_PUBLICATION_DIR_PATH);
+  const publicationRoot = path.join(blogRoot, RELATIVE_PUBLICATION_DIR_PATH);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
   const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  const distStaticFilesDirPath = path.join(distDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
+  const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
 
   return {
     sourceRoot,
-    distDirPath,
+    publicationRoot,
     sourceArticlesRoot,
     sourceStaticFilesRoot,
-    distArticlesDirPath,
-    distStaticFilesDirPath,
+    publicationArticlesRoot,
+    publicationStaticFilesRoot,
     permalinkRootPath,
   };
 }
