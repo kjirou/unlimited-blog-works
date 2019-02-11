@@ -11,7 +11,7 @@ const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_DIST_DIR_PATH: string = 'dist';
+const RELATIVE_PUBLICATION_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
@@ -40,7 +40,7 @@ export function generateBlogPaths(blogRoot: string): {
   permalinkRootPath: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
-  const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
+  const distDirPath = path.join(blogRoot, RELATIVE_PUBLICATION_DIR_PATH);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
   const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
