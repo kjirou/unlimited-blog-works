@@ -4,9 +4,24 @@ import {
   extractPageName,
   permalinksToRelativeUrl,
   scanRemarkAstNode,
+  toNormalizedAbsolutePath,
 } from '../src/utils';
 
 describe('utils', function() {
+  describe('toNormalizedAbsolutePath', function() {
+    [
+      ['foo', '/base/foo'],
+      ['./foo', '/base/foo'],
+      ['foo/bar', '/base/foo/bar'],
+      ['foo/bar/baz/../..', '/base/foo'],
+      ['/abs', '/abs'],
+    ].forEach(([pathInput, expected]) => {
+      it(`"${pathInput}" -> "${expected}"`, function() {
+        assert.strictEqual(toNormalizedAbsolutePath(pathInput, '/base'), expected);
+      });
+    });
+  });
+
   describe('permalinksToRelativeUrl', function() {
     [
       ['/index.html', '/articles/20190101-0001.html', 'articles/20190101-0001.html'],
