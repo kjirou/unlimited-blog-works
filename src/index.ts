@@ -14,6 +14,7 @@ import {
   preprocessNonArticlePages,
 } from './page-generator';
 import {
+  CONFIG_FILE_NAME,
   UbwConfigs,
   PRESETS_STATIC_FILES_ROOT,
   defaultUbwConfigs,
@@ -25,6 +26,7 @@ import {
 import TopLayout from './templates/TopLayout';
 
 export const cliUtils = {
+  CONFIG_FILE_NAME,
   toNormalizedAbsolutePath,
 };
 
@@ -34,7 +36,7 @@ export interface CommandResult {
 }
 
 export function executeInit(blogRoot: string): Promise<CommandResult> {
-  const configFilePath = path.join(blogRoot, 'ubw-configs.json');
+  const configFilePath = path.join(blogRoot, CONFIG_FILE_NAME);
 
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(

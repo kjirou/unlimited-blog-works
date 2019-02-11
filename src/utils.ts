@@ -11,6 +11,8 @@ export const PROJECT_ROOT: string = path.join(__dirname, '..');
 const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
 export const PRESETS_STATIC_FILES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
 
+export const CONFIG_FILE_NAME = 'ubw-configs.json';
+
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
