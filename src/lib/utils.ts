@@ -11,7 +11,6 @@ const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_PUBLICATION_DIR_PATH: string = 'docs';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
@@ -28,34 +27,6 @@ export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: stri
     path.dirname('.' + toPermalink)
   );
   return path.join(relativeDir, path.basename(toPermalink));
-}
-
-export function generateBlogPaths(blogRoot: string): {
-  sourceRoot: string,
-  publicationRoot: string,
-  sourceArticlesRoot: string,
-  sourceStaticFilesRoot: string,
-  publicationArticlesRoot: string,
-  publicationStaticFilesRoot: string,
-  permalinkRootPath: string,
-} {
-  const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
-  const publicationRoot = path.join(blogRoot, RELATIVE_PUBLICATION_DIR_PATH);
-  const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
-
-  return {
-    sourceRoot,
-    publicationRoot,
-    sourceArticlesRoot,
-    sourceStaticFilesRoot,
-    publicationArticlesRoot,
-    publicationStaticFilesRoot,
-    permalinkRootPath,
-  };
 }
 
 export interface UbwConfigs {
@@ -77,6 +48,34 @@ export const defaultUbwConfigs: UbwConfigs = {
   language: 'en',
   timeZone: 'UTC',
 };
+
+export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: string): {
+  sourceRoot: string,
+  publicationRoot: string,
+  sourceArticlesRoot: string,
+  sourceStaticFilesRoot: string,
+  publicationArticlesRoot: string,
+  publicationStaticFilesRoot: string,
+  permalinkRootPath: string,
+} {
+  const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
+  const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
+  const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
+
+  return {
+    sourceRoot,
+    publicationRoot,
+    sourceArticlesRoot,
+    sourceStaticFilesRoot,
+    publicationArticlesRoot,
+    publicationStaticFilesRoot,
+    permalinkRootPath,
+  };
+}
 
 export function generateTodayDateString(date: Date, timeZone: string): string {
   return dateFnsTz.format(date, 'YYYYMMdd', {timeZone});

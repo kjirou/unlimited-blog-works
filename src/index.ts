@@ -42,7 +42,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
 
   fs.ensureDirSync(paths.sourceStaticFilesRoot);
   fs.writeFileSync(path.join(paths.sourceStaticFilesRoot, '.keep'), '');
@@ -58,9 +58,11 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
-  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
+  let articlePages: ArticlePage[] = initializeArticlePages(
+      blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot)
+    )
     .map(articlePage => {
       return Object.assign({}, articlePage, {
         markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
@@ -109,12 +111,13 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   fs.ensureDirSync(paths.sourceRoot);
   fs.ensureDirSync(paths.sourceArticlesRoot);
 
-  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
+  const articlePages: ArticlePage[] =
+    initializeArticlePages(blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot));
 
   const now = new Date();
   const todayDateString = generateTodayDateString(now, configs.timeZone);

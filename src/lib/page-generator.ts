@@ -96,9 +96,10 @@ export function createArticlePage(): ArticlePage {
 
 export function initializeArticlePages(
   blogRoot: string,
+  configs: UbwConfigs,
   articleFileNames: string[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   return articleFileNames.map(articleFileName => {
     const articleFilePath = path.join(paths.sourceArticlesRoot, articleFileName);
@@ -136,7 +137,7 @@ export function preprocessArticlePages(
   configs: UbwConfigs,
   articlePages: ArticlePage[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
@@ -226,7 +227,7 @@ export function generateNonArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
