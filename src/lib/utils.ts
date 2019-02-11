@@ -11,7 +11,7 @@ const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_PUBLICATION_DIR_PATH: string = 'dist';
+const RELATIVE_PUBLICATION_DIR_PATH: string = 'docs';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
