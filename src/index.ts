@@ -12,7 +12,7 @@ import {
   initializeArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
-} from './lib/page-generator';
+} from './page-generator';
 import {
   UbwConfigs,
   STATIC_FILES_ROOT,
@@ -21,8 +21,8 @@ import {
   generateDateTimeString,
   generateTodayDateString,
   toNormalizedAbsolutePath,
-} from './lib/utils';
-import TopLayout from './lib/templates/TopLayout';
+} from './utils';
+import TopLayout from './templates/TopLayout';
 
 export const cliUtils = {
   toNormalizedAbsolutePath,

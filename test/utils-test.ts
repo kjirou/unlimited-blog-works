@@ -4,9 +4,9 @@ import {
   extractPageName,
   permalinksToRelativeUrl,
   scanRemarkAstNode,
-} from '../../src/lib/utils';
+} from '../src/utils';
 
-describe('lib/utils', function() {
+describe('utils', function() {
   describe('permalinksToRelativeUrl', function() {
     [
       ['/index.html', '/articles/20190101-0001.html', 'articles/20190101-0001.html'],

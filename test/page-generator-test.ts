@@ -4,9 +4,9 @@ import {
   ArticlePage,
   createArticlePage,
   getNextAutomaticArticleId,
-} from '../../src/lib/page-generator';
+} from '../src/page-generator';
 
-describe('lib/page-generator', function() {
+describe('page-generator', function() {
   describe('getNextAutomaticArticleId', function() {
     it('can increment a number', function() {
       const articlePages: ArticlePage[] = [
