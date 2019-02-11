@@ -96,9 +96,10 @@ export function createArticlePage(): ArticlePage {
 
 export function initializeArticlePages(
   blogRoot: string,
+  configs: UbwConfigs,
   articleFileNames: string[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   return articleFileNames.map(articleFileName => {
     const articleFilePath = path.join(paths.sourceArticlesRoot, articleFileName);
@@ -136,7 +137,7 @@ export function preprocessArticlePages(
   configs: UbwConfigs,
   articlePages: ArticlePage[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
@@ -155,7 +156,7 @@ export function preprocessArticlePages(
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       // TODO: サブディレクトリ対応
-      outputFilePath: path.join(paths.distArticlesDirPath, frontMatters.publicId + '.html'),
+      outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
@@ -226,7 +227,7 @@ export function generateNonArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
@@ -258,7 +259,7 @@ export function generateNonArticlePages(
       .processSync(html);
 
     return Object.assign({}, nonArticlePage, {
-      outputFilePath: path.join(paths.distDirPath, nonArticlePage.relativeOutputFilePath),
+      outputFilePath: path.join(paths.publicationRoot, nonArticlePage.relativeOutputFilePath),
       html: unifiedResult.contents,
     });
   });

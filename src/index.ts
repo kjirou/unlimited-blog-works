@@ -42,7 +42,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
     JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
   );
 
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
 
   fs.ensureDirSync(paths.sourceStaticFilesRoot);
   fs.writeFileSync(path.join(paths.sourceStaticFilesRoot, '.keep'), '');
@@ -58,9 +58,11 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
-  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
+  let articlePages: ArticlePage[] = initializeArticlePages(
+      blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot)
+    )
     .map(articlePage => {
       return Object.assign({}, articlePage, {
         markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
@@ -82,7 +84,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
   nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
 
-  fs.ensureDirSync(paths.distArticlesDirPath);
+  fs.ensureDirSync(paths.publicationArticlesRoot);
   articlePages.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
@@ -90,12 +92,12 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
-  fs.removeSync(paths.distStaticFilesDirPath);
-  fs.copySync(paths.sourceStaticFilesRoot, paths.distStaticFilesDirPath);
+  fs.removeSync(paths.publicationStaticFilesRoot);
+  fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
 
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
-    path.join(paths.distDirPath, 'github-markdown.css')
+    path.join(paths.publicationRoot, 'github-markdown.css')
   );
 
   return Promise.resolve({
@@ -109,12 +111,13 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
-  const paths = generateBlogPaths(blogRoot);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   fs.ensureDirSync(paths.sourceRoot);
   fs.ensureDirSync(paths.sourceArticlesRoot);
 
-  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
+  const articlePages: ArticlePage[] =
+    initializeArticlePages(blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot));
 
   const now = new Date();
   const todayDateString = generateTodayDateString(now, configs.timeZone);

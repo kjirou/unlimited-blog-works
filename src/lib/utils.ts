@@ -11,7 +11,6 @@ const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_DIST_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
@@ -30,38 +29,12 @@ export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: stri
   return path.join(relativeDir, path.basename(toPermalink));
 }
 
-export function generateBlogPaths(blogRoot: string): {
-  sourceRoot: string,
-  distDirPath: string,
-  sourceArticlesRoot: string,
-  sourceStaticFilesRoot: string,
-  distArticlesDirPath: string,
-  distStaticFilesDirPath: string,
-  permalinkRootPath: string,
-} {
-  const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
-  const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
-  const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  const distStaticFilesDirPath = path.join(distDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
-  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
-
-  return {
-    sourceRoot,
-    distDirPath,
-    sourceArticlesRoot,
-    sourceStaticFilesRoot,
-    distArticlesDirPath,
-    distStaticFilesDirPath,
-    permalinkRootPath,
-  };
-}
-
 export interface UbwConfigs {
   blogName: string,
-  // A relative path from the ubw-configs.json file to the blog container directory
+  // A relative path from the ubw-configs.json file to the blog root
   blogPath: string,
+  // A relative path from the blog root to the publication directory
+  publicationPath: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -71,9 +44,38 @@ export interface UbwConfigs {
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
   blogPath: '.',
+  publicationPath: './docs',
   language: 'en',
   timeZone: 'UTC',
 };
+
+export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: string): {
+  sourceRoot: string,
+  publicationRoot: string,
+  sourceArticlesRoot: string,
+  sourceStaticFilesRoot: string,
+  publicationArticlesRoot: string,
+  publicationStaticFilesRoot: string,
+  permalinkRootPath: string,
+} {
+  const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
+  const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
+  const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
+
+  return {
+    sourceRoot,
+    publicationRoot,
+    sourceArticlesRoot,
+    sourceStaticFilesRoot,
+    publicationArticlesRoot,
+    publicationStaticFilesRoot,
+    permalinkRootPath,
+  };
+}
 
 export function generateTodayDateString(date: Date, timeZone: string): string {
   return dateFnsTz.format(date, 'YYYYMMdd', {timeZone});
