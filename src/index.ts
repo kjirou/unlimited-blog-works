@@ -28,7 +28,7 @@ export const cliUtils = {
   toNormalizedAbsolutePath,
 };
 
-interface CommandResult {
+export interface CommandResult {
   exitCode: number,
   message: string,
 }
