@@ -29,6 +29,8 @@ function appendConfigFileParser(minimistOptions) {
   });
 }
 
+const cwd = process.cwd();
+
 const parsedSubCommands = parseCommands(
   {
     commands: {
@@ -45,7 +47,7 @@ const parsedSubCommands = parseCommands(
 );
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 
-const defaultConfigFilePath = path.join(process.cwd(), 'ubw-configs.json');
+const defaultConfigFilePath = path.join(cwd, 'ubw-configs.json');
 
 let promise;
 
@@ -54,7 +56,7 @@ if (subCommand === 'article') {
   if (subSubCommand === 'new') {
     const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
     const configFilePath = options['config-file']
-      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
       : defaultConfigFilePath;
     promise = ubw.executeArticleNew(configFilePath);
   }
@@ -63,12 +65,12 @@ if (subCommand === 'article') {
   const [
     destinationDirPathInput,
   ] = options._;
-  const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput);
+  const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
   promise = ubw.executeInit(destinationDirPath);
 } else if (subCommand === 'compile') {
   const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
   const configFilePath = options['config-file']
-    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'])
+    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
     : defaultConfigFilePath;
   promise = ubw.executeCompile(configFilePath);
 }
