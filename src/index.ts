@@ -84,7 +84,9 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
   nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
 
+  fs.ensureDirSync(paths.publicationRoot);
   fs.ensureDirSync(paths.publicationArticlesRoot);
+
   articlePages.forEach(article => {
     fs.writeFileSync(article.outputFilePath, article.htmlSource);
   });
