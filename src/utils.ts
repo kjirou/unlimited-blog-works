@@ -8,7 +8,8 @@ import * as url from 'url';
 const dateFnsTz = require('date-fns-tz');
 
 export const PROJECT_ROOT: string = path.join(__dirname, '..');
-export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
+const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
+export const PRESETS_STATIC_FILES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';

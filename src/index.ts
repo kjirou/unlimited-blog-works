@@ -15,7 +15,7 @@ import {
 } from './page-generator';
 import {
   UbwConfigs,
-  STATIC_FILES_ROOT,
+  PRESETS_STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
@@ -98,7 +98,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
 
   fs.copySync(
-    path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
+    path.join(PRESETS_STATIC_FILES_ROOT, 'github-markdown.css'),
     path.join(paths.publicationRoot, 'github-markdown.css')
   );
 
