@@ -101,7 +101,7 @@ export function initializeArticlePages(
   const paths = generateBlogPaths(blogRoot);
 
   return articleFileNames.map(articleFileName => {
-    const articleFilePath = path.join(paths.srcArticlesDirPath, articleFileName);
+    const articleFilePath = path.join(paths.sourceArticlesRoot, articleFileName);
 
     return Object.assign(createArticlePage(), {
       articleId: path.basename(articleFilePath, '.md'),

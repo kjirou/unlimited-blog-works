@@ -10,7 +10,7 @@ const dateFnsTz = require('date-fns-tz');
 const PROJECT_ROOT: string = path.join(__dirname, '../..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
-const RELATIVE_SRC_DIR_PATH: string = 'src';
+const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 const RELATIVE_DIST_DIR_PATH: string = 'dist';
 const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
@@ -31,27 +31,27 @@ export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: stri
 }
 
 export function generateBlogPaths(blogRoot: string): {
-  srcDirPath: string,
+  sourceRoot: string,
   distDirPath: string,
-  srcArticlesDirPath: string,
-  srcStaticFilesDirPath: string,
+  sourceArticlesRoot: string,
+  sourceStaticFilesRoot: string,
   distArticlesDirPath: string,
   distStaticFilesDirPath: string,
   permalinkRootPath: string,
 } {
-  const srcDirPath = path.join(blogRoot, RELATIVE_SRC_DIR_PATH);
+  const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const distDirPath = path.join(blogRoot, RELATIVE_DIST_DIR_PATH);
-  const srcArticlesDirPath = path.join(srcDirPath, RELATIVE_ARTICLES_DIR_PATH);
-  const srcStaticFilesDirPath = path.join(srcDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
+  const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
+  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
   const distArticlesDirPath = path.join(distDirPath, RELATIVE_ARTICLES_DIR_PATH);
   const distStaticFilesDirPath = path.join(distDirPath, RELATIVE_STATIC_FILES_DIR_PATH);
   const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
 
   return {
-    srcDirPath,
+    sourceRoot,
     distDirPath,
-    srcArticlesDirPath,
-    srcStaticFilesDirPath,
+    sourceArticlesRoot,
+    sourceStaticFilesRoot,
     distArticlesDirPath,
     distStaticFilesDirPath,
     permalinkRootPath,

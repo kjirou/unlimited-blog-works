@@ -44,8 +44,8 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   const paths = generateBlogPaths(blogRoot);
 
-  fs.ensureDirSync(paths.srcStaticFilesDirPath);
-  fs.writeFileSync(path.join(paths.srcStaticFilesDirPath, '.keep'), '');
+  fs.ensureDirSync(paths.sourceStaticFilesRoot);
+  fs.writeFileSync(path.join(paths.sourceStaticFilesRoot, '.keep'), '');
 
   return Promise.resolve({
     exitCode: 0,
@@ -60,7 +60,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot);
 
-  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+  let articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
     .map(articlePage => {
       return Object.assign({}, articlePage, {
         markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
@@ -91,7 +91,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   });
 
   fs.removeSync(paths.distStaticFilesDirPath);
-  fs.copySync(paths.srcStaticFilesDirPath, paths.distStaticFilesDirPath);
+  fs.copySync(paths.sourceStaticFilesRoot, paths.distStaticFilesDirPath);
 
   fs.copySync(
     path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
@@ -111,10 +111,10 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot);
 
-  fs.ensureDirSync(paths.srcDirPath);
-  fs.ensureDirSync(paths.srcArticlesDirPath);
+  fs.ensureDirSync(paths.sourceRoot);
+  fs.ensureDirSync(paths.sourceArticlesRoot);
 
-  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.srcArticlesDirPath))
+  const articlePages: ArticlePage[] = initializeArticlePages(blogRoot, fs.readdirSync(paths.sourceArticlesRoot))
 
   const now = new Date();
   const todayDateString = generateTodayDateString(now, configs.timeZone);
@@ -125,7 +125,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   };
 
   fs.writeFileSync(
-    path.join(paths.srcArticlesDirPath, articleId + '.md'),
+    path.join(paths.sourceArticlesRoot, articleId + '.md'),
     [
       // TODO: Want to wrap string variables with double quotes always.
       '---\n' + yaml.safeDump(frontMatters) + '---',
