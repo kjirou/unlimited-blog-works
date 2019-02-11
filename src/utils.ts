@@ -7,7 +7,7 @@ import * as url from 'url';
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
 
-const PROJECT_ROOT: string = path.join(__dirname, '..');
+export const PROJECT_ROOT: string = path.join(__dirname, '..');
 export const STATIC_FILES_ROOT: string = path.join(PROJECT_ROOT, 'static-files');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
