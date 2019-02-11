@@ -60,8 +60,10 @@ export function generateBlogPaths(blogRoot: string): {
 
 export interface UbwConfigs {
   blogName: string,
-  // A relative path from the ubw-configs.json file to the blog container directory
+  // A relative path from the ubw-configs.json file to the blog root
   blogPath: string,
+  // A relative path from the blog root to the publication directory
+  publicationPath: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -71,6 +73,7 @@ export interface UbwConfigs {
 export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
   blogPath: '.',
+  publicationPath: './docs',
   language: 'en',
   timeZone: 'UTC',
 };
