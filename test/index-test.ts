@@ -14,7 +14,7 @@ import {
 import {
   dumpDir,
   prepareWorkspace,
-} from './helper';
+} from '../src/test-helper';
 
 describe('index', function() {
   let workspaceRoot: string;

@@ -5,9 +5,9 @@ import * as path from 'path';
 import {
   dumpDir,
   prepareWorkspace,
-} from '../helper';
+} from '../src/test-helper';
 
-describe('test/helper', function() {
+describe('test-helper', function() {
   describe('prepareWorkspace', function() {
     describe('when there are no dirs', function() {
       it('can ensure a default dir', function() {
