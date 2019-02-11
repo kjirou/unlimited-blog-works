@@ -14,8 +14,9 @@ import {
   preprocessNonArticlePages,
 } from './page-generator';
 import {
+  CONFIG_FILE_NAME,
   UbwConfigs,
-  STATIC_FILES_ROOT,
+  PRESETS_STATIC_FILES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
@@ -25,6 +26,7 @@ import {
 import TopLayout from './templates/TopLayout';
 
 export const cliUtils = {
+  CONFIG_FILE_NAME,
   toNormalizedAbsolutePath,
 };
 
@@ -34,7 +36,7 @@ export interface CommandResult {
 }
 
 export function executeInit(blogRoot: string): Promise<CommandResult> {
-  const configFilePath = path.join(blogRoot, 'ubw-configs.json');
+  const configFilePath = path.join(blogRoot, CONFIG_FILE_NAME);
 
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
@@ -98,7 +100,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
 
   fs.copySync(
-    path.join(STATIC_FILES_ROOT, 'github-markdown.css'),
+    path.join(PRESETS_STATIC_FILES_ROOT, 'github-markdown.css'),
     path.join(paths.publicationRoot, 'github-markdown.css')
   );
 

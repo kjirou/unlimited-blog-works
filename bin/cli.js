@@ -47,7 +47,7 @@ const parsedSubCommands = parseCommands(
 );
 const [subCommand, subSubCommand] = parsedSubCommands.commands;
 
-const defaultConfigFilePath = path.join(cwd, 'ubw-configs.json');
+const defaultConfigFilePath = path.join(cwd, ubw.cliUtils.CONFIG_FILE_NAME);
 
 let promise;
 

@@ -1,8 +1,11 @@
+/*
+ * MUST NOT import this file except under the "test" directory.
+ */
 import * as fs from 'fs-extra';
 import * as klawSync from 'klaw-sync';
 import * as path from 'path';
 
-import {PROJECT_ROOT} from '../src/utils';
+import {PROJECT_ROOT} from './utils';
 
 const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'test/tmp');
 
