@@ -1,6 +1,9 @@
 import * as React from 'react';
 
-import {permalinksToRelativeUrl} from '../utils';
+import {
+  generateDateTimeString,
+  permalinksToRelativeUrl,
+} from '../utils';
 import {NonArticlePageProps} from './shared';
 
 export default class TopLayout extends React.Component<NonArticlePageProps> {
@@ -19,7 +22,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
                 const href = permalinksToRelativeUrl(this.props.permalink, article.permalink);
                 return (
                   <li key={article.articleId}>
-                    <a href={href}>{article.pageName}</a>
+                    <a href={href}>{article.pageName}</a> {generateDateTimeString(article.lastUpdatedAt, this.props.timeZone)}
                   </li>
                 );
               })

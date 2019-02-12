@@ -244,6 +244,7 @@ export function generateNonArticlePages(
         articles: articlesProps,
         blogName: configs.blogName,
         permalink: nonArticlePage.permalink,
+        timeZone: configs.timeZone,
       })
     );
 
