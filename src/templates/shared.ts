@@ -7,4 +7,5 @@ export interface NonArticlePageProps {
   }[],
   blogName: string,
   permalink: string,
+  timeZone: string,
 }
