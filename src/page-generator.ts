@@ -48,13 +48,15 @@ function createRemarkPlugins(): any[] {
 function createRehypePlugins(params: {
   title: string,
   language: string,
+  // TODO: Rough implementation
+  relativeCssUrl: string,
 }): any[] {
   return [
     [rehypeRaw],
     [rehypeDocument, {
       title: params.title,
       language: params.language,
-      css: '/github-markdown.css',
+      css: params.relativeCssUrl + '/github-markdown.css',
     }],
     [rehypeFormat],
   ];
@@ -195,6 +197,7 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
         language: configs.language,
+        relativeCssUrl: '..',
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -255,6 +258,7 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
+        relativeCssUrl: '.',
       }))
       .use(rehypeStringify)
       .processSync(html);
