@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>A Sample Article | Sample Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/github-markdown.css">
+  </head>
+  <body>
+    <div class="markdown-body">
+      <h1>A Sample Article</h1>
+      <h2>Write a diary</h2>
+      <p>What shall I write?<br>Anyway, <strong>I am poor at English</strong>, so I can not write it for too long.</p>
+      <p>Let's also talk about the parents' cats.</p>
+      <p>
+        <img src="../static-files/cat.jpg" alt="My boss">
+      </p>
+      <p>It is not cute at all. In the first place she is looking down on me.</p>
+      <p>There are many people who say cats are "cute", but I personally think that they are different.<br>If cats have a good point, the cats themselves are "<strong>free</strong>" and "<strong>peaceful</strong>".</p>
+      <p>Freedom and peace are good things. Therefore, I think that it is healed by seeing a cat stupidly. It is regrettable!</p>
+      <h2>Write a sentence about programming</h2>
+      <p>What to do now? I do not know much about programming too.<br>This command is made with Node.js, so let's talk about it.</p>
+      <p>I did not know how to generate the relative path of the URL, so this time I wrote the following code in <code>src/utils.ts</code></p>
+      <pre><code>export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
+  // NOTICE: Originally `path.relative()` should not be used for URLs.
+  //         In this time, there is probably no inconsistency, so there is no problem.
+  const relativeDir = path.relative(
+    path.dirname('.' + fromPermalink),
+    path.dirname('.' + toPermalink)
+  );
+  return path.join(relativeDir, path.basename(toPermalink));
+}
+</code></pre>
+      <p>How do you usually write?</p>
+    </div>
+    <div>
+      <ul>
+        <li>Last updated at: 2019-02-12 23:54:21</li>
+      </ul>
+    </div>
+  </body>
+</html>
