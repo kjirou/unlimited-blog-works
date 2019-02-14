@@ -10,7 +10,7 @@ import {
   RehypeAstNode,
   RemarkAstNode,
   UbwConfigs,
-  extractPageName,
+  extractPageTitle,
   generateBlogPaths,
 } from './utils';
 
@@ -70,12 +70,37 @@ function createRehypePlugins(params: {
   ];
 }
 
-export interface ArticleFrontMatters {
+interface ArticleFrontMatters {
   // Last updated date time, time zone is "UTC"
   // e.g. "2019-12-31 23:59:59"
   lastUpdatedAt: string,
-  pageName?: string,
   publicId: string,
+}
+
+interface ActualArticleFrontMatters {
+  lastUpdatedAt: ArticleFrontMatters['lastUpdatedAt'],
+  publicId: ArticleFrontMatters['publicId'],
+}
+
+function createDefaultArticleFrontMatters() {
+  return {
+    lastUpdatedAt: '',
+    publicId: '',
+  };
+}
+
+export function createInitialArticleFrontMatters(
+  publicId: ArticleFrontMatters['publicId'],
+  lastUpdatedAt: ArticleFrontMatters['lastUpdatedAt'],
+) {
+  return {
+    publicId,
+    lastUpdatedAt,
+  };
+}
+
+function fillWithDefaultArticleFrontMatters(actualFrontMatters: ActualArticleFrontMatters) {
+  return Object.assign({}, createDefaultArticleFrontMatters(), actualFrontMatters);
 }
 
 export interface ArticlePage {
@@ -86,7 +111,7 @@ export interface ArticlePage {
   permalink: string,
   htmlSource: string,
   markdownSource: string,
-  pageName: string,
+  pageTitle: string,
   lastUpdatedAt: Date,
 }
 
@@ -99,7 +124,7 @@ export function createArticlePage(): ArticlePage {
     permalink: '',
     htmlSource: '',
     markdownSource: '',
-    pageName: '',
+    pageTitle: '',
     lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
   };
 }
@@ -161,7 +186,8 @@ export function preprocessArticlePages(
     if (frontMattersNode.type !== 'yaml') {
       throw new Error('Can not find a Front-matter block in an articlePage.');
     }
-    const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
+    const actualFrontMatters = yaml.safeLoad(frontMattersNode.value) as ActualArticleFrontMatters;
+    const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
 
     const permalink = `${configs.baseUrl}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
@@ -169,7 +195,7 @@ export function preprocessArticlePages(
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       permalink,
-      pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
+      pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
   });
@@ -204,7 +230,7 @@ export function generateArticlePages(
         fragment: true,
       })
       .use(createRehypePlugins({
-        title: `${articlePage.pageName} | ${configs.blogName}`,
+        title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
         cssUrl: configs.cssUrl || '',
         jsUrl: configs.jsUrl || '',
@@ -246,7 +272,7 @@ export function generateNonArticlePages(
     return {
       articleId: articlePage.articleId,
       lastUpdatedAt: articlePage.lastUpdatedAt,
-      pageName: articlePage.pageName,
+      pageTitle: articlePage.pageTitle,
       permalink: articlePage.permalink,
     };
   });

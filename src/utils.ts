@@ -80,7 +80,7 @@ function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
     blogPath: '.',
-    publicationPath: './docs',
+    publicationPath: './blog-publication',
     baseUrl: '/',
     cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     jsUrl: '',
@@ -174,7 +174,7 @@ export function scanRemarkAstNode(
   }
 }
 
-export function extractPageName(node: RemarkAstNode): string {
+export function extractPageTitle(node: RemarkAstNode): string {
   const fragments: string[] = [];
   scanRemarkAstNode(node, (heading1Node) => {
     if (heading1Node.type === 'heading' && heading1Node.depth === 1) {

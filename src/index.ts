@@ -3,9 +3,9 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 
 import {
-  ArticleFrontMatters,
   ArticlePage,
   NonArticlePage,
+  createInitialArticleFrontMatters,
   generateArticlePages,
   generateNonArticlePages,
   getNextAutomaticArticleId,
@@ -140,10 +140,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const now = new Date();
   const todayDateString = generateTodayDateString(now, configs.timeZone);
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
-  const frontMatters: ArticleFrontMatters = {
-    publicId: articleId,
-    lastUpdatedAt: generateDateTimeString(now, 'UTC'),
-  };
+  const frontMatters = createInitialArticleFrontMatters(articleId, generateDateTimeString(now, 'UTC'));
 
   fs.writeFileSync(
     path.join(paths.sourceArticlesRoot, articleId + '.md'),
@@ -151,7 +148,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
       // TODO: Want to wrap string variables with double quotes always.
       '---\n' + yaml.safeDump(frontMatters) + '---',
       '',
-      '# My First Article & **Bold**\n',
+      '# Page Title\n',
     ].join('\n')
   );
 
