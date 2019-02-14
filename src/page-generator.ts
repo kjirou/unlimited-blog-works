@@ -74,7 +74,6 @@ export interface ArticleFrontMatters {
   // Last updated date time, time zone is "UTC"
   // e.g. "2019-12-31 23:59:59"
   lastUpdatedAt: string,
-  pageName?: string,
   publicId: string,
 }
 
@@ -169,7 +168,7 @@ export function preprocessArticlePages(
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       permalink,
-      pageName: frontMatters.pageName ? frontMatters.pageName : extractPageTitle(ast),
+      pageName: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
   });
