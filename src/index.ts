@@ -96,7 +96,6 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
-  fs.removeSync(paths.publicationExternalResourcesRoot);
   fs.copySync(paths.sourceExternalResourcesRoot, paths.publicationExternalResourcesRoot);
   fs.ensureDirSync(paths.publicationExternalResourcesDirectPlacementRoot);
   fs.moveSync(paths.publicationExternalResourcesDirectPlacementRoot, paths.publicationRoot);
