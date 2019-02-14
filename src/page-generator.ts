@@ -49,16 +49,23 @@ function createRemarkPlugins(): any[] {
 function createRehypePlugins(params: {
   title: string,
   language: string,
-  // TODO: Rough implementation
-  relativeCssUrl: string,
+  cssUrl: string,
+  jsUrl: string,
 }): any[] {
+  const documentOptions: any = {
+    title: params.title,
+    language: params.language,
+  };
+  if (params.cssUrl) {
+    documentOptions.css = params.cssUrl;
+  }
+  if (params.jsUrl) {
+    documentOptions.js = params.jsUrl;
+  }
+
   return [
     [rehypeRaw],
-    [rehypeDocument, {
-      title: params.title,
-      language: params.language,
-      css: params.relativeCssUrl + '/github-markdown.css',
-    }],
+    [rehypeDocument, documentOptions],
     [rehypeFormat],
   ];
 }
@@ -199,7 +206,8 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
         language: configs.language,
-        relativeCssUrl: '..',
+        cssUrl: configs.cssUrl || '',
+        jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -260,7 +268,8 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        relativeCssUrl: '.',
+        cssUrl: configs.cssUrl || '',
+        jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
       .processSync(html);

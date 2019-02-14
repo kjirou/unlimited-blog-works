@@ -48,6 +48,14 @@ export interface UbwConfigs {
   // it will be "/" if it is published from the "<username>.github.io" repository,
   // In other cases it will probably be "/<your-repository-name>/".
   baseUrl: string,
+  // A absolute URL or root-relative URL to the .css
+  //
+  // This value is used <link rel="{here}"> directly.
+  cssUrl?: string,
+  // A absolute URL or root-relative URL to the .js
+  //
+  // This value is used <script src="{here}"> directly.
+  jsUrl?: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -59,6 +67,7 @@ export const defaultUbwConfigs: UbwConfigs = {
   blogPath: '.',
   publicationPath: './docs',
   baseUrl: '/',
+  cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
   language: 'en',
   timeZone: 'UTC',
 };
