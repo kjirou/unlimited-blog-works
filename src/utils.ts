@@ -10,6 +10,7 @@ const dateFnsTz = require('date-fns-tz');
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'external-resources';
+const RELATIVE_EXTERNAL_RESOURCES_DIRECT_PLACEMENT_DIR_PATH: string = '_direct';
 
 export const PROJECT_ROOT: string = path.join(__dirname, '..');
 const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
@@ -77,23 +78,31 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   publicationRoot: string,
   sourceArticlesRoot: string,
   sourceExternalResourcesRoot: string,
+  sourceExternalResourcesDirectPlacementRoot: string,
   publicationArticlesRoot: string,
   publicationExternalResourcesRoot: string,
+  publicationExternalResourcesDirectPlacementRoot: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
   const sourceExternalResourcesRoot = path.join(sourceRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
+  const sourceExternalResourcesDirectPlacementRoot =
+    path.join(sourceExternalResourcesRoot, RELATIVE_EXTERNAL_RESOURCES_DIRECT_PLACEMENT_DIR_PATH);
   const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
   const publicationExternalResourcesRoot = path.join(publicationRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
+  const publicationExternalResourcesDirectPlacementRoot =
+    path.join(publicationExternalResourcesRoot, RELATIVE_EXTERNAL_RESOURCES_DIRECT_PLACEMENT_DIR_PATH);
 
   return {
     sourceRoot,
     publicationRoot,
     sourceArticlesRoot,
     sourceExternalResourcesRoot,
+    sourceExternalResourcesDirectPlacementRoot,
     publicationArticlesRoot,
     publicationExternalResourcesRoot,
+    publicationExternalResourcesDirectPlacementRoot,
   };
 }
 
