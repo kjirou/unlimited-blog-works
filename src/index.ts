@@ -46,8 +46,8 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
 
-  fs.ensureDirSync(paths.sourceStaticFilesRoot);
-  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceStaticFilesRoot);
+  fs.ensureDirSync(paths.sourceExternalResourcesRoot);
+  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
 
   return Promise.resolve({
     exitCode: 0,
@@ -96,8 +96,8 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
-  fs.removeSync(paths.publicationStaticFilesRoot);
-  fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
+  fs.removeSync(paths.publicationExternalResourcesRoot);
+  fs.copySync(paths.sourceExternalResourcesRoot, paths.publicationExternalResourcesRoot);
 
   return Promise.resolve({
     exitCode: 0,

@@ -66,24 +66,24 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   sourceRoot: string,
   publicationRoot: string,
   sourceArticlesRoot: string,
-  sourceStaticFilesRoot: string,
+  sourceExternalResourcesRoot: string,
   publicationArticlesRoot: string,
-  publicationStaticFilesRoot: string,
+  publicationExternalResourcesRoot: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
+  const sourceExternalResourcesRoot = path.join(sourceRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
   const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
+  const publicationExternalResourcesRoot = path.join(publicationRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
 
   return {
     sourceRoot,
     publicationRoot,
     sourceArticlesRoot,
-    sourceStaticFilesRoot,
+    sourceExternalResourcesRoot,
     publicationArticlesRoot,
-    publicationStaticFilesRoot,
+    publicationExternalResourcesRoot,
   };
 }
 
