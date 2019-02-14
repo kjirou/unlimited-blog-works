@@ -70,11 +70,37 @@ function createRehypePlugins(params: {
   ];
 }
 
-export interface ArticleFrontMatters {
+interface ArticleFrontMatters {
   // Last updated date time, time zone is "UTC"
   // e.g. "2019-12-31 23:59:59"
   lastUpdatedAt: string,
   publicId: string,
+}
+
+interface ActualArticleFrontMatters {
+  lastUpdatedAt: ArticleFrontMatters['lastUpdatedAt'],
+  publicId: ArticleFrontMatters['publicId'],
+}
+
+function createDefaultArticleFrontMatters() {
+  return {
+    lastUpdatedAt: '',
+    publicId: '',
+  };
+}
+
+export function createInitialArticleFrontMatters(
+  publicId: ArticleFrontMatters['publicId'],
+  lastUpdatedAt: ArticleFrontMatters['lastUpdatedAt'],
+) {
+  return {
+    publicId,
+    lastUpdatedAt,
+  };
+}
+
+function fillWithDefaultArticleFrontMatters(actualFrontMatters: ActualArticleFrontMatters) {
+  return Object.assign({}, createDefaultArticleFrontMatters(), actualFrontMatters);
 }
 
 export interface ArticlePage {
@@ -160,7 +186,8 @@ export function preprocessArticlePages(
     if (frontMattersNode.type !== 'yaml') {
       throw new Error('Can not find a Front-matter block in an articlePage.');
     }
-    const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
+    const actualFrontMatters = yaml.safeLoad(frontMattersNode.value) as ActualArticleFrontMatters;
+    const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
 
     const permalink = `${configs.baseUrl}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
