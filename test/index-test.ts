@@ -83,11 +83,11 @@ describe('index', function() {
             assert.strictEqual(result.exitCode, 0);
 
             const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['docs/index.html'], 'string');
-            assert.strictEqual(typeof dump['docs/robots.txt'], 'string');
-            assert.strictEqual(typeof dump['docs/external-resources/index.css'], 'string');
-            assert.strictEqual(typeof dump['docs/external-resources/github-markdown.css'], 'string');
-            assert.strictEqual(typeof dump['docs/articles/20190101-0001.html'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
           });
       });
 
@@ -99,8 +99,8 @@ describe('index', function() {
             assert.strictEqual(result.exitCode, 0);
 
             const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['docs/index.html'], 'string');
-            assert.strictEqual(typeof dump['docs/robots.txt'], 'undefined');
+            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
           });
       });
 
@@ -112,8 +112,8 @@ describe('index', function() {
             assert.strictEqual(result.exitCode, 0);
 
             const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['docs/index.html'], 'string');
-            assert.strictEqual(typeof dump['docs/robots.txt'], 'undefined');
+            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
           });
       });
     });

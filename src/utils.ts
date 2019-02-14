@@ -80,7 +80,7 @@ function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
     blogPath: '.',
-    publicationPath: './docs',
+    publicationPath: './blog-publication',
     baseUrl: '/',
     cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     jsUrl: '',
