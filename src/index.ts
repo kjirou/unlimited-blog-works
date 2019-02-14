@@ -16,7 +16,7 @@ import {
 import {
   CONFIG_FILE_NAME,
   UbwConfigs,
-  PRESETS_STATIC_FILES_ROOT,
+  PRESETS_EXTERNAL_RESOURCES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
@@ -47,7 +47,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
 
   fs.ensureDirSync(paths.sourceStaticFilesRoot);
-  fs.copySync(PRESETS_STATIC_FILES_ROOT, paths.sourceStaticFilesRoot);
+  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceStaticFilesRoot);
 
   return Promise.resolve({
     exitCode: 0,

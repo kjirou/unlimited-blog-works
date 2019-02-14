@@ -9,13 +9,13 @@ const dateFnsTz = require('date-fns-tz');
 
 export const PROJECT_ROOT: string = path.join(__dirname, '..');
 const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
-export const PRESETS_STATIC_FILES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
+export const PRESETS_EXTERNAL_RESOURCES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
 
 export const CONFIG_FILE_NAME = 'ubw-configs.js';
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
-const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
+const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'static-files';
 
 export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: string): string {
   const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(baseAbsolutePath, pathInput);
@@ -73,9 +73,9 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
   const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
 
   return {
     sourceRoot,
