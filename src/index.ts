@@ -97,8 +97,21 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   });
 
   fs.copySync(paths.sourceExternalResourcesRoot, paths.publicationExternalResourcesRoot);
+
+  // Expand files under the "external-resources/_direct" into under the document root.
+  //
+  // NOTICE: Previously expanded files using "fs-extra"'s `moveSync` like the following code,
+  //         this didn't work in the Travis CI environment.
+  //         ```
+  //         fs.moveSync("/path/to/external-resources/_direct", "/path/to/publication");
+  //         ```
   fs.ensureDirSync(paths.publicationExternalResourcesDirectPlacementRoot);
-  fs.moveSync(paths.publicationExternalResourcesDirectPlacementRoot, paths.publicationRoot);
+  fs.readdirSync(paths.publicationExternalResourcesDirectPlacementRoot).forEach(fileName => {
+    const from = path.join(paths.publicationExternalResourcesDirectPlacementRoot, fileName);
+    const to = path.join(paths.publicationRoot, fileName);
+    fs.copySync(from, to);
+  });
+  fs.removeSync(paths.publicationExternalResourcesDirectPlacementRoot);
 
   return Promise.resolve({
     exitCode: 0,
