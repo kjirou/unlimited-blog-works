@@ -10,7 +10,7 @@ import {
   RehypeAstNode,
   RemarkAstNode,
   UbwConfigs,
-  extractPageName,
+  extractPageTitle,
   generateBlogPaths,
 } from './utils';
 
@@ -169,7 +169,7 @@ export function preprocessArticlePages(
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       permalink,
-      pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
+      pageName: frontMatters.pageName ? frontMatters.pageName : extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
   });

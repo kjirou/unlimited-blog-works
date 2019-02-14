@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import {
-  extractPageName,
+  extractPageTitle,
   permalinksToRelativeUrl,
   scanRemarkAstNode,
   toNormalizedAbsolutePath,
@@ -100,10 +100,10 @@ describe('utils', function() {
     });
   });
 
-  describe('extractPageName', function() {
+  describe('extractPageTitle', function() {
     it('can exact type="heading" and depth=1 only', function() {
       assert.strictEqual(
-        extractPageName(
+        extractPageTitle(
           {
             type: 'root',
             children: [
@@ -136,7 +136,7 @@ describe('utils', function() {
 
     it('should trim the value', function() {
       assert.strictEqual(
-        extractPageName(
+        extractPageTitle(
           {
             type: 'root',
             children: [
@@ -154,7 +154,7 @@ describe('utils', function() {
 
     it('should join children\'s values recursively', function() {
       assert.strictEqual(
-        extractPageName(
+        extractPageTitle(
           {
             type: 'root',
             children: [
