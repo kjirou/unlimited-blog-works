@@ -14,10 +14,12 @@ import {
   preprocessNonArticlePages,
 } from './page-generator';
 import {
+  ActualUbwConfigs,
   CONFIG_FILE_NAME,
   UbwConfigs,
   PRESETS_EXTERNAL_RESOURCES_ROOT,
-  defaultUbwConfigs,
+  createInitialUbwConfigs,
+  fillWithDefaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
   generateTodayDateString,
@@ -38,13 +40,16 @@ export interface CommandResult {
 export function executeInit(blogRoot: string): Promise<CommandResult> {
   const configFilePath = path.join(blogRoot, CONFIG_FILE_NAME);
 
+  const initialConfigs = createInitialUbwConfigs();
+  const configs = fillWithDefaultUbwConfigs(initialConfigs);
+
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
     configFilePath,
-    `module.exports = ${JSON.stringify(defaultUbwConfigs, null, 2)}\n`
+    `module.exports = ${JSON.stringify(initialConfigs, null, 2)}\n`
   );
 
-  const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   fs.ensureDirSync(paths.sourceExternalResourcesRoot);
   fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
@@ -56,8 +61,8 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 }
 
 export function executeCompile(configFilePath: string): Promise<CommandResult> {
-  const rawConfigs = require(configFilePath);
-  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+  const actualConfigs = require(configFilePath) as ActualUbwConfigs;
+  const configs = fillWithDefaultUbwConfigs(actualConfigs);
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
@@ -120,8 +125,8 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
 }
 
 export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
-  const rawConfigs = require(configFilePath);
-  const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
+  const actualConfigs = require(configFilePath) as ActualUbwConfigs;
+  const configs = fillWithDefaultUbwConfigs(actualConfigs);
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
