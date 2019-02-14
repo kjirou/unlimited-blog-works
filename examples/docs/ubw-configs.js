@@ -1,4 +1,4 @@
-{
+module.exports = {
   "blogName": "Sample Blog",
   "blogPath": ".",
   "publicationPath": "../../docs",
