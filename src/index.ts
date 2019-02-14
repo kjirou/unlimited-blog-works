@@ -74,7 +74,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     {
       layoutComponent: TopLayout,
       relativeOutputFilePath: 'index.html',
-      permalink: '/index.html',
+      permalink: configs.baseUrl + 'index.html',
       outputFilePath: '',
       html: '',
     },

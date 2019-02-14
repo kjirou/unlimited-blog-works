@@ -6,6 +6,7 @@ import * as yaml from 'js-yaml';
 import ArticleLayout from './templates/ArticleLayout';
 import {NonArticlePageProps} from './templates/shared';
 import {
+  RELATIVE_ARTICLES_DIR_PATH,
   RehypeAstNode,
   RemarkAstNode,
   UbwConfigs,
@@ -155,11 +156,12 @@ export function preprocessArticlePages(
     }
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
+    const permalink = `${configs.baseUrl}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
-      // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
-      permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
+      permalink,
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });

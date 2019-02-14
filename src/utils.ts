@@ -14,7 +14,7 @@ export const PRESETS_STATIC_FILES_ROOT: string = path.join(PRESETS_ROOT, 'static
 export const CONFIG_FILE_NAME = 'ubw-configs.js';
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
+export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
 export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: string): string {
@@ -69,7 +69,6 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   sourceStaticFilesRoot: string,
   publicationArticlesRoot: string,
   publicationStaticFilesRoot: string,
-  permalinkRootPath: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
@@ -77,7 +76,6 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
   const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
   const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
 
   return {
     sourceRoot,
@@ -86,7 +84,6 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
     sourceStaticFilesRoot,
     publicationArticlesRoot,
     publicationStaticFilesRoot,
-    permalinkRootPath,
   };
 }
 
