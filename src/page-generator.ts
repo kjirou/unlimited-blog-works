@@ -6,6 +6,7 @@ import * as yaml from 'js-yaml';
 import ArticleLayout from './templates/ArticleLayout';
 import {NonArticlePageProps} from './templates/shared';
 import {
+  RELATIVE_ARTICLES_DIR_PATH,
   RehypeAstNode,
   RemarkAstNode,
   UbwConfigs,
@@ -48,16 +49,23 @@ function createRemarkPlugins(): any[] {
 function createRehypePlugins(params: {
   title: string,
   language: string,
-  // TODO: Rough implementation
-  relativeCssUrl: string,
+  cssUrl: string,
+  jsUrl: string,
 }): any[] {
+  const documentOptions: any = {
+    title: params.title,
+    language: params.language,
+  };
+  if (params.cssUrl) {
+    documentOptions.css = params.cssUrl;
+  }
+  if (params.jsUrl) {
+    documentOptions.js = params.jsUrl;
+  }
+
   return [
     [rehypeRaw],
-    [rehypeDocument, {
-      title: params.title,
-      language: params.language,
-      css: params.relativeCssUrl + '/github-markdown.css',
-    }],
+    [rehypeDocument, documentOptions],
     [rehypeFormat],
   ];
 }
@@ -155,11 +163,12 @@ export function preprocessArticlePages(
     }
     const frontMatters = yaml.safeLoad(frontMattersNode.value) as ArticleFrontMatters;
 
+    const permalink = `${configs.baseUrl}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
-      // TODO: サブディレクトリ対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
-      permalink: `${paths.permalinkRootPath}/${frontMatters.publicId}.html`,
+      permalink,
       pageName: frontMatters.pageName ? frontMatters.pageName : extractPageName(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
@@ -197,7 +206,8 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageName} | ${configs.blogName}`,
         language: configs.language,
-        relativeCssUrl: '..',
+        cssUrl: configs.cssUrl || '',
+        jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -258,7 +268,8 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        relativeCssUrl: '.',
+        cssUrl: configs.cssUrl || '',
+        jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
       .processSync(html);

@@ -31,7 +31,8 @@ describe('index', function() {
 
           const dump = dumpDir(workspaceRoot);
           assert.strictEqual(typeof dump['ubw-configs.js'], 'string');
-          assert.strictEqual(dump['blog-source/static-files/.keep'], '');
+          assert.strictEqual(typeof dump['blog-source/external-resources/index.css'], 'string');
+          assert.strictEqual(typeof dump['blog-source/external-resources/github-markdown.css'], 'string');
         });
     });
   });
@@ -86,12 +87,9 @@ describe('index', function() {
 
             const dump = dumpDir(workspaceRoot);
             assert.strictEqual(typeof dump['docs/index.html'], 'string');
-            assert.strictEqual(typeof dump['docs/github-markdown.css'], 'string');
+            assert.strictEqual(typeof dump['docs/external-resources/index.css'], 'string');
+            assert.strictEqual(typeof dump['docs/external-resources/github-markdown.css'], 'string');
             assert.strictEqual(typeof dump['docs/articles/20190101-0001.html'], 'string');
-            assert.strictEqual(
-              fs.existsSync(path.join(workspaceRoot, 'docs/static-files')),
-              true
-            );
           });
       });
     });

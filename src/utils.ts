@@ -7,15 +7,16 @@ import * as url from 'url';
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
 
+const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
+export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
+const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'external-resources';
+
 export const PROJECT_ROOT: string = path.join(__dirname, '..');
 const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
-export const PRESETS_STATIC_FILES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
+export const PRESETS_EXTERNAL_RESOURCES_ROOT: string =
+  path.join(PRESETS_ROOT, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
 
 export const CONFIG_FILE_NAME = 'ubw-configs.js';
-
-const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
-const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
-const RELATIVE_STATIC_FILES_DIR_PATH: string = 'static-files';
 
 export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: string): string {
   const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(baseAbsolutePath, pathInput);
@@ -38,6 +39,23 @@ export interface UbwConfigs {
   blogPath: string,
   // A relative path from the blog root to the publication directory
   publicationPath: string,
+  // A relative URL from the root
+  //
+  // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
+  // If you want to place in "http://your-host.com/subdir/index.html", set "/subdir/" to this property.
+  //
+  // In case you are hosting on GitHub,
+  // it will be "/" if it is published from the "<username>.github.io" repository,
+  // In other cases it will probably be "/<your-repository-name>/".
+  baseUrl: string,
+  // A absolute URL or root-relative URL to the .css
+  //
+  // This value is used <link rel="{here}"> directly.
+  cssUrl?: string,
+  // A absolute URL or root-relative URL to the .js
+  //
+  // This value is used <script src="{here}"> directly.
+  jsUrl?: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -48,6 +66,8 @@ export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
   blogPath: '.',
   publicationPath: './docs',
+  baseUrl: '/',
+  cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
   language: 'en',
   timeZone: 'UTC',
 };
@@ -56,27 +76,24 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   sourceRoot: string,
   publicationRoot: string,
   sourceArticlesRoot: string,
-  sourceStaticFilesRoot: string,
+  sourceExternalResourcesRoot: string,
   publicationArticlesRoot: string,
-  publicationStaticFilesRoot: string,
-  permalinkRootPath: string,
+  publicationExternalResourcesRoot: string,
 } {
   const sourceRoot = path.join(blogRoot, RELATIVE_SOURCE_DIR_PATH);
   const publicationRoot = path.join(blogRoot, relativePublicationDirPath);
   const sourceArticlesRoot = path.join(sourceRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const sourceStaticFilesRoot = path.join(sourceRoot, RELATIVE_STATIC_FILES_DIR_PATH);
+  const sourceExternalResourcesRoot = path.join(sourceRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
   const publicationArticlesRoot = path.join(publicationRoot, RELATIVE_ARTICLES_DIR_PATH);
-  const publicationStaticFilesRoot = path.join(publicationRoot, RELATIVE_STATIC_FILES_DIR_PATH);
-  const permalinkRootPath = `/${RELATIVE_ARTICLES_DIR_PATH}`;
+  const publicationExternalResourcesRoot = path.join(publicationRoot, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
 
   return {
     sourceRoot,
     publicationRoot,
     sourceArticlesRoot,
-    sourceStaticFilesRoot,
+    sourceExternalResourcesRoot,
     publicationArticlesRoot,
-    publicationStaticFilesRoot,
-    permalinkRootPath,
+    publicationExternalResourcesRoot,
   };
 }
 

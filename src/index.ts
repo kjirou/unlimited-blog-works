@@ -16,7 +16,7 @@ import {
 import {
   CONFIG_FILE_NAME,
   UbwConfigs,
-  PRESETS_STATIC_FILES_ROOT,
+  PRESETS_EXTERNAL_RESOURCES_ROOT,
   defaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
@@ -46,8 +46,8 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
 
-  fs.ensureDirSync(paths.sourceStaticFilesRoot);
-  fs.writeFileSync(path.join(paths.sourceStaticFilesRoot, '.keep'), '');
+  fs.ensureDirSync(paths.sourceExternalResourcesRoot);
+  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
 
   return Promise.resolve({
     exitCode: 0,
@@ -74,7 +74,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     {
       layoutComponent: TopLayout,
       relativeOutputFilePath: 'index.html',
-      permalink: '/index.html',
+      permalink: configs.baseUrl + 'index.html',
       outputFilePath: '',
       html: '',
     },
@@ -96,13 +96,8 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
   });
 
-  fs.removeSync(paths.publicationStaticFilesRoot);
-  fs.copySync(paths.sourceStaticFilesRoot, paths.publicationStaticFilesRoot);
-
-  fs.copySync(
-    path.join(PRESETS_STATIC_FILES_ROOT, 'github-markdown.css'),
-    path.join(paths.publicationRoot, 'github-markdown.css')
-  );
+  fs.removeSync(paths.publicationExternalResourcesRoot);
+  fs.copySync(paths.sourceExternalResourcesRoot, paths.publicationExternalResourcesRoot);
 
   return Promise.resolve({
     exitCode: 0,
