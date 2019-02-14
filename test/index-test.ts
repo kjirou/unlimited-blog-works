@@ -87,6 +87,7 @@ describe('index', function() {
 
             const dump = dumpDir(workspaceRoot);
             assert.strictEqual(typeof dump['docs/index.html'], 'string');
+            assert.strictEqual(typeof dump['docs/robots.txt'], 'string');
             assert.strictEqual(typeof dump['docs/external-resources/index.css'], 'string');
             assert.strictEqual(typeof dump['docs/external-resources/github-markdown.css'], 'string');
             assert.strictEqual(typeof dump['docs/articles/20190101-0001.html'], 'string');
