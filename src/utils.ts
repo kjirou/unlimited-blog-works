@@ -7,15 +7,16 @@ import * as url from 'url';
 // Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
 const dateFnsTz = require('date-fns-tz');
 
-export const PROJECT_ROOT: string = path.join(__dirname, '..');
-const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
-export const PRESETS_EXTERNAL_RESOURCES_ROOT: string = path.join(PRESETS_ROOT, 'static-files');
-
-export const CONFIG_FILE_NAME = 'ubw-configs.js';
-
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
-const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'static-files';
+const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'external-resources';
+
+export const PROJECT_ROOT: string = path.join(__dirname, '..');
+const PRESETS_ROOT: string = path.join(PROJECT_ROOT, 'presets');
+export const PRESETS_EXTERNAL_RESOURCES_ROOT: string =
+  path.join(PRESETS_ROOT, RELATIVE_EXTERNAL_RESOURCES_DIR_PATH);
+
+export const CONFIG_FILE_NAME = 'ubw-configs.js';
 
 export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: string): string {
   const absolutePath = path.isAbsolute(pathInput) ? pathInput : path.join(baseAbsolutePath, pathInput);
