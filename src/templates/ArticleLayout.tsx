@@ -13,7 +13,8 @@ export default class ArticleLayout extends React.Component<ArticlePageProps> {
     return (
       <React.Fragment>
         <div className="markdown-body" dangerouslySetInnerHTML={{__html: this.props.contentHtml}} />
-        <div>
+        <hr className="article-end-of-markdown-body" />
+        <div className="article-meta-information">
           <ul>
             <li>Last updated at: {generateDateTimeString(this.props.lastUpdatedAt, this.props.timeZone)}</li>
           </ul>
