@@ -151,7 +151,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
       // TODO: Want to wrap string variables with double quotes always.
       '---\n' + yaml.safeDump(frontMatters) + '---',
       '',
-      '# My First Article & **Bold**\n',
+      '# Page Title\n',
     ].join('\n')
   );
 
