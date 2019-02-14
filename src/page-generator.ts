@@ -85,7 +85,7 @@ export interface ArticlePage {
   permalink: string,
   htmlSource: string,
   markdownSource: string,
-  pageName: string,
+  pageTitle: string,
   lastUpdatedAt: Date,
 }
 
@@ -98,7 +98,7 @@ export function createArticlePage(): ArticlePage {
     permalink: '',
     htmlSource: '',
     markdownSource: '',
-    pageName: '',
+    pageTitle: '',
     lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
   };
 }
@@ -168,7 +168,7 @@ export function preprocessArticlePages(
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       permalink,
-      pageName: extractPageTitle(ast),
+      pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
   });
@@ -203,7 +203,7 @@ export function generateArticlePages(
         fragment: true,
       })
       .use(createRehypePlugins({
-        title: `${articlePage.pageName} | ${configs.blogName}`,
+        title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
         cssUrl: configs.cssUrl || '',
         jsUrl: configs.jsUrl || '',
@@ -245,7 +245,7 @@ export function generateNonArticlePages(
     return {
       articleId: articlePage.articleId,
       lastUpdatedAt: articlePage.lastUpdatedAt,
-      pageName: articlePage.pageName,
+      pageTitle: articlePage.pageTitle,
       permalink: articlePage.permalink,
     };
   });
