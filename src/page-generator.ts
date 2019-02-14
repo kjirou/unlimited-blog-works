@@ -14,22 +14,7 @@ import {
   generateBlogPaths,
 } from './utils';
 
-//
-// TODO:
-//   When executing via reqiure("ts-node").register, the following error occurs.
-//
-//   ```
-//   /path/to/unlimited-blog-works/src/lib/markdowns-converter.ts:17
-//     return hoge.map(markdownSource => {
-//                 ^
-//   TypeError: unified_1.default is not a function
-//   ```
-//
-//   There is no error when passing through "tsc" command directly
-//     (and through "mocha --require ts-settings" command too).
-//
-//   Give up exact typing and confine the influence into this file.
-//
+// NOTICE: "unified" set MUST use only in the file
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
 const rehypeParse = require('rehype-parse');
