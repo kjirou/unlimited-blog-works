@@ -65,15 +65,7 @@ export interface UbwConfigs {
   timeZone: string,
 }
 
-export interface ActualUbwConfigs {
-  blogName?: UbwConfigs['blogName'],
-  blogPath?: UbwConfigs['blogPath'],
-  publicationPath?: UbwConfigs['publicationPath'],
-  baseUrl?: UbwConfigs['baseUrl'],
-  cssUrl?: UbwConfigs['cssUrl'],
-  jsUrl?: UbwConfigs['jsUrl'],
-  language?: UbwConfigs['language'],
-  timeZone?: UbwConfigs['timeZone'],
+export interface ActualUbwConfigs extends Partial<UbwConfigs> {
 }
 
 function createDefaultUbwConfigs(): UbwConfigs {

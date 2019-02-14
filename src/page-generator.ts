@@ -62,7 +62,7 @@ interface ArticleFrontMatters {
   publicId: string,
 }
 
-interface ActualArticleFrontMatters {
+interface ActualArticleFrontMatters extends Partial<ArticleFrontMatters> {
   lastUpdatedAt: ArticleFrontMatters['lastUpdatedAt'],
   publicId: ArticleFrontMatters['publicId'],
 }
