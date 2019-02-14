@@ -38,6 +38,15 @@ export interface UbwConfigs {
   blogPath: string,
   // A relative path from the blog root to the publication directory
   publicationPath: string,
+  // A relative URL from the root
+  //
+  // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
+  // If you want to place in "http://your-host.com/subdir/index.html", set "/subdir/" to this property.
+  //
+  // In case you are hosting on GitHub,
+  // it will be "/" if it is published from the "<username>.github.io" repository,
+  // In other cases it will probably be "/<your-repository-name>/".
+  baseUrl: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -48,6 +57,7 @@ export const defaultUbwConfigs: UbwConfigs = {
   blogName: 'My Blog',
   blogPath: '.',
   publicationPath: './docs',
+  baseUrl: '/',
   language: 'en',
   timeZone: 'UTC',
 };
