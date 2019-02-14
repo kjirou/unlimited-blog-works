@@ -7,6 +7,7 @@
   "scripts": {
     "build": "$(npm bin)/tsc --project ./tsconfigs/build.json",
     "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
+    "serve-docs": "$(npm bin)/http-server",
     "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' './test/**/*-test.ts'",
     "typecheck": "$(npm bin)/tsc --project ./tsconfigs/test.json"
   },
