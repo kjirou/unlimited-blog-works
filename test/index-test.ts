@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as sinon from 'sinon';
 
@@ -91,6 +91,32 @@ describe('index', function() {
             assert.strictEqual(typeof dump['docs/external-resources/index.css'], 'string');
             assert.strictEqual(typeof dump['docs/external-resources/github-markdown.css'], 'string');
             assert.strictEqual(typeof dump['docs/articles/20190101-0001.html'], 'string');
+          });
+      });
+
+      it('should succeed even if there is no "_direct" dir', function() {
+        fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+
+        return executeCompile(configFilePath)
+          .then(result => {
+            assert.strictEqual(result.exitCode, 0);
+
+            const dump = dumpDir(workspaceRoot);
+            assert.strictEqual(typeof dump['docs/index.html'], 'string');
+            assert.strictEqual(typeof dump['docs/robots.txt'], 'undefined');
+          });
+      });
+
+      it('should succeed even if the "_direct" dir is empty', function() {
+        fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+
+        return executeCompile(configFilePath)
+          .then(result => {
+            assert.strictEqual(result.exitCode, 0);
+
+            const dump = dumpDir(workspaceRoot);
+            assert.strictEqual(typeof dump['docs/index.html'], 'string');
+            assert.strictEqual(typeof dump['docs/robots.txt'], 'undefined');
           });
       });
     });
