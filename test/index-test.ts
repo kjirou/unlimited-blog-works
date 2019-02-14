@@ -9,9 +9,6 @@ import {
   executeInit,
 } from '../src/index';
 import {
-  defaultUbwConfigs,
-} from '../src/utils';
-import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';

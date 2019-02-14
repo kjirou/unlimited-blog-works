@@ -52,26 +52,58 @@ export interface UbwConfigs {
   // A absolute URL or root-relative URL to the .css
   //
   // This value is used <link rel="{here}"> directly.
-  cssUrl?: string,
+  // It becomes disabled if it is set with "".
+  cssUrl: string,
   // A absolute URL or root-relative URL to the .js
   //
   // This value is used <script src="{here}"> directly.
-  jsUrl?: string,
+  // It becomes disabled if it is set with "".
+  jsUrl: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
 }
 
-export const defaultUbwConfigs: UbwConfigs = {
-  blogName: 'My Blog',
-  blogPath: '.',
-  publicationPath: './docs',
-  baseUrl: '/',
-  cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
-  language: 'en',
-  timeZone: 'UTC',
-};
+export interface ActualUbwConfigs {
+  blogName?: UbwConfigs['blogName'],
+  blogPath?: UbwConfigs['blogPath'],
+  publicationPath?: UbwConfigs['publicationPath'],
+  baseUrl?: UbwConfigs['baseUrl'],
+  cssUrl?: UbwConfigs['cssUrl'],
+  jsUrl?: UbwConfigs['jsUrl'],
+  language?: UbwConfigs['language'],
+  timeZone?: UbwConfigs['timeZone'],
+}
+
+function createDefaultUbwConfigs(): UbwConfigs {
+  return {
+    blogName: 'My Blog',
+    blogPath: '.',
+    publicationPath: './docs',
+    baseUrl: '/',
+    cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
+    jsUrl: '',
+    language: 'en',
+    timeZone: 'UTC',
+  };
+}
+
+export function createInitialUbwConfigs(): ActualUbwConfigs {
+  const configs = createDefaultUbwConfigs();
+  return {
+    blogName: configs.blogName,
+    publicationPath: configs.publicationPath,
+    baseUrl: configs.baseUrl,
+    cssUrl: configs.cssUrl,
+    language: configs.language,
+    timeZone: configs.timeZone,
+  };
+}
+
+export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs {
+  return Object.assign({}, createDefaultUbwConfigs(), configs);
+}
 
 export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: string): {
   sourceRoot: string,
