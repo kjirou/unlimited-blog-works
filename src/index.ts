@@ -41,7 +41,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(
     configFilePath,
-    JSON.stringify(defaultUbwConfigs, null, 2) + '\n'
+    `module.exports = ${JSON.stringify(defaultUbwConfigs, null, 2)}\n`
   );
 
   const paths = generateBlogPaths(blogRoot, defaultUbwConfigs.publicationPath);
@@ -56,7 +56,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 }
 
 export function executeCompile(configFilePath: string): Promise<CommandResult> {
-  const rawConfigs = fs.readJsonSync(configFilePath);
+  const rawConfigs = require(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
@@ -111,7 +111,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
 }
 
 export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
-  const rawConfigs = fs.readJsonSync(configFilePath);
+  const rawConfigs = require(configFilePath);
   const configs = Object.assign({}, defaultUbwConfigs, rawConfigs) as UbwConfigs;
 
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);

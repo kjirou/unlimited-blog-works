@@ -30,7 +30,7 @@ describe('index', function() {
           assert.strictEqual(result.exitCode, 0);
 
           const dump = dumpDir(workspaceRoot);
-          assert.deepStrictEqual(JSON.parse(dump['ubw-configs.json']), defaultUbwConfigs);
+          assert.strictEqual(typeof dump['ubw-configs.js'], 'string');
           assert.strictEqual(dump['blog-source/static-files/.keep'], '');
         });
     });
@@ -51,7 +51,7 @@ describe('index', function() {
       });
 
       it('can create an article source file', function() {
-        return executeArticleNew(path.join(workspaceRoot, 'ubw-configs.json'))
+        return executeArticleNew(path.join(workspaceRoot, 'ubw-configs.js'))
           .then(result => {
             assert.strictEqual(result.exitCode, 0);
 
@@ -69,7 +69,7 @@ describe('index', function() {
 
       beforeEach(function() {
         clock = sinon.useFakeTimers(new Date(2019, 0, 1));
-        configFilePath = path.join(workspaceRoot, 'ubw-configs.json');
+        configFilePath = path.join(workspaceRoot, 'ubw-configs.js');
 
         return executeInit(workspaceRoot)
           .then(() => executeArticleNew(configFilePath));
