@@ -7,9 +7,9 @@ import ArticleLayout from './templates/ArticleLayout';
 import {NonArticlePageProps} from './templates/shared';
 import {
   RELATIVE_ARTICLES_DIR_PATH,
+  RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
   RehypeAstNode,
   RemarkAstNode,
-  UbwConfigs,
   extractPageTitle,
   generateBlogPaths,
 } from './utils';
@@ -24,6 +24,69 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
+
+export interface UbwConfigs {
+  blogName: string,
+  // A relative path from the ubw-configs.json file to the blog root
+  blogPath: string,
+  // A relative path from the blog root to the publication directory
+  publicationPath: string,
+  // A relative URL from the root
+  //
+  // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
+  // If you want to place in "http://your-host.com/subdir/index.html", set "/subdir/" to this property.
+  //
+  // In case you are hosting on GitHub,
+  // it will be "/" if it is published from the "<username>.github.io" repository,
+  // In other cases it will probably be "/<your-repository-name>/".
+  baseUrl: string,
+  // A absolute URL or root-relative URL to the .css
+  //
+  // This value is used <link rel="{here}"> directly.
+  // It becomes disabled if it is set with "".
+  cssUrl: string,
+  // A absolute URL or root-relative URL to the .js
+  //
+  // This value is used <script src="{here}"> directly.
+  // It becomes disabled if it is set with "".
+  jsUrl: string,
+  // Used <html lang="{here}">
+  language: string,
+  // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
+  timeZone: string,
+}
+
+export interface ActualUbwConfigs extends Partial<UbwConfigs> {
+}
+
+function createDefaultUbwConfigs(): UbwConfigs {
+  return {
+    blogName: 'My Blog',
+    blogPath: '.',
+    publicationPath: './blog-publication',
+    baseUrl: '/',
+    cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
+    jsUrl: '',
+    language: 'en',
+    timeZone: 'UTC',
+  };
+}
+
+export function createInitialUbwConfigs(): ActualUbwConfigs {
+  const configs = createDefaultUbwConfigs();
+  return {
+    blogName: configs.blogName,
+    publicationPath: configs.publicationPath,
+    baseUrl: configs.baseUrl,
+    cssUrl: configs.cssUrl,
+    language: configs.language,
+    timeZone: configs.timeZone,
+  };
+}
+
+export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs {
+  return Object.assign({}, createDefaultUbwConfigs(), configs);
+}
 
 function createRemarkPlugins(): any[] {
   return [

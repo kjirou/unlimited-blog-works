@@ -5,9 +5,13 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 
 import {
+  ActualUbwConfigs,
   ArticlePage,
   NonArticlePage,
+  UbwConfigs,
   createInitialArticleFrontMatters,
+  createInitialUbwConfigs,
+  fillWithDefaultUbwConfigs,
   generateArticlePages,
   generateNonArticlePages,
   getNextAutomaticArticleId,
@@ -16,12 +20,8 @@ import {
   preprocessNonArticlePages,
 } from './page-generator';
 import {
-  ActualUbwConfigs,
   CONFIG_FILE_NAME,
-  UbwConfigs,
   PRESETS_EXTERNAL_RESOURCES_ROOT,
-  createInitialUbwConfigs,
-  fillWithDefaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
   generateTodayDateString,
