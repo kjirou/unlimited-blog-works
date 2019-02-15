@@ -1,8 +1,6 @@
 import * as fs from 'fs-extra';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
-import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
 
 import {
   ActualUbwConfigs,
@@ -16,6 +14,7 @@ import {
   generateNonArticlePages,
   getNextAutomaticArticleId,
   initializeArticlePages,
+  initializeNonArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
 } from './page-generator';
@@ -78,17 +77,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
         markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
       });
     });
-  let nonArticlePages: NonArticlePage[] = [
-    {
-      render(props: NonArticlePageProps): string {
-        return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
-      },
-      relativeOutputFilePath: 'index.html',
-      permalink: configs.baseUrl + 'index.html',
-      outputFilePath: '',
-      html: '',
-    },
-  ];
+  let nonArticlePages: NonArticlePage[] = initializeNonArticlePages(blogRoot, configs);
 
   articlePages = preprocessArticlePages(blogRoot, configs, articlePages);
   nonArticlePages = preprocessNonArticlePages(blogRoot, configs, nonArticlePages);

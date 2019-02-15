@@ -4,6 +4,7 @@ import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
 import ArticleLayout from './templates/ArticleLayout';
+import TopLayout from './templates/TopLayout';
 import {
   ArticlePageProps,
   NonArticlePageProps,
@@ -57,14 +58,15 @@ export interface UbwConfigs {
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
-
-
-  //
-  // Theme Settings
-  //
-
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
+  // Non-article pages configurations
+  nonArticles: {
+    // A relative URL from the "baseUrl"
+    url: string,
+    // Non-article pages renderer
+    render: (props: NonArticlePageProps) => string,
+  }[],
 }
 
 export interface ActualUbwConfigs extends Partial<UbwConfigs> {
@@ -83,6 +85,14 @@ function createDefaultUbwConfigs(): UbwConfigs {
     renderArticle(props: ArticlePageProps): string {
       return ReactDOMServer.renderToStaticMarkup(React.createElement(ArticleLayout, props));
     },
+    nonArticles: [
+      {
+        url: 'index.html',
+        render(props: NonArticlePageProps): string {
+          return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
+        },
+      },
+    ],
   };
 }
 
@@ -307,10 +317,25 @@ export function generateArticlePages(
 
 export interface NonArticlePage {
   render: (props: NonArticlePageProps) => string,
-  relativeOutputFilePath: string,
   permalink: string,
   outputFilePath: string,
   html: string,
+}
+
+export function initializeNonArticlePages(
+  blogRoot: string,
+  configs: UbwConfigs
+): NonArticlePage[] {
+  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+
+  return configs.nonArticles.map(nonArticleConfigs => {
+    return {
+      render: nonArticleConfigs.render,
+      permalink: configs.baseUrl + nonArticleConfigs.url,
+      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      html: '',
+    };
+  });
 }
 
 export function preprocessNonArticlePages(
@@ -361,7 +386,6 @@ export function generateNonArticlePages(
       .processSync(html);
 
     return Object.assign({}, nonArticlePage, {
-      outputFilePath: path.join(paths.publicationRoot, nonArticlePage.relativeOutputFilePath),
       html: unifiedResult.contents,
     });
   });
