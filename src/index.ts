@@ -1,6 +1,8 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as yaml from 'js-yaml';
+import * as path from 'path';
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom/server';
 
 import {
   ArticlePage,
@@ -26,6 +28,7 @@ import {
   toNormalizedAbsolutePath,
 } from './utils';
 import TopLayout from './templates/TopLayout';
+import {NonArticlePageProps} from './templates/shared';
 
 export const cliUtils = {
   CONFIG_FILE_NAME,
@@ -77,7 +80,9 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     });
   let nonArticlePages: NonArticlePage[] = [
     {
-      layoutComponent: TopLayout,
+      render(props: NonArticlePageProps): string {
+        return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
+      },
       relativeOutputFilePath: 'index.html',
       permalink: configs.baseUrl + 'index.html',
       outputFilePath: '',

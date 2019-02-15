@@ -230,7 +230,7 @@ export function generateArticlePages(
 }
 
 export interface NonArticlePage {
-  layoutComponent: React.ComponentClass<NonArticlePageProps>,
+  render: (props: NonArticlePageProps) => string,
   relativeOutputFilePath: string,
   permalink: string,
   outputFilePath: string,
@@ -263,14 +263,12 @@ export function generateNonArticlePages(
   });
 
   return nonArticlePages.map(nonArticlePage => {
-    const html = ReactDOMServer.renderToStaticMarkup(
-      React.createElement(nonArticlePage.layoutComponent, {
-        articles: articlesProps,
-        blogName: configs.blogName,
-        permalink: nonArticlePage.permalink,
-        timeZone: configs.timeZone,
-      })
-    );
+    const html = nonArticlePage.render({
+      articles: articlesProps,
+      blogName: configs.blogName,
+      permalink: nonArticlePage.permalink,
+      timeZone: configs.timeZone,
+    });
 
     const unifiedResult = unified()
       .use(rehypeParse, {
