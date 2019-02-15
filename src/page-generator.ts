@@ -339,12 +339,13 @@ export function generateNonArticlePages(
   });
 
   return nonArticlePages.map(nonArticlePage => {
-    const html = nonArticlePage.render({
+    const nonArticlePageProps: NonArticlePageProps = {
       articles: articlesProps,
       blogName: configs.blogName,
       permalink: nonArticlePage.permalink,
       timeZone: configs.timeZone,
-    });
+    };
+    const html = nonArticlePage.render(nonArticlePageProps);
 
     const unifiedResult = unified()
       .use(rehypeParse, {
