@@ -1,31 +1,36 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as yaml from 'js-yaml';
+import * as path from 'path';
 
 import {
+  ActualUbwConfigs,
   ArticlePage,
   NonArticlePage,
+  UbwConfigs,
+  createDefaultUbwConfigs as createDefaultUbwConfigs_,
   createInitialArticleFrontMatters,
+  createInitialUbwConfigs,
+  fillWithDefaultUbwConfigs,
   generateArticlePages,
   generateNonArticlePages,
   getNextAutomaticArticleId,
   initializeArticlePages,
+  initializeNonArticlePages,
   preprocessArticlePages,
   preprocessNonArticlePages,
 } from './page-generator';
 import {
-  ActualUbwConfigs,
   CONFIG_FILE_NAME,
-  UbwConfigs,
   PRESETS_EXTERNAL_RESOURCES_ROOT,
-  createInitialUbwConfigs,
-  fillWithDefaultUbwConfigs,
   generateBlogPaths,
   generateDateTimeString,
   generateTodayDateString,
   toNormalizedAbsolutePath,
 } from './utils';
 import TopLayout from './templates/TopLayout';
+import {NonArticlePageProps} from './templates/shared';
+
+export const createDefaultUbwConfigs = createDefaultUbwConfigs_;
 
 export const cliUtils = {
   CONFIG_FILE_NAME,
@@ -75,15 +80,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
         markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
       });
     });
-  let nonArticlePages: NonArticlePage[] = [
-    {
-      layoutComponent: TopLayout,
-      relativeOutputFilePath: 'index.html',
-      permalink: configs.baseUrl + 'index.html',
-      outputFilePath: '',
-      html: '',
-    },
-  ];
+  let nonArticlePages: NonArticlePage[] = initializeNonArticlePages(blogRoot, configs);
 
   articlePages = preprocessArticlePages(blogRoot, configs, articlePages);
   nonArticlePages = preprocessNonArticlePages(blogRoot, configs, nonArticlePages);
