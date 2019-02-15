@@ -1,12 +1,7 @@
 import * as React from 'react';
 
 import {generateDateTimeString} from '../utils';
-
-interface ArticlePageProps {
-  contentHtml: string,
-  lastUpdatedAt: Date,
-  timeZone: string,
-}
+import {ArticlePageProps} from './shared';
 
 export default class ArticleLayout extends React.Component<ArticlePageProps> {
   render(): JSX.Element {

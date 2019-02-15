@@ -4,7 +4,10 @@ import * as ReactDOMServer from 'react-dom/server';
 import * as yaml from 'js-yaml';
 
 import ArticleLayout from './templates/ArticleLayout';
-import {NonArticlePageProps} from './templates/shared';
+import {
+  ArticlePageProps,
+  NonArticlePageProps,
+} from './templates/shared';
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
@@ -54,6 +57,14 @@ export interface UbwConfigs {
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
+
+
+  //
+  // Theme Settings
+  //
+
+  // Article pages renderer
+  renderArticle: (props: ArticlePageProps) => string,
 }
 
 export interface ActualUbwConfigs extends Partial<UbwConfigs> {
@@ -69,6 +80,9 @@ function createDefaultUbwConfigs(): UbwConfigs {
     jsUrl: '',
     language: 'en',
     timeZone: 'UTC',
+    renderArticle(props: ArticlePageProps): string {
+      return ReactDOMServer.renderToStaticMarkup(React.createElement(ArticleLayout, props));
+    },
   };
 }
 
@@ -265,13 +279,12 @@ export function generateArticlePages(
       .use(rehypeStringify)
       .processSync(articlePage.markdownSource);
 
-    const articleHtml = ReactDOMServer.renderToStaticMarkup(
-      React.createElement(ArticleLayout, {
-        contentHtml: contentHtmlData.contents,
-        lastUpdatedAt: articlePage.lastUpdatedAt,
-        timeZone: configs.timeZone,
-      })
-    );
+    const articlePageProps: ArticlePageProps = {
+      contentHtml: contentHtmlData.contents,
+      lastUpdatedAt: articlePage.lastUpdatedAt,
+      timeZone: configs.timeZone,
+    };
+    const articleHtml = configs.renderArticle(articlePageProps);
 
     const unifiedResult = unified()
       .use(rehypeParse, {

@@ -1,3 +1,9 @@
+export interface ArticlePageProps {
+  contentHtml: string,
+  lastUpdatedAt: Date,
+  timeZone: string,
+}
+
 export interface NonArticlePageProps {
   articles: {
     articleId: string,
