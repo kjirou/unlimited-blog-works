@@ -7,6 +7,7 @@ import {
   ArticlePage,
   NonArticlePage,
   UbwConfigs,
+  createDefaultUbwConfigs as createDefaultUbwConfigs_,
   createInitialArticleFrontMatters,
   createInitialUbwConfigs,
   fillWithDefaultUbwConfigs,
@@ -28,6 +29,8 @@ import {
 } from './utils';
 import TopLayout from './templates/TopLayout';
 import {NonArticlePageProps} from './templates/shared';
+
+export const createDefaultUbwConfigs = createDefaultUbwConfigs_;
 
 export const cliUtils = {
   CONFIG_FILE_NAME,

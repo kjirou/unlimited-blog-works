@@ -62,6 +62,10 @@ export interface UbwConfigs {
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
   nonArticles: {
+    // An identifier for user reference
+    //
+    // For example, when the user wishes to use the existing setting, this value is used for identification.
+    nonArticlePageId: string,
     // A relative URL from the "baseUrl"
     url: string,
     // Non-article pages renderer
@@ -72,7 +76,7 @@ export interface UbwConfigs {
 export interface ActualUbwConfigs extends Partial<UbwConfigs> {
 }
 
-function createDefaultUbwConfigs(): UbwConfigs {
+export function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
     blogPath: '.',
@@ -87,6 +91,7 @@ function createDefaultUbwConfigs(): UbwConfigs {
     },
     nonArticles: [
       {
+        nonArticlePageId: 'top',
         url: 'index.html',
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
