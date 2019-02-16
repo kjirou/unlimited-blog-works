@@ -85,7 +85,7 @@ if (!promise) {
 promise.then(result => {
   if (result.message) {
     if (result.exitCode === 0) {
-      process.stdout.write(`${result.message}\n`);
+      process.stderr.write(`${result.message}\n`);
     } else {
       printErrorMessage(result.message);
     }
