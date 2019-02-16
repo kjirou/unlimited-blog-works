@@ -186,7 +186,7 @@ export interface ArticlePage {
   inputFilePath: string,
   outputFilePath: string,
   permalink: string,
-  htmlSource: string,
+  html: string,
   markdown: string,
   pageTitle: string,
   lastUpdatedAt: Date,
@@ -207,7 +207,7 @@ export function createArticlePage(): ArticlePage {
     inputFilePath: '',
     outputFilePath: '',
     permalink: '',
-    htmlSource: '',
+    html: '',
     markdown: '',
     pageTitle: '',
     lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
@@ -332,7 +332,7 @@ export function generateArticlePages(
       .processSync(articleHtml);
 
     return Object.assign({}, articlePage, {
-      htmlSource: unifiedResult.contents,
+      html: unifiedResult.contents,
     });
   });
 }

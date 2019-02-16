@@ -92,7 +92,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
   fs.ensureDirSync(paths.publicationArticlesRoot);
 
   articlePages.forEach(article => {
-    fs.writeFileSync(article.outputFilePath, article.htmlSource);
+    fs.writeFileSync(article.outputFilePath, article.html);
   });
   nonArticlePages.forEach(nonArticlePage => {
     fs.writeFileSync(nonArticlePage.outputFilePath, nonArticlePage.html);
