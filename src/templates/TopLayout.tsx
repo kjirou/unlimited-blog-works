@@ -9,25 +9,30 @@ import {NonArticlePageProps} from './shared';
 export default class TopLayout extends React.Component<NonArticlePageProps> {
   render(): JSX.Element {
     return (
-      <div className="markdown-body">
-        <h1>{this.props.blogName}</h1>
-        <ul>
-          {
-            this.props.articles
-              .slice()
-              .sort((a, b) => {
-                return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
-              })
-              .map(article => {
-                const href = permalinksToRelativeUrl(this.props.permalink, article.permalink);
-                return (
-                  <li key={article.articleId}>
-                    <a href={href}>{article.pageTitle}</a> {generateDateTimeString(article.lastUpdatedAt, this.props.timeZone)}
-                  </li>
-                );
-              })
-          }
-        </ul>
+      <div className="ubw-non-article ubw-top">
+        <div className="markdown-body ubw-main-content">
+          <h1>{this.props.blogName}</h1>
+          <ul className="ubw-articles">
+            {
+              this.props.articles
+                .slice()
+                .sort((a, b) => {
+                  return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
+                })
+                .map(article => {
+                  const href = permalinksToRelativeUrl(this.props.permalink, article.permalink);
+                  return (
+                    <li key={article.articleId} className="ubw-articles-item">
+                      <a className="ubw-articles-item-link" href={href}>{article.pageTitle}</a>
+                      <span className="ubw-articles-item-last-updated-at">
+                        {generateDateTimeString(article.lastUpdatedAt, this.props.timeZone)}
+                      </span>
+                    </li>
+                  );
+                })
+            }
+          </ul>
+        </div>
       </div>
     );
   }
