@@ -10,7 +10,7 @@ export default class ArticleLayout extends React.Component<ArticlePageProps> {
         <hr className="article-end-of-markdown-body" />
         <div className="article-meta-information">
           <ul>
-            <li>Last updated at: {this.props.formattedLastUpdatedAt}</li>
+            <li>Last updated at: {this.props.formattedLastUpdatedAt} ({this.props.timeZone})</li>
             <li><a href={this.props.nonArticles.top.permalink}>Back to the Top</a></li>
           </ul>
         </div>
