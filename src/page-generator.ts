@@ -187,7 +187,7 @@ export interface ArticlePage {
   outputFilePath: string,
   permalink: string,
   htmlSource: string,
-  markdownSource: string,
+  markdown: string,
   pageTitle: string,
   lastUpdatedAt: Date,
 }
@@ -208,7 +208,7 @@ export function createArticlePage(): ArticlePage {
     outputFilePath: '',
     permalink: '',
     htmlSource: '',
-    markdownSource: '',
+    markdown: '',
     pageTitle: '',
     lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
   };
@@ -265,7 +265,7 @@ export function preprocessArticlePages(
     const ast = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
-      .parse(articlePage.markdownSource);
+      .parse(articlePage.markdown);
 
     const frontMattersNode = ast.children[0];
     if (frontMattersNode.type !== 'yaml') {
@@ -308,7 +308,7 @@ export function generateArticlePages(
         allowDangerousHTML: true,
       })
       .use(rehypeStringify)
-      .processSync(articlePage.markdownSource);
+      .processSync(articlePage.markdown);
 
     const articlePageProps: ArticlePageProps = {
       contentHtml: contentHtmlData.contents,

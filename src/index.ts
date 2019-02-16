@@ -77,7 +77,7 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
     )
     .map(articlePage => {
       return Object.assign({}, articlePage, {
-        markdownSource: fs.readFileSync(articlePage.inputFilePath).toString(),
+        markdown: fs.readFileSync(articlePage.inputFilePath).toString(),
       });
     });
   let nonArticlePages: NonArticlePage[] = initializeNonArticlePages(blogRoot, configs);
