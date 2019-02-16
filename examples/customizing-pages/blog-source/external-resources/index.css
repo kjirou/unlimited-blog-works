@@ -1,9 +1,17 @@
 @import url("./github-markdown.css");
 
-.article-end-of-markdown-body {
+.ubw-article .ubw-end-of-main-content {
   margin-top: 1em;
 }
 
-.article-meta-information {
+.ubw-article .ubw-meta-data {
   margin-top: 1em;
+}
+
+.ubw-article .ubw-meta-data-last-updated-at span:nth-child(n + 2) {
+  margin-left: 0.5em;
+}
+
+.ubw-top .ubw-articles-item-last-updated-at {
+  margin-left: 0.5em;
 }
