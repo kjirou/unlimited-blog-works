@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import {
   generateDateTimeString,
-  permalinksToRelativeUrl,
 } from '../utils';
 import {NonArticlePageProps} from './shared';
 
@@ -20,10 +19,9 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
                   return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
                 })
                 .map(article => {
-                  const href = permalinksToRelativeUrl(this.props.permalink, article.permalink);
                   return (
                     <li key={article.articleId} className="ubw-articles-item">
-                      <a className="ubw-articles-item-link" href={href}>{article.pageTitle}</a>
+                      <a className="ubw-articles-item-link" href={article.permalink}>{article.pageTitle}</a>
                       <span className="ubw-articles-item-last-updated-at">
                         {generateDateTimeString(article.lastUpdatedAt, this.props.timeZone)}
                       </span>
