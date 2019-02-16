@@ -137,7 +137,11 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const now = new Date();
   const todayDateString = generateTodayDateString(now, configs.timeZone);
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
-  const frontMatters = createInitialArticleFrontMatters(articleId, generateDateTimeString(now, 'UTC'));
+  const frontMatters = createInitialArticleFrontMatters(
+    articleId,
+    // TODO: Make to append the TZ suffix by options
+    generateDateTimeString(now, 'UTC') + '+0000'
+  );
 
   fs.writeFileSync(
     path.join(paths.sourceArticlesRoot, articleId + '.md'),
