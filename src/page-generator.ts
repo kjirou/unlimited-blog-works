@@ -376,6 +376,7 @@ export function generateNonArticlePages(
     return {
       articleId: articlePage.articleId,
       lastUpdatedAt: articlePage.lastUpdatedAt,
+      formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
       pageTitle: articlePage.pageTitle,
       permalink: articlePage.permalink,
     };

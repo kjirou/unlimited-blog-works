@@ -1,8 +1,5 @@
 import * as React from 'react';
 
-import {
-  generateDateTimeString,
-} from '../utils';
 import {NonArticlePageProps} from './shared';
 
 export default class TopLayout extends React.Component<NonArticlePageProps> {
@@ -23,7 +20,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
                     <li key={article.articleId} className="ubw-articles-item">
                       <a className="ubw-articles-item-link" href={article.permalink}>{article.pageTitle}</a>
                       <span className="ubw-articles-item-last-updated-at">
-                        {generateDateTimeString(article.lastUpdatedAt, this.props.timeZone)}
+                        {article.formattedLastUpdatedAt}
                       </span>
                     </li>
                   );
