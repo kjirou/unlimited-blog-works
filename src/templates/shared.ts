@@ -1,5 +1,6 @@
 export interface ArticlePageProps {
   contentHtml: string,
+  formattedLastUpdatedAt: string,
   lastUpdatedAt: Date,
   nonArticles: {
     [nonArticlePageId: string]: {

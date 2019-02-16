@@ -15,6 +15,7 @@ import {
   RehypeAstNode,
   RemarkAstNode,
   extractPageTitle,
+  generateDateTimeString,
   generateBlogPaths,
 } from './utils';
 
@@ -313,6 +314,7 @@ export function generateArticlePages(
     const articlePageProps: ArticlePageProps = {
       contentHtml: contentHtmlData.contents,
       lastUpdatedAt: articlePage.lastUpdatedAt,
+      formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
       timeZone: configs.timeZone,
       nonArticles: nonArticlesProps,
     };
