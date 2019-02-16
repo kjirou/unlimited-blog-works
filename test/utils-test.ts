@@ -2,12 +2,48 @@ import * as assert from 'assert';
 
 import {
   extractPageTitle,
+  generateDateTimeString,
+  generateTodayDateString,
   permalinksToRelativeUrl,
   scanRemarkAstNode,
   toNormalizedAbsolutePath,
 } from '../src/utils';
 
 describe('utils', function() {
+  describe('generateDateTimeString', function() {
+    [
+      ['2019-01-01 00:00:00+0000', 'UTC', '2019-01-01 00:00:00'],
+      ['2019-12-31 23:59:59+0000', 'UTC', '2019-12-31 23:59:59'],
+      ['2019-01-01 00:00:00+0000', 'GMT', '2019-01-01 00:00:00'],
+      ['2019-01-01 00:00:00+0000', 'Asia/Tokyo', '2019-01-01 09:00:00'],
+      ['2019-01-01 00:00:00+0000', 'America/New_York', '2018-12-31 19:00:00'],
+    ].forEach(([actual, expectedTimeZone, expected]) => {
+      it(`${actual} -> (${expectedTimeZone}) ${expected}`, function() {
+        assert.strictEqual(
+          generateDateTimeString(new Date(actual), expectedTimeZone),
+          expected
+        );
+      });
+    });
+  });
+
+  describe('generateTodayDateString', function() {
+    [
+      ['2019-01-01 00:00:00+0000', 'UTC', '20190101'],
+      ['2019-12-31 23:59:59+0000', 'UTC', '20191231'],
+      ['2019-01-01 00:00:00+0000', 'GMT', '20190101'],
+      ['2019-01-01 00:00:00+0000', 'Asia/Tokyo', '20190101'],
+      ['2019-01-01 00:00:00+0000', 'America/New_York', '20181231'],
+    ].forEach(([actual, expectedTimeZone, expected]) => {
+      it(`${actual} -> (${expectedTimeZone}) ${expected}`, function() {
+        assert.strictEqual(
+          generateTodayDateString(new Date(actual), expectedTimeZone),
+          expected
+        );
+      });
+    });
+  });
+
   describe('toNormalizedAbsolutePath', function() {
     [
       ['foo', '/base/foo'],

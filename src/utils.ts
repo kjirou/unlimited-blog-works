@@ -1,11 +1,9 @@
 /*
  * This file MUST NOT depend on any file in the project.
  */
+import {formatToTimeZone} from 'date-fns-timezone';
 import * as path from 'path';
 import * as url from 'url';
-
-// Reason for using `require`) https://github.com/marnusw/date-fns-tz/issues/12
-const dateFnsTz = require('date-fns-tz');
 
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
@@ -67,12 +65,12 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   };
 }
 
-export function generateTodayDateString(date: Date, timeZone: string): string {
-  return dateFnsTz.format(date, 'YYYYMMdd', {timeZone});
+export function generateDateTimeString(date: Date, timeZone: string): string {
+  return formatToTimeZone(date, 'YYYY-MM-DD HH:mm:ss', {timeZone});
 }
 
-export function generateDateTimeString(date: Date, timeZone: string): string {
-  return dateFnsTz.format(date, 'YYYY-MM-dd HH:mm:ss', {timeZone});
+export function generateTodayDateString(date: Date, timeZone: string): string {
+  return formatToTimeZone(date, 'YYYYMMDD', {timeZone});
 }
 
 export interface RemarkAstNode {
