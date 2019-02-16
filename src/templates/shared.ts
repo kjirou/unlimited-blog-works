@@ -14,6 +14,7 @@ export interface NonArticlePageProps {
   articles: {
     articleId: string,
     lastUpdatedAt: Date,
+    formattedLastUpdatedAt: string,
     pageTitle: string,
     permalink: string,
   }[],
