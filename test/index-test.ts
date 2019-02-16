@@ -39,7 +39,7 @@ describe('index', function() {
       let clock: any;
 
       beforeEach(function() {
-        clock = sinon.useFakeTimers(new Date(2019, 0, 1));
+        clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
 
         return executeInit(workspaceRoot);
       });
@@ -66,7 +66,7 @@ describe('index', function() {
       let configFilePath: string;
 
       beforeEach(function() {
-        clock = sinon.useFakeTimers(new Date(2019, 0, 1));
+        clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
         configFilePath = path.join(workspaceRoot, 'ubw-configs.js');
 
         return executeInit(workspaceRoot)

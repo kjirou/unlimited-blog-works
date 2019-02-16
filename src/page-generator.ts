@@ -15,6 +15,7 @@ import {
   RehypeAstNode,
   RemarkAstNode,
   extractPageTitle,
+  generateDateTimeString,
   generateBlogPaths,
 } from './utils';
 
@@ -186,10 +187,18 @@ export interface ArticlePage {
   inputFilePath: string,
   outputFilePath: string,
   permalink: string,
-  htmlSource: string,
-  markdownSource: string,
+  html: string,
+  markdown: string,
   pageTitle: string,
   lastUpdatedAt: Date,
+}
+
+export interface NonArticlePage {
+  nonArticlePageId: string,
+  render: (props: NonArticlePageProps) => string,
+  permalink: string,
+  outputFilePath: string,
+  html: string,
 }
 
 export function createArticlePage(): ArticlePage {
@@ -199,8 +208,8 @@ export function createArticlePage(): ArticlePage {
     inputFilePath: '',
     outputFilePath: '',
     permalink: '',
-    htmlSource: '',
-    markdownSource: '',
+    html: '',
+    markdown: '',
     pageTitle: '',
     lastUpdatedAt: new Date(1970, 0, 1),  // Dummy
   };
@@ -257,7 +266,7 @@ export function preprocessArticlePages(
     const ast = unified()
       .use(remarkParse)
       .use(createRemarkPlugins())
-      .parse(articlePage.markdownSource);
+      .parse(articlePage.markdown);
 
     const frontMattersNode = ast.children[0];
     if (frontMattersNode.type !== 'yaml') {
@@ -284,6 +293,14 @@ export function generateArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): ArticlePage[] {
+  const nonArticlesProps = nonArticlePages.reduce((summary, nonArticlePage) => {
+    return Object.assign({}, summary, {
+      [nonArticlePage.nonArticlePageId]: {
+        permalink: nonArticlePage.permalink,
+      },
+    });
+  }, {});
+
   return articlePages.map(articlePage => {
     const contentHtmlData = unified()
       .use(remarkParse)
@@ -292,12 +309,14 @@ export function generateArticlePages(
         allowDangerousHTML: true,
       })
       .use(rehypeStringify)
-      .processSync(articlePage.markdownSource);
+      .processSync(articlePage.markdown);
 
     const articlePageProps: ArticlePageProps = {
       contentHtml: contentHtmlData.contents,
       lastUpdatedAt: articlePage.lastUpdatedAt,
+      formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
       timeZone: configs.timeZone,
+      nonArticles: nonArticlesProps,
     };
     const articleHtml = configs.renderArticle(articlePageProps);
 
@@ -315,16 +334,9 @@ export function generateArticlePages(
       .processSync(articleHtml);
 
     return Object.assign({}, articlePage, {
-      htmlSource: unifiedResult.contents,
+      html: unifiedResult.contents,
     });
   });
-}
-
-export interface NonArticlePage {
-  render: (props: NonArticlePageProps) => string,
-  permalink: string,
-  outputFilePath: string,
-  html: string,
 }
 
 export function initializeNonArticlePages(
@@ -335,6 +347,7 @@ export function initializeNonArticlePages(
 
   return configs.nonArticles.map(nonArticleConfigs => {
     return {
+      nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
       permalink: configs.baseUrl + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
