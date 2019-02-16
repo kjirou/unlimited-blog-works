@@ -192,6 +192,14 @@ export interface ArticlePage {
   lastUpdatedAt: Date,
 }
 
+export interface NonArticlePage {
+  nonArticlePageId: string,
+  render: (props: NonArticlePageProps) => string,
+  permalink: string,
+  outputFilePath: string,
+  html: string,
+}
+
 export function createArticlePage(): ArticlePage {
   return {
     articleId: '',
@@ -284,6 +292,14 @@ export function generateArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): ArticlePage[] {
+  const nonArticlesProps = nonArticlePages.reduce((summary, nonArticlePage) => {
+    return Object.assign({}, summary, {
+      [nonArticlePage.nonArticlePageId]: {
+        permalink: nonArticlePage.permalink,
+      },
+    });
+  }, {});
+
   return articlePages.map(articlePage => {
     const contentHtmlData = unified()
       .use(remarkParse)
@@ -298,6 +314,7 @@ export function generateArticlePages(
       contentHtml: contentHtmlData.contents,
       lastUpdatedAt: articlePage.lastUpdatedAt,
       timeZone: configs.timeZone,
+      nonArticles: nonArticlesProps,
     };
     const articleHtml = configs.renderArticle(articlePageProps);
 
@@ -320,13 +337,6 @@ export function generateArticlePages(
   });
 }
 
-export interface NonArticlePage {
-  render: (props: NonArticlePageProps) => string,
-  permalink: string,
-  outputFilePath: string,
-  html: string,
-}
-
 export function initializeNonArticlePages(
   blogRoot: string,
   configs: UbwConfigs
@@ -335,6 +345,7 @@ export function initializeNonArticlePages(
 
   return configs.nonArticles.map(nonArticleConfigs => {
     return {
+      nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
       permalink: configs.baseUrl + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),

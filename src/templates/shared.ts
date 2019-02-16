@@ -1,6 +1,11 @@
 export interface ArticlePageProps {
   contentHtml: string,
   lastUpdatedAt: Date,
+  nonArticles: {
+    [nonArticlePageId: string]: {
+      permalink: string,
+    },
+  },
   timeZone: string,
 }
 
