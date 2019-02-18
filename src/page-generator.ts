@@ -20,6 +20,7 @@ import {
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
+const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
 const rehypeParse = require('rehype-parse');
@@ -142,9 +143,22 @@ function createRehypePlugins(params: {
     documentOptions.js = params.jsUrl;
   }
 
+  const autolinkContent: RehypeAstNode = {
+    type: 'text',
+    value: '#',
+  };
+
   return [
     [rehypeRaw],
     [rehypeSlug],
+    [rehypeAutolinkHeadings, {
+      behavior: 'append',
+      content: autolinkContent,
+      properties: {
+        className: 'ubw-heading-slug',
+        ariaHidden: true,
+      },
+    }],
     [rehypeDocument, documentOptions],
     [rehypeFormat],
   ];

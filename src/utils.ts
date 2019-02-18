@@ -82,10 +82,12 @@ export interface RemarkAstNode {
 
 export interface RehypeAstNode {
   type: string,
-  tagName: string,
-  properties: {
+  tagName?: string,
+  properties?: {
+    ariaHidden?: boolean,
     className?: string[],
   },
+  value?: string,
   children?: RehypeAstNode[],
 }
 
