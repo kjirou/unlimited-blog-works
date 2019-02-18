@@ -24,6 +24,7 @@ const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
 const rehypeParse = require('rehype-parse');
 const rehypeRaw = require('rehype-raw');
+const rehypeSlug = require('rehype-slug');
 const rehypeStringify = require('rehype-stringify');
 const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
@@ -143,6 +144,7 @@ function createRehypePlugins(params: {
 
   return [
     [rehypeRaw],
+    [rehypeSlug],
     [rehypeDocument, documentOptions],
     [rehypeFormat],
   ];
