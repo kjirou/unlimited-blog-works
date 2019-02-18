@@ -1,5 +1,10 @@
 @import url("./github-markdown.css");
 
+.ubw-heading-slug {
+  margin-left: 0.25em;
+  font-weight: normal;
+}
+
 .ubw-article .ubw-end-of-main-content {
   margin-top: 1em;
 }
