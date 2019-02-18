@@ -63,6 +63,7 @@
     "minimist-subcommand": "^3.0.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "rehype-autolink-headings": "^2.0.4",
     "rehype-document": "^3.0.0",
     "rehype-format": "^2.3.1",
     "rehype-parse": "^6.0.0",
