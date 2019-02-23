@@ -91,30 +91,32 @@ describe('index', function() {
           });
       });
 
-      it('should succeed even if there is no "_direct" dir', function() {
-        fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+      describe('"_direct" directory', function() {
+        it('should succeed even if there is no "_direct" dir', function() {
+          fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-        return executeCompile(configFilePath)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-          });
-      });
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
+            });
+        });
 
-      it('should succeed even if the "_direct" dir is empty', function() {
-        fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+        it('should succeed even if the "_direct" dir is empty', function() {
+          fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-        return executeCompile(configFilePath)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-          });
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
+            });
+        });
       });
     });
   });
