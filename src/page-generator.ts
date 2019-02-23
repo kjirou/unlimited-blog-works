@@ -47,11 +47,10 @@ export interface UbwConfigs {
   // it will be "/" if it is published from the "<username>.github.io" repository,
   // In other cases it will probably be "/<your-repository-name>/".
   baseUrl: string,
-  // A absolute URL or root-relative URL to the .css
+  // Absolute or root-relative urls for stylesheet
   //
-  // This value is used <link rel="{here}"> directly.
-  // It becomes disabled if it is set with "".
-  cssUrls: string,
+  // These values are assigned to <link rel="{here}"> directly.
+  cssUrls: string[],
   // A absolute URL or root-relative URL to the .js
   //
   // This value is used <script src="{here}"> directly.
@@ -85,7 +84,9 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     blogPath: '.',
     publicationPath: './blog-publication',
     baseUrl: '/',
-    cssUrls: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
+    cssUrls: [
+      `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
+    ],
     jsUrl: '',
     language: 'en',
     timeZone: 'UTC',
@@ -129,16 +130,15 @@ function createRemarkPlugins(): any[] {
 function createRehypePlugins(params: {
   title: string,
   language: string,
-  cssUrls: string,
+  cssUrls: string[],
   jsUrl: string,
 }): any[] {
   const documentOptions: any = {
     title: params.title,
     language: params.language,
+    css: params.cssUrls,
   };
-  if (params.cssUrls) {
-    documentOptions.css = params.cssUrls;
-  }
+  documentOptions.css = params.cssUrls;
   if (params.jsUrl) {
     documentOptions.js = params.jsUrl;
   }
@@ -343,7 +343,7 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
-        cssUrls: configs.cssUrls || '',
+        cssUrls: configs.cssUrls || [],
         jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
@@ -414,7 +414,7 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        cssUrls: configs.cssUrls || '',
+        cssUrls: configs.cssUrls || [],
         jsUrl: configs.jsUrl || '',
       }))
       .use(rehypeStringify)
