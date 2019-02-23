@@ -55,7 +55,7 @@ export interface UbwConfigs {
   //
   // This value is used <script src="{here}"> directly.
   // It becomes disabled if it is set with "".
-  jsUrl: string,
+  jsUrls: string,
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -87,7 +87,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     cssUrls: [
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
-    jsUrl: '',
+    jsUrls: '',
     language: 'en',
     timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
@@ -131,7 +131,7 @@ function createRehypePlugins(params: {
   title: string,
   language: string,
   cssUrls: string[],
-  jsUrl: string,
+  jsUrls: string,
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -139,8 +139,8 @@ function createRehypePlugins(params: {
     css: params.cssUrls,
   };
   documentOptions.css = params.cssUrls;
-  if (params.jsUrl) {
-    documentOptions.js = params.jsUrl;
+  if (params.jsUrls) {
+    documentOptions.js = params.jsUrls;
   }
 
   const autolinkContent: RehypeAstNode = {
@@ -344,7 +344,7 @@ export function generateArticlePages(
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
         cssUrls: configs.cssUrls || [],
-        jsUrl: configs.jsUrl || '',
+        jsUrls: configs.jsUrls || '',
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -415,7 +415,7 @@ export function generateNonArticlePages(
         title: configs.blogName,
         language: configs.language,
         cssUrls: configs.cssUrls || [],
-        jsUrl: configs.jsUrl || '',
+        jsUrls: configs.jsUrls || '',
       }))
       .use(rehypeStringify)
       .processSync(html);
