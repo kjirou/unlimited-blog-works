@@ -349,8 +349,8 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
-        cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || [],
+        cssUrls: configs.cssUrls,
+        jsUrls: configs.jsUrls,
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -420,8 +420,8 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || [],
+        cssUrls: configs.cssUrls,
+        jsUrls: configs.jsUrls,
       }))
       .use(rehypeStringify)
       .processSync(html);
