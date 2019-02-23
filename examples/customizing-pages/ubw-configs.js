@@ -29,7 +29,9 @@ module.exports = {
   "blogName": "Customizing Pages",
   "publicationPath": "./blog-publication",
   "baseUrl": "/",
-  "cssUrl": "/external-resources/index.css",
+  "cssUrls": [
+    "/external-resources/index.css",
+  ],
   "language": "en",
   "timeZone": "UTC",
   renderArticle,

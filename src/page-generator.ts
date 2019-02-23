@@ -47,16 +47,15 @@ export interface UbwConfigs {
   // it will be "/" if it is published from the "<username>.github.io" repository,
   // In other cases it will probably be "/<your-repository-name>/".
   baseUrl: string,
-  // A absolute URL or root-relative URL to the .css
+  // Absolute or root-relative urls for CSS sources
   //
-  // This value is used <link rel="{here}"> directly.
-  // It becomes disabled if it is set with "".
-  cssUrl: string,
-  // A absolute URL or root-relative URL to the .js
+  // These values are assigned to <link rel="{here}"> directly.
+  cssUrls: string[],
+  // Absolute or root-relative urls for JavaScript sources
   //
-  // This value is used <script src="{here}"> directly.
-  // It becomes disabled if it is set with "".
-  jsUrl: string,
+  // These values are assigned to <script src="{here}"> directly.
+  // Place these script tags at the end of the body.
+  jsUrls: string[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -85,8 +84,10 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     blogPath: '.',
     publicationPath: './blog-publication',
     baseUrl: '/',
-    cssUrl: `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
-    jsUrl: '',
+    cssUrls: [
+      `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
+    ],
+    jsUrls: [],
     language: 'en',
     timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
@@ -110,7 +111,7 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
     blogName: configs.blogName,
     publicationPath: configs.publicationPath,
     baseUrl: configs.baseUrl,
-    cssUrl: configs.cssUrl,
+    cssUrls: configs.cssUrls,
     language: configs.language,
     timeZone: configs.timeZone,
   };
@@ -129,19 +130,16 @@ function createRemarkPlugins(): any[] {
 function createRehypePlugins(params: {
   title: string,
   language: string,
-  cssUrl: string,
-  jsUrl: string,
+  cssUrls: string[],
+  jsUrls: string[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
     language: params.language,
+    css: params.cssUrls,
   };
-  if (params.cssUrl) {
-    documentOptions.css = params.cssUrl;
-  }
-  if (params.jsUrl) {
-    documentOptions.js = params.jsUrl;
-  }
+  documentOptions.css = params.cssUrls;
+  documentOptions.js = params.jsUrls;
 
   const autolinkContent: RehypeAstNode = {
     type: 'text',
@@ -343,8 +341,8 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
-        cssUrl: configs.cssUrl || '',
-        jsUrl: configs.jsUrl || '',
+        cssUrls: configs.cssUrls || [],
+        jsUrls: configs.jsUrls || [],
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -414,8 +412,8 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        cssUrl: configs.cssUrl || '',
-        jsUrl: configs.jsUrl || '',
+        cssUrls: configs.cssUrls || [],
+        jsUrls: configs.jsUrls || [],
       }))
       .use(rehypeStringify)
       .processSync(html);
