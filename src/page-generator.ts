@@ -47,15 +47,14 @@ export interface UbwConfigs {
   // it will be "/" if it is published from the "<username>.github.io" repository,
   // In other cases it will probably be "/<your-repository-name>/".
   baseUrl: string,
-  // Absolute or root-relative urls for stylesheet
+  // Absolute or root-relative urls for CSS sources
   //
   // These values are assigned to <link rel="{here}"> directly.
   cssUrls: string[],
-  // A absolute URL or root-relative URL to the .js
+  // Absolute or root-relative urls for JavaScript sources
   //
-  // This value is used <script src="{here}"> directly.
-  // It becomes disabled if it is set with "".
-  jsUrls: string,
+  // These values are assigned to <script src="{here}"> directly.
+  jsUrls: string[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -87,7 +86,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     cssUrls: [
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
-    jsUrls: '',
+    jsUrls: [],
     language: 'en',
     timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
@@ -131,7 +130,7 @@ function createRehypePlugins(params: {
   title: string,
   language: string,
   cssUrls: string[],
-  jsUrls: string,
+  jsUrls: string[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -139,9 +138,7 @@ function createRehypePlugins(params: {
     css: params.cssUrls,
   };
   documentOptions.css = params.cssUrls;
-  if (params.jsUrls) {
-    documentOptions.js = params.jsUrls;
-  }
+  documentOptions.js = params.jsUrls;
 
   const autolinkContent: RehypeAstNode = {
     type: 'text',
@@ -344,7 +341,7 @@ export function generateArticlePages(
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
         cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || '',
+        jsUrls: configs.jsUrls || [],
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -415,7 +412,7 @@ export function generateNonArticlePages(
         title: configs.blogName,
         language: configs.language,
         cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || '',
+        jsUrls: configs.jsUrls || [],
       }))
       .use(rehypeStringify)
       .processSync(html);
