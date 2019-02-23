@@ -4,9 +4,12 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 
 import {
+  UbwSettings,
   executeArticleNew,
   executeCompile,
+  executeCompileWithConfigs,
   executeInit,
+  requireSettings,
 } from '../src/index';
 import {
   dumpDir,
@@ -60,14 +63,17 @@ describe('index', function() {
     });
   });
 
-  describe('executeCompile', function() {
+  describe('executeCompile, executeCompileWithConfigs', function() {
     describe('when after `executeInit` and `executeArticleNew`', function() {
       let clock: any;
       let configFilePath: string;
+      let settings: UbwSettings;
 
       beforeEach(function() {
         clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
+
         configFilePath = path.join(workspaceRoot, 'ubw-configs.js');
+        settings = requireSettings(configFilePath);
 
         return executeInit(workspaceRoot)
           .then(() => executeArticleNew(configFilePath));
@@ -78,7 +84,7 @@ describe('index', function() {
       });
 
       it('can create some files into the publication dir', function() {
-        return executeCompile(configFilePath)
+        return executeCompileWithConfigs(settings)
           .then(result => {
             assert.strictEqual(result.exitCode, 0);
 
@@ -95,7 +101,7 @@ describe('index', function() {
         it('should succeed even if there is no "_direct" dir', function() {
           fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompile(configFilePath)
+          return executeCompileWithConfigs(settings)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
@@ -108,7 +114,7 @@ describe('index', function() {
         it('should succeed even if the "_direct" dir is empty', function() {
           fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompile(configFilePath)
+          return executeCompileWithConfigs(settings)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
