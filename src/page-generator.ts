@@ -31,6 +31,7 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
+const visit = require('unist-util-visit');
 
 export interface UbwConfigs {
   blogName: string,
@@ -56,8 +57,16 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
-  generateArticleHeadTags: (articlePages: ArticlePage[], nonArticlePages: NonArticlePage[]) => string[],
-  generateNonArticleHeadTags: (articlePages: ArticlePage[], nonArticlePages: NonArticlePage[]) => string[],
+  generateArticleHeadNodes: (
+    currentPage: ArticlePage,
+    articlePages: ArticlePage[],
+    nonArticlePages: NonArticlePage[]
+  ) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (
+    currentPage: NonArticlePage,
+    articlePages: ArticlePage[],
+    nonArticlePages: NonArticlePage[]
+  ) => RehypeAstNode[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -90,10 +99,10 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
     jsUrls: [],
-    generateArticleHeadTags() {
+    generateArticleHeadNodes() {
       return [];
     },
-    generateNonArticleHeadTags() {
+    generateNonArticleHeadNodes() {
       return [];
     },
     language: 'en',
@@ -140,6 +149,7 @@ function createRehypePlugins(params: {
   language: string,
   cssUrls: string[],
   jsUrls: string[],
+  additionalHeadNodes: RehypeAstNode[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -148,6 +158,7 @@ function createRehypePlugins(params: {
   };
   documentOptions.css = params.cssUrls;
   documentOptions.js = params.jsUrls;
+  const additionalHeadNodes = params.additionalHeadNodes || [];
 
   const autolinkContent: RehypeAstNode = {
     type: 'text',
@@ -166,6 +177,15 @@ function createRehypePlugins(params: {
       },
     }],
     [rehypeDocument, documentOptions],
+    function(): any {
+      return function transformer(tree: RehypeAstNode): void {
+        visit(tree, {type: 'element', tagName: 'head'}, function(node: RehypeAstNode): void {
+          params.additionalHeadNodes.forEach(nodeInHead => {
+            (node.children || []).push(nodeInHead);
+          });
+        });
+      };
+    },
     [rehypeFormat],
   ];
 }
@@ -351,6 +371,7 @@ export function generateArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
+        additionalHeadNodes: configs.generateArticleHeadNodes(articlePage, articlePages, nonArticlePages),
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -422,6 +443,7 @@ export function generateNonArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
+        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePage, articlePages, nonArticlePages),
       }))
       .use(rehypeStringify)
       .processSync(html);
