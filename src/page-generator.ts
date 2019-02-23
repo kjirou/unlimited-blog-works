@@ -56,6 +56,8 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
+  generateArticleHeadTags: (articlePages: ArticlePage[], nonArticlePages: NonArticlePage[]) => string[],
+  generateNonArticleHeadTags: (articlePages: ArticlePage[], nonArticlePages: NonArticlePage[]) => string[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -88,6 +90,12 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
     jsUrls: [],
+    generateArticleHeadTags() {
+      return [];
+    },
+    generateNonArticleHeadTags() {
+      return [];
+    },
     language: 'en',
     timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
