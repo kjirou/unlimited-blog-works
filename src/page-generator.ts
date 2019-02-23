@@ -54,6 +54,7 @@ export interface UbwConfigs {
   // Absolute or root-relative urls for JavaScript sources
   //
   // These values are assigned to <script src="{here}"> directly.
+  // Place these script tags at the end of the body.
   jsUrls: string[],
   // Used <html lang="{here}">
   language: string,
