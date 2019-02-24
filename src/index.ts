@@ -50,7 +50,10 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   const configFileSource = [
     'module.exports = function ubwConfigs() {',
-    `return ${JSON.stringify(initialConfigs, null, 2)};`,
+    `return ${JSON.stringify(initialConfigs, null, 2)};`
+      .split('\n')
+      .map(line => '  ' + line)
+      .join('\n'),
     '}',
     '',
   ].join('\n');
