@@ -38,7 +38,7 @@ export interface UbwConfigs {
   // A relative path from the ubw-configs.js file to the blog root
   blogDir: string,
   // A relative path from the blog root to the publication directory
-  publicationPath: string,
+  publicationDir: string,
   // A relative URL from the root
   //
   // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
@@ -85,7 +85,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
     blogDir: '.',
-    publicationPath: './blog-publication',
+    publicationDir: './blog-publication',
     baseUrl: '/',
     cssUrls: [
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
@@ -118,7 +118,7 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
   const configs = createDefaultUbwConfigs();
   return {
     blogName: configs.blogName,
-    publicationPath: configs.publicationPath,
+    publicationDir: configs.publicationDir,
     baseUrl: configs.baseUrl,
     cssUrls: configs.cssUrls,
     language: configs.language,
@@ -254,7 +254,7 @@ export function initializeArticlePages(
   configs: UbwConfigs,
   articleFileNames: string[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   return articleFileNames.map(articleFileName => {
     const articleFilePath = path.join(paths.sourceArticlesRoot, articleFileName);
@@ -292,7 +292,7 @@ export function preprocessArticlePages(
   configs: UbwConfigs,
   articlePages: ArticlePage[]
 ): ArticlePage[] {
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
   //       unified().stringify() で処理する方法が不明だった。
@@ -378,7 +378,7 @@ export function initializeNonArticlePages(
   blogRoot: string,
   configs: UbwConfigs
 ): NonArticlePage[] {
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   return configs.nonArticles.map(nonArticleConfigs => {
     return {
@@ -405,7 +405,7 @@ export function generateNonArticlePages(
   articlePages: ArticlePage[],
   nonArticlePages: NonArticlePage[]
 ): NonArticlePage[] {
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
     return {
