@@ -25,15 +25,17 @@ const nonArticles = [
   },
 ];
 
-module.exports = {
-  "blogName": "Customizing Pages",
-  "publicationPath": "./blog-publication",
-  "baseUrl": "/",
-  "cssUrls": [
-    "/external-resources/index.css",
-  ],
-  "language": "en",
-  "timeZone": "UTC",
-  renderArticle,
-  nonArticles,
+module.exports = function ubwConfigs() {
+  return {
+    "blogName": "Customizing Pages",
+    "publicationPath": "./blog-publication",
+    "baseUrl": "/",
+    "cssUrls": [
+      "/external-resources/index.css",
+    ],
+    "language": "en",
+    "timeZone": "UTC",
+    renderArticle,
+    nonArticles,
+  };
 }
