@@ -47,6 +47,7 @@
     "@types/react": "^16.8.1",
     "@types/react-dom": "^16.0.11",
     "@types/sinon": "^7.0.5",
+    "clear-module": "^3.1.0",
     "http-server": "^0.11.1",
     "klaw-sync": "^6.0.0",
     "mocha": "^5.2.0",
