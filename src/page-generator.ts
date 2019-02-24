@@ -39,7 +39,7 @@ export interface UbwConfigs {
   blogDir: string,
   // A relative path from the blog root to the publication directory
   publicationDir: string,
-  // A relative URL from the root
+  // A relative url from the root
   //
   // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
   // If you want to place in "http://your-host.com/subdir/index.html", set "/subdir/" to this property.
@@ -47,7 +47,7 @@ export interface UbwConfigs {
   // In case you are hosting on GitHub,
   // it will be "/" if it is published from the "<username>.github.io" repository,
   // In other cases it will probably be "/<your-repository-name>/".
-  baseUrl: string,
+  basePath: string,
   // Absolute or root-relative urls for CSS sources
   //
   // These values are assigned to <link rel="{here}"> directly.
@@ -71,7 +71,7 @@ export interface UbwConfigs {
     //
     // For example, when the user wishes to use the existing setting, this value is used for identification.
     nonArticlePageId: string,
-    // A relative URL from the "baseUrl"
+    // A relative URL from the "basePath"
     url: string,
     // Non-article pages renderer
     render: (props: NonArticlePageProps) => string,
@@ -86,7 +86,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     blogName: 'My Blog',
     blogDir: '.',
     publicationDir: './blog-publication',
-    baseUrl: '/',
+    basePath: '/',
     cssUrls: [
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
@@ -119,7 +119,7 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
   return {
     blogName: configs.blogName,
     publicationDir: configs.publicationDir,
-    baseUrl: configs.baseUrl,
+    basePath: configs.basePath,
     cssUrls: configs.cssUrls,
     language: configs.language,
     timeZone: configs.timeZone,
@@ -309,7 +309,7 @@ export function preprocessArticlePages(
     const actualFrontMatters = yaml.safeLoad(frontMattersNode.value) as ActualArticleFrontMatters;
     const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
 
-    const permalink = `${configs.baseUrl}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+    const permalink = `${configs.basePath}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
@@ -384,7 +384,7 @@ export function initializeNonArticlePages(
     return {
       nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
-      permalink: configs.baseUrl + nonArticleConfigs.url,
+      permalink: configs.basePath + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
       html: '',
     };
