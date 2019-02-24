@@ -4,14 +4,27 @@ import * as path from 'path';
 import * as sinon from 'sinon';
 
 import {
+  UbwSettings,
   executeArticleNew,
   executeCompile,
+  executeCompileWithSettings,
   executeInit,
+  requireSettings,
 } from '../src/index';
+import {
+  ArticlePageProps,
+  NonArticlePageProps,
+} from '../src/templates/shared';
+import {
+  RehypeAstNode,
+} from '../src/utils';
 import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';
+
+const clearModule = require('clear-module');
+const hast = require('hastscript');
 
 describe('index', function() {
   let workspaceRoot: string;
@@ -60,7 +73,7 @@ describe('index', function() {
     });
   });
 
-  describe('executeCompile', function() {
+  describe('executeCompile, executeCompileWithSettings', function() {
     describe('when after `executeInit` and `executeArticleNew`', function() {
       let clock: any;
       let configFilePath: string;
@@ -70,51 +83,120 @@ describe('index', function() {
         configFilePath = path.join(workspaceRoot, 'ubw-configs.js');
 
         return executeInit(workspaceRoot)
-          .then(() => executeArticleNew(configFilePath));
+          .then(() => {
+            clearModule(configFilePath);
+            return executeArticleNew(configFilePath);
+          })
+          .then(() => {
+            clearModule(configFilePath);
+          });
       });
 
       afterEach(function() {
         clock.restore();
       });
 
-      it('can create some files into the publication dir', function() {
-        return executeCompile(configFilePath)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+      describe('Basic specification of `executeCompile`', function() {
+        it('can create some files into the publication dir', function() {
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
-          });
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
+            });
+        });
       });
 
-      it('should succeed even if there is no "_direct" dir', function() {
-        fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+      describe('"_direct" directory', function() {
+        it('should succeed even if there is no "_direct" dir', function() {
+          fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-        return executeCompile(configFilePath)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-          });
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
+            });
+        });
+
+        it('should succeed even if the "_direct" dir is empty', function() {
+          fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
+            });
+        });
       });
 
-      it('should succeed even if the "_direct" dir is empty', function() {
-        fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
+      describe('Change due to each setting', function() {
+        let settings: UbwSettings;
 
-        return executeCompile(configFilePath)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+        beforeEach(function() {
+          clearModule(configFilePath);
+          settings = requireSettings(configFilePath);
+        });
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-          });
+        it('generateArticleHeadNodes', function() {
+          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
+            return [
+              hast('script', {src: '/path/to/foo.js'}),
+              hast('link', {rel: '/path/to/bar.css'}),
+            ];
+          };
+
+          return executeCompileWithSettings(settings)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<script src="/path/to/foo.js"></script>'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<link rel="/path/to/bar.css">'),
+                -1
+              );
+            });
+        });
+
+        it('generateNonArticleHeadNodes', function() {
+          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): RehypeAstNode[] {
+            return [
+              hast('script', {src: '/path/to/foo.js'}),
+              hast('link', {rel: '/path/to/bar.css'}),
+            ];
+          };
+
+          return executeCompileWithSettings(settings)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.notStrictEqual(
+                dump['blog-publication/index.html'].indexOf('<script src="/path/to/foo.js"></script>'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/index.html'].indexOf('<link rel="/path/to/bar.css">'),
+                -1
+              );
+            });
+        });
       });
     });
   });

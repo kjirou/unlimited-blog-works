@@ -31,6 +31,7 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
+const visit = require('unist-util-visit');
 
 export interface UbwConfigs {
   blogName: string,
@@ -56,6 +57,8 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -88,6 +91,12 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
     jsUrls: [],
+    generateArticleHeadNodes() {
+      return [];
+    },
+    generateNonArticleHeadNodes() {
+      return [];
+    },
     language: 'en',
     timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
@@ -132,6 +141,7 @@ function createRehypePlugins(params: {
   language: string,
   cssUrls: string[],
   jsUrls: string[],
+  additionalHeadNodes: RehypeAstNode[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -140,6 +150,7 @@ function createRehypePlugins(params: {
   };
   documentOptions.css = params.cssUrls;
   documentOptions.js = params.jsUrls;
+  const additionalHeadNodes = params.additionalHeadNodes || [];
 
   const autolinkContent: RehypeAstNode = {
     type: 'text',
@@ -158,6 +169,15 @@ function createRehypePlugins(params: {
       },
     }],
     [rehypeDocument, documentOptions],
+    function(): any {
+      return function transformer(tree: RehypeAstNode): void {
+        visit(tree, {type: 'element', tagName: 'head'}, function(node: RehypeAstNode): void {
+          params.additionalHeadNodes.forEach(nodeInHead => {
+            (node.children || []).push(nodeInHead);
+          });
+        });
+      };
+    },
     [rehypeFormat],
   ];
 }
@@ -341,8 +361,9 @@ export function generateArticlePages(
       .use(createRehypePlugins({
         title: `${articlePage.pageTitle} | ${configs.blogName}`,
         language: configs.language,
-        cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || [],
+        cssUrls: configs.cssUrls,
+        jsUrls: configs.jsUrls,
+        additionalHeadNodes: configs.generateArticleHeadNodes(articlePageProps),
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -412,8 +433,9 @@ export function generateNonArticlePages(
       .use(createRehypePlugins({
         title: configs.blogName,
         language: configs.language,
-        cssUrls: configs.cssUrls || [],
-        jsUrls: configs.jsUrls || [],
+        cssUrls: configs.cssUrls,
+        jsUrls: configs.jsUrls,
+        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePageProps),
       }))
       .use(rehypeStringify)
       .processSync(html);

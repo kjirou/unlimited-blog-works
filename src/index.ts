@@ -48,11 +48,18 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   const initialConfigs = createInitialUbwConfigs();
   const configs = fillWithDefaultUbwConfigs(initialConfigs);
 
+  const configFileSource = [
+    'module.exports = function ubwConfigs() {',
+    `return ${JSON.stringify(initialConfigs, null, 2)};`
+      .split('\n')
+      .map(line => '  ' + line)
+      .join('\n'),
+    '}',
+    '',
+  ].join('\n');
+
   fs.ensureDirSync(blogRoot);
-  fs.writeFileSync(
-    configFilePath,
-    `module.exports = ${JSON.stringify(initialConfigs, null, 2)}\n`
-  );
+  fs.writeFileSync(configFilePath, configFileSource);
 
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
@@ -65,11 +72,34 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   });
 }
 
-export function executeCompile(configFilePath: string): Promise<CommandResult> {
-  const actualConfigs = require(configFilePath) as ActualUbwConfigs;
-  const configs = fillWithDefaultUbwConfigs(actualConfigs);
+export interface UbwSettings {
+  configs: UbwConfigs,
+  blogRoot: string,
+}
 
+export function requireSettings(configFilePath: string): UbwSettings {
+  const generateActualUbwConfigs = require(configFilePath);
+  const actualConfigs = generateActualUbwConfigs() as ActualUbwConfigs;
+  const configs = fillWithDefaultUbwConfigs(actualConfigs);
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
+
+  return {
+    configs,
+    blogRoot,
+  };
+}
+
+export function executeCompile(configFilePath: string): Promise<CommandResult> {
+  const settings = requireSettings(configFilePath);
+  return executeCompileWithSettings(settings);
+}
+
+// Separate it from `executeCompile` to change the `configs` at the time of the test
+export function executeCompileWithSettings(settings: UbwSettings): Promise<CommandResult> {
+  const {
+    configs,
+    blogRoot,
+  } = settings;
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   let articlePages: ArticlePage[] = initializeArticlePages(
@@ -122,10 +152,11 @@ export function executeCompile(configFilePath: string): Promise<CommandResult> {
 }
 
 export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
-  const actualConfigs = require(configFilePath) as ActualUbwConfigs;
-  const configs = fillWithDefaultUbwConfigs(actualConfigs);
+  const {
+    configs,
+    blogRoot,
+  } = requireSettings(configFilePath);
 
-  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
   fs.ensureDirSync(paths.sourceRoot);
