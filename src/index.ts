@@ -48,11 +48,15 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   const initialConfigs = createInitialUbwConfigs();
   const configs = fillWithDefaultUbwConfigs(initialConfigs);
 
+  const configFileSource = [
+    'module.exports = function ubwConfigs() {',
+    `return ${JSON.stringify(initialConfigs, null, 2)};`,
+    '}',
+    '',
+  ].join('\n');
+
   fs.ensureDirSync(blogRoot);
-  fs.writeFileSync(
-    configFilePath,
-    `module.exports = ${JSON.stringify(initialConfigs, null, 2)}\n`
-  );
+  fs.writeFileSync(configFilePath, configFileSource);
 
   const paths = generateBlogPaths(blogRoot, configs.publicationPath);
 
@@ -71,7 +75,8 @@ export interface UbwSettings {
 }
 
 export function requireSettings(configFilePath: string): UbwSettings {
-  const actualConfigs = require(configFilePath) as ActualUbwConfigs;
+  const generateActualUbwConfigs = require(configFilePath);
+  const actualConfigs = generateActualUbwConfigs() as ActualUbwConfigs;
   const configs = fillWithDefaultUbwConfigs(actualConfigs);
   const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
 
