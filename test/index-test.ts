@@ -12,11 +12,19 @@ import {
   requireSettings,
 } from '../src/index';
 import {
+  ArticlePageProps,
+  NonArticlePageProps,
+} from '../src/templates/shared';
+import {
+  RehypeAstNode,
+} from '../src/utils';
+import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';
 
 const clearModule = require('clear-module');
+const hast = require('hastscript');
 
 describe('index', function() {
   let workspaceRoot: string;
@@ -69,7 +77,6 @@ describe('index', function() {
     describe('when after `executeInit` and `executeArticleNew`', function() {
       let clock: any;
       let configFilePath: string;
-      let settings: UbwSettings;
 
       beforeEach(function() {
         clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
@@ -129,6 +136,65 @@ describe('index', function() {
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
+            });
+        });
+      });
+
+      describe('Change due to each setting', function() {
+        let settings: UbwSettings;
+
+        beforeEach(function() {
+          clearModule(configFilePath);
+          settings = requireSettings(configFilePath);
+        });
+
+        it('generateArticleHeadNodes', function() {
+          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
+            return [
+              hast('script', {src: '/path/to/foo.js'}),
+              hast('link', {rel: '/path/to/bar.css'}),
+            ];
+          };
+
+          return executeCompileWithSettings(settings)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<script src="/path/to/foo.js"></script>'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<link rel="/path/to/bar.css">'),
+                -1
+              );
+            });
+        });
+
+        it('generateNonArticleHeadNodes', function() {
+          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): RehypeAstNode[] {
+            return [
+              hast('script', {src: '/path/to/foo.js'}),
+              hast('link', {rel: '/path/to/bar.css'}),
+            ];
+          };
+
+          return executeCompileWithSettings(settings)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.notStrictEqual(
+                dump['blog-publication/index.html'].indexOf('<script src="/path/to/foo.js"></script>'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/index.html'].indexOf('<link rel="/path/to/bar.css">'),
+                -1
+              );
             });
         });
       });
