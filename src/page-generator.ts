@@ -34,6 +34,9 @@ const unified = require('unified');
 const visit = require('unist-util-visit');
 
 export interface UbwConfigs {
+  // The name of your blog
+  //
+  // It is used in <title> and so on.
   blogName: string,
   // A relative path from the ubw-configs.js file to the blog root
   blogDir: string,
@@ -57,12 +60,20 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
-  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
-  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
+  // Additional tags in <head> on articles
+  //
+  // Set a callback that returns a list of HAST node.
+  // Ref) https://github.com/syntax-tree/hastscript
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  // Additional tags in <head> on non-articles
+  //
+  // Set a callback that returns a list of HAST node.
+  // Ref) https://github.com/syntax-tree/hastscript
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
@@ -91,14 +102,14 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
     jsUrls: [],
+    language: 'en',
+    timeZone: 'UTC',
     generateArticleHeadNodes() {
       return [];
     },
     generateNonArticleHeadNodes() {
       return [];
     },
-    language: 'en',
-    timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
       return ReactDOMServer.renderToStaticMarkup(React.createElement(ArticleLayout, props));
     },
