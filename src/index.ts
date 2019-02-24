@@ -61,7 +61,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   fs.ensureDirSync(blogRoot);
   fs.writeFileSync(configFilePath, configFileSource);
 
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   fs.ensureDirSync(paths.sourceExternalResourcesRoot);
   fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
@@ -81,7 +81,7 @@ export function requireSettings(configFilePath: string): UbwSettings {
   const generateActualUbwConfigs = require(configFilePath);
   const actualConfigs = generateActualUbwConfigs() as ActualUbwConfigs;
   const configs = fillWithDefaultUbwConfigs(actualConfigs);
-  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogDir);
 
   return {
     configs,
@@ -100,7 +100,7 @@ export function executeCompileWithSettings(settings: UbwSettings): Promise<Comma
     configs,
     blogRoot,
   } = settings;
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   let articlePages: ArticlePage[] = initializeArticlePages(
       blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot)
@@ -157,7 +157,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
     blogRoot,
   } = requireSettings(configFilePath);
 
-  const paths = generateBlogPaths(blogRoot, configs.publicationPath);
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
   fs.ensureDirSync(paths.sourceRoot);
   fs.ensureDirSync(paths.sourceArticlesRoot);

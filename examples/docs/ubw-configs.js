@@ -1,9 +1,8 @@
 module.exports = function ubwConfigs() {
   return {
     "blogName": "Sample Blog",
-    "blogPath": ".",
-    "publicationPath": "../../docs",
-    "baseUrl": "/unlimited-blog-works/",
+    "publicationDir": "../../docs",
+    "basePath": "/unlimited-blog-works/",
     "cssUrls": [
       "/unlimited-blog-works/external-resources/index.css",
     ],

@@ -28,8 +28,8 @@ const nonArticles = [
 module.exports = function ubwConfigs() {
   return {
     "blogName": "Customizing Pages",
-    "publicationPath": "./blog-publication",
-    "baseUrl": "/",
+    "publicationDir": "./blog-publication",
+    "basePath": "/",
     "cssUrls": [
       "/external-resources/index.css",
     ],
