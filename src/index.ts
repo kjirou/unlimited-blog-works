@@ -83,11 +83,11 @@ export function requireSettings(configFilePath: string): UbwSettings {
 
 export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const settings = requireSettings(configFilePath);
-  return executeCompileWithConfigs(settings);
+  return executeCompileWithSettings(settings);
 }
 
 // Separate it from `executeCompile` to change the `configs` at the time of the test
-export function executeCompileWithConfigs(settings: UbwSettings): Promise<CommandResult> {
+export function executeCompileWithSettings(settings: UbwSettings): Promise<CommandResult> {
   const {
     configs,
     blogRoot,

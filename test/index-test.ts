@@ -7,7 +7,7 @@ import {
   UbwSettings,
   executeArticleNew,
   executeCompile,
-  executeCompileWithConfigs,
+  executeCompileWithSettings,
   executeInit,
   requireSettings,
 } from '../src/index';
@@ -63,7 +63,7 @@ describe('index', function() {
     });
   });
 
-  describe('executeCompile, executeCompileWithConfigs', function() {
+  describe('executeCompile, executeCompileWithSettings', function() {
     describe('when after `executeInit` and `executeArticleNew`', function() {
       let clock: any;
       let configFilePath: string;
@@ -84,7 +84,7 @@ describe('index', function() {
       });
 
       it('can create some files into the publication dir', function() {
-        return executeCompileWithConfigs(settings)
+        return executeCompileWithSettings(settings)
           .then(result => {
             assert.strictEqual(result.exitCode, 0);
 
@@ -101,7 +101,7 @@ describe('index', function() {
         it('should succeed even if there is no "_direct" dir', function() {
           fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompileWithConfigs(settings)
+          return executeCompileWithSettings(settings)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
@@ -114,7 +114,7 @@ describe('index', function() {
         it('should succeed even if the "_direct" dir is empty', function() {
           fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompileWithConfigs(settings)
+          return executeCompileWithSettings(settings)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
