@@ -16,6 +16,8 @@ import {
   prepareWorkspace,
 } from '../src/test-helper';
 
+const clearModule = require('clear-module');
+
 describe('index', function() {
   let workspaceRoot: string;
 
@@ -71,12 +73,17 @@ describe('index', function() {
 
       beforeEach(function() {
         clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
-
         configFilePath = path.join(workspaceRoot, 'ubw-configs.js');
-        settings = requireSettings(configFilePath);
 
         return executeInit(workspaceRoot)
-          .then(() => executeArticleNew(configFilePath));
+          .then(() => {
+            clearModule(configFilePath);
+            settings = requireSettings(configFilePath);
+          })
+          .then(() => {
+            clearModule(configFilePath);
+            return executeArticleNew(configFilePath);
+          });
       });
 
       afterEach(function() {
