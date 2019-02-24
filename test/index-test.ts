@@ -78,11 +78,10 @@ describe('index', function() {
         return executeInit(workspaceRoot)
           .then(() => {
             clearModule(configFilePath);
-            settings = requireSettings(configFilePath);
+            return executeArticleNew(configFilePath);
           })
           .then(() => {
             clearModule(configFilePath);
-            return executeArticleNew(configFilePath);
           });
       });
 
@@ -90,25 +89,27 @@ describe('index', function() {
         clock.restore();
       });
 
-      it('can create some files into the publication dir', function() {
-        return executeCompileWithSettings(settings)
-          .then(result => {
-            assert.strictEqual(result.exitCode, 0);
+      describe('Basic specification of `executeCompile`', function() {
+        it('can create some files into the publication dir', function() {
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
 
-            const dump = dumpDir(workspaceRoot);
-            assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
-            assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
-          });
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
+            });
+        });
       });
 
       describe('"_direct" directory', function() {
         it('should succeed even if there is no "_direct" dir', function() {
           fs.removeSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompileWithSettings(settings)
+          return executeCompile(configFilePath)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
@@ -121,7 +122,7 @@ describe('index', function() {
         it('should succeed even if the "_direct" dir is empty', function() {
           fs.emptyDirSync(path.join(workspaceRoot, 'blog-source/external-resources/_direct'));
 
-          return executeCompileWithSettings(settings)
+          return executeCompile(configFilePath)
             .then(result => {
               assert.strictEqual(result.exitCode, 0);
 
