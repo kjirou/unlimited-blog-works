@@ -81,7 +81,7 @@ export function requireSettings(configFilePath: string): UbwSettings {
   const generateActualUbwConfigs = require(configFilePath);
   const actualConfigs = generateActualUbwConfigs() as ActualUbwConfigs;
   const configs = fillWithDefaultUbwConfigs(actualConfigs);
-  const blogRoot = path.join(path.dirname(configFilePath), configs.blogPath);
+  const blogRoot = path.join(path.dirname(configFilePath), configs.blogDir);
 
   return {
     configs,

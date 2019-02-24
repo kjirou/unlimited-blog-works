@@ -1,7 +1,6 @@
 module.exports = function ubwConfigs() {
   return {
     "blogName": "Sample Blog",
-    "blogPath": ".",
     "publicationPath": "../../docs",
     "baseUrl": "/unlimited-blog-works/",
     "cssUrls": [

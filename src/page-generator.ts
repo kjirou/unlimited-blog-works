@@ -35,8 +35,8 @@ const visit = require('unist-util-visit');
 
 export interface UbwConfigs {
   blogName: string,
-  // A relative path from the ubw-configs.json file to the blog root
-  blogPath: string,
+  // A relative path from the ubw-configs.js file to the blog root
+  blogDir: string,
   // A relative path from the blog root to the publication directory
   publicationPath: string,
   // A relative URL from the root
@@ -84,7 +84,7 @@ export interface ActualUbwConfigs extends Partial<UbwConfigs> {
 export function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
-    blogPath: '.',
+    blogDir: '.',
     publicationPath: './blog-publication',
     baseUrl: '/',
     cssUrls: [
