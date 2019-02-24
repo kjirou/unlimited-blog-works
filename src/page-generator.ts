@@ -57,16 +57,8 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
-  generateArticleHeadNodes: (
-    currentPage: ArticlePage,
-    articlePages: ArticlePage[],
-    nonArticlePages: NonArticlePage[]
-  ) => RehypeAstNode[],
-  generateNonArticleHeadNodes: (
-    currentPage: NonArticlePage,
-    articlePages: ArticlePage[],
-    nonArticlePages: NonArticlePage[]
-  ) => RehypeAstNode[],
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
@@ -371,7 +363,7 @@ export function generateArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateArticleHeadNodes(articlePage, articlePages, nonArticlePages),
+        additionalHeadNodes: configs.generateArticleHeadNodes(articlePageProps),
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -443,7 +435,7 @@ export function generateNonArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePage, articlePages, nonArticlePages),
+        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePageProps),
       }))
       .use(rehypeStringify)
       .processSync(html);
