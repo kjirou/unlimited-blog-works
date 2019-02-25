@@ -20,6 +20,7 @@ import {
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
+const hast = require('hastscript');
 const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
@@ -150,6 +151,15 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
 
 export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs {
   return Object.assign({}, createDefaultUbwConfigs(), configs);
+}
+
+function generateOgpNodes(title: string, url: string, siteName: string): RehypeAstNode[] {
+  return [
+    hast('meta', {property: 'og:title', content: title}),
+    hast('meta', {property: 'og:type', content: 'website'}),
+    hast('meta', {property: 'og:url', content: url}),
+    hast('meta', {property: 'og:site_name', content: siteName}),
+  ];
 }
 
 function createRemarkPlugins(): any[] {
@@ -376,6 +386,14 @@ export function generateArticlePages(
     };
     const articleHtml = configs.renderArticle(articlePageProps);
 
+    const ogpNodes = configs.ogp
+      ? generateOgpNodes(
+        articlePage.pageTitle,
+        `${configs.ogp.baseUrl}${articlePage.permalink}`,
+        configs.blogName
+      )
+      : [];
+
     const unifiedResult = unified()
       .use(rehypeParse, {
         fragment: true,
@@ -385,7 +403,10 @@ export function generateArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateArticleHeadNodes(articlePageProps),
+        additionalHeadNodes: [
+          ...ogpNodes,
+          ...configs.generateArticleHeadNodes(articlePageProps),
+        ],
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -448,6 +469,14 @@ export function generateNonArticlePages(
     };
     const html = nonArticlePage.render(nonArticlePageProps);
 
+    const ogpNodes = configs.ogp
+      ? generateOgpNodes(
+        configs.blogName,
+        `${configs.ogp.baseUrl}${nonArticlePage.permalink}`,
+        configs.blogName
+      )
+      : [];
+
     const unifiedResult = unified()
       .use(rehypeParse, {
         fragment: true,
@@ -457,7 +486,10 @@ export function generateNonArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePageProps),
+        additionalHeadNodes: [
+          ...ogpNodes,
+          ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
+        ]
       }))
       .use(rehypeStringify)
       .processSync(html);
