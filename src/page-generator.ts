@@ -64,6 +64,16 @@ export interface UbwConfigs {
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
+  // [Experimental] A short-hand OGP setting
+  //
+  // When you pass an object, the following settings are made for all articles.
+  // - og:title = Set the page name by top heading.
+  // - og:type = It is always "website".
+  // - og:url = ogp.baseUrl + basePath + each file name
+  // - og:site_name = blogName
+  ogp: {
+    baseUrl: string,
+  } | null,
   // Additional tags in <head> on articles
   //
   // Set a callback that returns a list of HAST node.
@@ -104,6 +114,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     jsUrls: [],
     language: 'en',
     timeZone: 'UTC',
+    ogp: null,
     generateArticleHeadNodes() {
       return [];
     },
