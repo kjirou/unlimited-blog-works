@@ -148,6 +148,64 @@ describe('index', function() {
           settings = requireSettings(configFilePath);
         });
 
+        it('ogp', function() {
+          Object.assign(settings.configs, {
+            blogName: 'FOO',
+            basePath: '/bar/',
+            ogp: {
+              baseUrl: 'https://example.com',
+            },
+          });
+
+          return executeCompileWithSettings(settings)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<meta property="og:title" content="Page Title">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<meta property="og:type" content="website">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<meta property="og:url" content="https://example.com/bar/articles/20190101-0001.html">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/articles/20190101-0001.html']
+                  .indexOf('<meta property="og:site_name" content="FOO">'),
+                -1
+              );
+
+              assert.notStrictEqual(
+                dump['blog-publication/index.html']
+                  .indexOf('<meta property="og:title" content="FOO">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/index.html']
+                  .indexOf('<meta property="og:type" content="website">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/index.html']
+                  .indexOf('<meta property="og:url" content="https://example.com/bar/index.html">'),
+                -1
+              );
+              assert.notStrictEqual(
+                dump['blog-publication/index.html']
+                  .indexOf('<meta property="og:site_name" content="FOO">'),
+                -1
+              );
+            });
+        });
+
         it('generateArticleHeadNodes', function() {
           settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
             return [
