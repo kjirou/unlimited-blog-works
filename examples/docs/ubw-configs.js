@@ -7,6 +7,9 @@ module.exports = function ubwConfigs() {
       "/unlimited-blog-works/external-resources/index.css",
     ],
     "language": "en",
-    "timeZone": "UTC"
+    "timeZone": "UTC",
+    ogp: {
+      baseUrl: 'https://kjirou.github.io',
+    },
   };
 }
