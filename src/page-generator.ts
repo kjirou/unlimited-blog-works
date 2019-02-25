@@ -20,6 +20,7 @@ import {
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
+const hast = require('hastscript');
 const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
@@ -34,6 +35,9 @@ const unified = require('unified');
 const visit = require('unist-util-visit');
 
 export interface UbwConfigs {
+  // The name of your blog
+  //
+  // It is used in <title> and so on.
   blogName: string,
   // A relative path from the ubw-configs.js file to the blog root
   blogDir: string,
@@ -57,12 +61,30 @@ export interface UbwConfigs {
   // These values are assigned to <script src="{here}"> directly.
   // Place these script tags at the end of the body.
   jsUrls: string[],
-  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
-  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Used <html lang="{here}">
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
+  // [Experimental] A short-hand OGP setting
+  //
+  // When you pass an object, the following settings are made for all articles.
+  // - og:title = Set the page name by top heading.
+  // - og:type = It is always "website".
+  // - og:url = ogp.baseUrl + basePath + each file name
+  // - og:site_name = blogName
+  ogp: {
+    baseUrl: string,
+  } | null,
+  // Additional tags in <head> on articles
+  //
+  // Set a callback that returns a list of HAST node.
+  // Ref) https://github.com/syntax-tree/hastscript
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  // Additional tags in <head> on non-articles
+  //
+  // Set a callback that returns a list of HAST node.
+  // Ref) https://github.com/syntax-tree/hastscript
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
@@ -91,14 +113,15 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
     jsUrls: [],
+    language: 'en',
+    timeZone: 'UTC',
+    ogp: null,
     generateArticleHeadNodes() {
       return [];
     },
     generateNonArticleHeadNodes() {
       return [];
     },
-    language: 'en',
-    timeZone: 'UTC',
     renderArticle(props: ArticlePageProps): string {
       return ReactDOMServer.renderToStaticMarkup(React.createElement(ArticleLayout, props));
     },
@@ -130,6 +153,15 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
   return Object.assign({}, createDefaultUbwConfigs(), configs);
 }
 
+function generateOgpNodes(title: string, url: string, siteName: string): RehypeAstNode[] {
+  return [
+    hast('meta', {property: 'og:title', content: title}),
+    hast('meta', {property: 'og:type', content: 'website'}),
+    hast('meta', {property: 'og:url', content: url}),
+    hast('meta', {property: 'og:site_name', content: siteName}),
+  ];
+}
+
 function createRemarkPlugins(): any[] {
   return [
     [remarkFrontmatter, ['yaml']],
@@ -150,7 +182,7 @@ function createRehypePlugins(params: {
   };
   documentOptions.css = params.cssUrls;
   documentOptions.js = params.jsUrls;
-  const additionalHeadNodes = params.additionalHeadNodes || [];
+  const additionalHeadNodes = params.additionalHeadNodes;
 
   const autolinkContent: RehypeAstNode = {
     type: 'text',
@@ -354,6 +386,14 @@ export function generateArticlePages(
     };
     const articleHtml = configs.renderArticle(articlePageProps);
 
+    const ogpNodes = configs.ogp
+      ? generateOgpNodes(
+        articlePage.pageTitle,
+        `${configs.ogp.baseUrl}${articlePage.permalink}`,
+        configs.blogName
+      )
+      : [];
+
     const unifiedResult = unified()
       .use(rehypeParse, {
         fragment: true,
@@ -363,7 +403,10 @@ export function generateArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateArticleHeadNodes(articlePageProps),
+        additionalHeadNodes: [
+          ...ogpNodes,
+          ...configs.generateArticleHeadNodes(articlePageProps),
+        ],
       }))
       .use(rehypeStringify)
       .processSync(articleHtml);
@@ -426,6 +469,14 @@ export function generateNonArticlePages(
     };
     const html = nonArticlePage.render(nonArticlePageProps);
 
+    const ogpNodes = configs.ogp
+      ? generateOgpNodes(
+        configs.blogName,
+        `${configs.ogp.baseUrl}${nonArticlePage.permalink}`,
+        configs.blogName
+      )
+      : [];
+
     const unifiedResult = unified()
       .use(rehypeParse, {
         fragment: true,
@@ -435,7 +486,10 @@ export function generateNonArticlePages(
         language: configs.language,
         cssUrls: configs.cssUrls,
         jsUrls: configs.jsUrls,
-        additionalHeadNodes: configs.generateNonArticleHeadNodes(nonArticlePageProps),
+        additionalHeadNodes: [
+          ...ogpNodes,
+          ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
+        ]
       }))
       .use(rehypeStringify)
       .processSync(html);
