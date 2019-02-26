@@ -17,6 +17,7 @@ import {
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,
+  getPathnameWithoutTailingSlash,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
@@ -50,15 +51,6 @@ export interface UbwConfigs {
   blogDir: string,
   // A relative path from the blog root to the publication directory
   publicationDir: string,
-  // A relative url from the root
-  //
-  // If you want to place the generated "index.html" at "http://your-host.com/index.html", set "/" to this property.
-  // If you want to place in "http://your-host.com/subdir/index.html", set "/subdir/" to this property.
-  //
-  // In case you are hosting on GitHub,
-  // it will be "/" if it is published from the "<username>.github.io" repository,
-  // In other cases it will probably be "/<your-repository-name>/".
-  basePath: string,
   // Absolute or root-relative urls for CSS sources
   //
   // These values are assigned to <link rel="{here}"> directly.
@@ -100,7 +92,7 @@ export interface UbwConfigs {
     //
     // For example, when the user wishes to use the existing setting, this value is used for identification.
     nonArticlePageId: string,
-    // A relative URL from the "basePath"
+    // A relative URL from the "blogUrl"
     url: string,
     // Non-article pages renderer
     render: (props: NonArticlePageProps) => string,
@@ -116,7 +108,6 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     blogUrl: 'https://example.com',
     blogDir: '.',
     publicationDir: './blog-publication',
-    basePath: '/',
     cssUrls: [
       `/${RELATIVE_EXTERNAL_RESOURCES_DIR_PATH}/index.css`,
     ],
@@ -151,7 +142,6 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
     blogName: configs.blogName,
     blogUrl: configs.blogUrl,
     publicationDir: configs.publicationDir,
-    basePath: configs.basePath,
     cssUrls: configs.cssUrls,
     language: configs.language,
     timeZone: configs.timeZone,
@@ -261,6 +251,7 @@ export interface ArticlePage {
   publicId: string,
   inputFilePath: string,
   outputFilePath: string,
+  rootRelativePath: string,
   permalink: string,
   html: string,
   markdown: string,
@@ -271,6 +262,7 @@ export interface ArticlePage {
 export interface NonArticlePage {
   nonArticlePageId: string,
   render: (props: NonArticlePageProps) => string,
+  rootRelativePath: string,
   permalink: string,
   outputFilePath: string,
   html: string,
@@ -282,6 +274,7 @@ export function createArticlePage(): ArticlePage {
     publicId: '',
     inputFilePath: '',
     outputFilePath: '',
+    rootRelativePath: '',
     permalink: '',
     html: '',
     markdown: '',
@@ -350,11 +343,14 @@ export function preprocessArticlePages(
     const actualFrontMatters = yaml.safeLoad(frontMattersNode.value) as ActualArticleFrontMatters;
     const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
 
-    const permalink = `${configs.basePath}${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+    const basePath = getPathnameWithoutTailingSlash(configs.blogUrl);
+    const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+    const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
+      rootRelativePath,
       permalink,
       pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
@@ -372,6 +368,7 @@ export function generateArticlePages(
     return Object.assign({}, summary, {
       [nonArticlePage.nonArticlePageId]: {
         permalink: nonArticlePage.permalink,
+        rootRelativePath: nonArticlePage.rootRelativePath,
       },
     });
   }, {});
@@ -431,12 +428,14 @@ export function initializeNonArticlePages(
   configs: UbwConfigs
 ): NonArticlePage[] {
   const paths = generateBlogPaths(blogRoot, configs.publicationDir);
+  const basePath = getPathnameWithoutTailingSlash(configs.blogUrl);
 
   return configs.nonArticles.map(nonArticleConfigs => {
     return {
       nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
-      permalink: configs.basePath + nonArticleConfigs.url,
+      rootRelativePath: basePath + '/' + nonArticleConfigs.url,
+      permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
       html: '',
     };
@@ -466,6 +465,7 @@ export function generateNonArticlePages(
       formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
       pageTitle: articlePage.pageTitle,
       permalink: articlePage.permalink,
+      rootRelativePath: articlePage.rootRelativePath,
     };
   });
 
@@ -474,6 +474,7 @@ export function generateNonArticlePages(
       articles: articlesProps,
       blogName: configs.blogName,
       permalink: nonArticlePage.permalink,
+      rootRelativePath: nonArticlePage.rootRelativePath,
       timeZone: configs.timeZone,
     };
     const html = nonArticlePage.render(nonArticlePageProps);
