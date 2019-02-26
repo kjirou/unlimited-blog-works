@@ -39,6 +39,13 @@ export interface UbwConfigs {
   //
   // It is used in <title> and so on.
   blogName: string,
+  // An absolute url of the blog
+  //
+  // e.g.
+  //   "http://your-host.com"
+  //   "http://your-host.com/sub/path"
+  //   Notice: Remove "/" of the end
+  blogUrl: string,
   // A relative path from the ubw-configs.js file to the blog root
   blogDir: string,
   // A relative path from the blog root to the publication directory
@@ -106,6 +113,7 @@ export interface ActualUbwConfigs extends Partial<UbwConfigs> {
 export function createDefaultUbwConfigs(): UbwConfigs {
   return {
     blogName: 'My Blog',
+    blogUrl: 'https://example.com',
     blogDir: '.',
     publicationDir: './blog-publication',
     basePath: '/',
@@ -141,6 +149,7 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
   const configs = createDefaultUbwConfigs();
   return {
     blogName: configs.blogName,
+    blogUrl: configs.blogUrl,
     publicationDir: configs.publicationDir,
     basePath: configs.basePath,
     cssUrls: configs.cssUrls,
