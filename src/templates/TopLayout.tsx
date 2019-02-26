@@ -18,7 +18,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
                 .map(article => {
                   return (
                     <li key={article.articleId} className="ubw-articles-item">
-                      <a className="ubw-articles-item-link" href={article.permalink}>{article.pageTitle}</a>
+                      <a className="ubw-articles-item-link" href={article.rootRelativePath}>{article.pageTitle}</a>
                       <span className="ubw-articles-item-last-updated-at">
                         {article.formattedLastUpdatedAt}
                       </span>

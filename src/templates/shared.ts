@@ -5,6 +5,7 @@ export interface ArticlePageProps {
   nonArticles: {
     [nonArticlePageId: string]: {
       permalink: string,
+      rootRelativePath: string,
     },
   },
   timeZone: string,
@@ -17,8 +18,10 @@ export interface NonArticlePageProps {
     formattedLastUpdatedAt: string,
     pageTitle: string,
     permalink: string,
+    rootRelativePath: string,
   }[],
   blogName: string,
   permalink: string,
+  rootRelativePath: string,
   timeZone: string,
 }

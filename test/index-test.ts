@@ -151,10 +151,7 @@ describe('index', function() {
         it('ogp', function() {
           Object.assign(settings.configs, {
             blogName: 'FOO',
-            basePath: '/bar/',
-            ogp: {
-              baseUrl: 'https://example.com',
-            },
+            blogUrl: 'https://example.com/bar',
           });
 
           return executeCompileWithSettings(settings)

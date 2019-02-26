@@ -1,15 +1,12 @@
 module.exports = function ubwConfigs() {
   return {
     "blogName": "Sample Blog",
+    "blogUrl": "https://kjirou.github.io/unlimited-blog-works",
     "publicationDir": "../../docs",
-    "basePath": "/unlimited-blog-works/",
     "cssUrls": [
       "/unlimited-blog-works/external-resources/index.css",
     ],
     "language": "en",
-    "timeZone": "UTC",
-    ogp: {
-      baseUrl: 'https://kjirou.github.io',
-    },
+    "timeZone": "UTC"
   };
 }

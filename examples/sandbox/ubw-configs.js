@@ -1,8 +1,8 @@
 module.exports = function ubwConfigs() {
   return {
     "blogName": "わたしのブログ",
+    "blogUrl": "https://example.com",
     "publicationDir": "./blog-publication",
-    "basePath": "/",
     "cssUrls": [
       "/external-resources/index.css",
     ],

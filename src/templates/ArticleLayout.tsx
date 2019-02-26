@@ -14,7 +14,7 @@ export default class ArticleLayout extends React.Component<ArticlePageProps> {
             <span>{this.props.formattedLastUpdatedAt} ({this.props.timeZone})</span>
           </li>
           <li className="ubw-meta-data-back-to-top">
-            <a href={this.props.nonArticles.top.permalink}>Back to the Top</a>
+            <a href={this.props.nonArticles.top.rootRelativePath}>Back to the Top</a>
           </li>
         </ul>
       </div>
