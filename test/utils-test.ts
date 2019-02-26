@@ -4,6 +4,7 @@ import {
   extractPageTitle,
   generateDateTimeString,
   generateTodayDateString,
+  getPathnameWithoutTailingSlash,
   permalinksToRelativeUrl,
   scanRemarkAstNode,
   toNormalizedAbsolutePath,
@@ -54,6 +55,21 @@ describe('utils', function() {
     ].forEach(([pathInput, expected]) => {
       it(`"${pathInput}" -> "${expected}"`, function() {
         assert.strictEqual(toNormalizedAbsolutePath(pathInput, '/base'), expected);
+      });
+    });
+  });
+
+  describe('getPathnameWithoutTailingSlash', function() {
+    [
+      ['https://example.com', ''],
+      ['https://example.com/', ''],
+      ['https://example.com/foo', '/foo'],
+      ['https://example.com/foo/', '/foo'],
+      ['https://example.com/foo/bar', '/foo/bar'],
+      ['https://example.com/foo/bar/', '/foo/bar'],
+    ].forEach(([urlInput, expected]) => {
+      it(`"${urlInput}" -> "${expected}"`, function() {
+        assert.strictEqual(getPathnameWithoutTailingSlash(urlInput), expected);
       });
     });
   });

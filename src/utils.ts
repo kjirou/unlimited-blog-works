@@ -22,6 +22,22 @@ export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: st
   return path.normalize(absolutePath);
 }
 
+/**
+ * It is mainly used to normalize the following last case.
+ *
+ *   url="https://foo.com/bar"  -> pathname="/bar"
+ *   url="https://foo.com/bar/" -> pathname="/bar/"
+ *   url="https://foo.com/"     -> pathname="/"
+ *   url="https://foo.com"      -> pathname="/" (What's!?)
+ */
+export function getPathnameWithoutTailingSlash(absoluteUrl: string): string {
+  const urlObj = url.parse(absoluteUrl);
+  if (typeof urlObj.pathname === 'string') {
+    return urlObj.pathname.replace(/\/$/, '');
+  }
+  throw new Error('An invalid url passed');
+}
+
 export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
   // NOTICE: Originally `path.relative()` should not be used for URLs.
   //         In this time, there is probably no inconsistency, so there is no problem.
