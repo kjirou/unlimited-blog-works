@@ -64,16 +64,14 @@ export interface UbwConfigs {
   language: string,
   // IANA time zone name (e.g. "America/New_York", "Asia/Tokyo")
   timeZone: string,
-  // [Experimental] A short-hand OGP setting
+  // Easy OGP setting
   //
   // When you pass an object, the following settings are made for all articles.
   // - og:title = Set the page name by top heading.
   // - og:type = It is always "website".
-  // - og:url = ogp.baseUrl + basePath + each file name
+  // - og:url = blogUrl + each page path
   // - og:site_name = blogName
-  ogp: {
-    baseUrl: string,
-  } | null,
+  ogp: boolean,
   // Additional tags in <head> on articles
   //
   // Set a callback that returns a list of HAST node.
@@ -114,7 +112,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     jsUrls: [],
     language: 'en',
     timeZone: 'UTC',
-    ogp: null,
+    ogp: true,
     generateArticleHeadNodes() {
       return [];
     },
@@ -393,11 +391,7 @@ export function generateArticlePages(
     const articleHtml = configs.renderArticle(articlePageProps);
 
     const ogpNodes = configs.ogp
-      ? generateOgpNodes(
-        articlePage.pageTitle,
-        `${configs.ogp.baseUrl}${articlePage.permalink}`,
-        configs.blogName
-      )
+      ? generateOgpNodes(articlePage.pageTitle, articlePage.permalink, configs.blogName)
       : [];
 
     const unifiedResult = unified()
@@ -480,11 +474,7 @@ export function generateNonArticlePages(
     const html = nonArticlePage.render(nonArticlePageProps);
 
     const ogpNodes = configs.ogp
-      ? generateOgpNodes(
-        configs.blogName,
-        `${configs.ogp.baseUrl}${nonArticlePage.permalink}`,
-        configs.blogName
-      )
+      ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
       : [];
 
     const unifiedResult = unified()
