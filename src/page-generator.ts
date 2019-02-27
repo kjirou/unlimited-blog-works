@@ -35,6 +35,9 @@ const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 const visit = require('unist-util-visit');
 
+// NOTICE: Its type definition file exists but it is broken.
+const Feed = require('feed').Feed;
+
 export interface UbwConfigs {
   // The name of your blog
   //
@@ -498,4 +501,34 @@ export function generateNonArticlePages(
       html: unifiedResult.contents,
     });
   });
+}
+
+export function generateAtomFeedPage(
+  configs: UbwConfigs,
+  articlePages: ArticlePage[],
+  nonArticlePages: NonArticlePage[]
+): string {
+  const feed = new Feed({
+    title: configs.blogName,
+    id: configs.blogUrl,
+  });
+
+  articlePages
+    .slice()
+    .sort((a, b) => {
+      return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
+    })
+    .slice(0, 100)
+    .forEach(articlePage => {
+      feed.addItem({
+        title: articlePage.pageTitle,
+        id: articlePage.permalink,
+        // The "link" field is not required as specification of Atom,
+        //   but this "feed" library requests it.
+        link: articlePage.permalink,
+        date: articlePage.lastUpdatedAt,
+      });
+    });
+
+  return feed.atom1();
 }
