@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://example.com</id>
+    <title>わたしのブログ</title>
+    <updated>2019-02-28T16:06:52.103Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <entry>
+        <title type="html"><![CDATA[二番目の記事です]]></title>
+        <id>https://example.com/articles/20190209-0002.html</id>
+        <link href="https://example.com/articles/20190209-0002.html">
+        </link>
+        <updated>2019-02-09T20:03:02.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[最初の記事でこれは 太字 です]]></title>
+        <id>https://example.com/articles/20190209-0001.html</id>
+        <link href="https://example.com/articles/20190209-0001.html">
+        </link>
+        <updated>2019-02-09T20:02:58.000Z</updated>
+    </entry>
+</feed>
