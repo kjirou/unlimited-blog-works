@@ -95,6 +95,10 @@ export interface UbwConfigs {
     nonArticlePageId: string,
     // A relative URL from the "blogUrl"
     url: string,
+    // Page is output with layout
+    //
+    // When it is false, the return value of "render" is directly output as a page.
+    useLayout: boolean,
     // Non-article pages renderer
     render: (props: NonArticlePageProps) => string,
   }[],
@@ -129,6 +133,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       {
         nonArticlePageId: 'top',
         url: 'index.html',
+        useLayout: true,
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
         },
@@ -136,6 +141,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       {
         nonArticlePageId: 'atom-feed',
         url: 'atom-feed.xml',
+        useLayout: false,
         render(props: NonArticlePageProps): string {
           const feed = new Feed({
             title: props.blogName,
@@ -159,7 +165,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
               });
             });
 
-          return feed.atom1();
+          return feed.atom1() + '\n';
         },
       },
     ],
@@ -295,6 +301,7 @@ export interface NonArticlePage {
   rootRelativePath: string,
   permalink: string,
   outputFilePath: string,
+  useLayout: boolean,
   html: string,
 }
 
@@ -465,6 +472,7 @@ export function initializeNonArticlePages(
       rootRelativePath: basePath + '/' + nonArticleConfigs.url,
       permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      useLayout: nonArticleConfigs.useLayout,
       html: '',
     };
   });
@@ -506,31 +514,35 @@ export function generateNonArticlePages(
       rootRelativePath: nonArticlePage.rootRelativePath,
       timeZone: configs.timeZone,
     };
-    const html = nonArticlePage.render(nonArticlePageProps);
+    let html = nonArticlePage.render(nonArticlePageProps);
 
-    const ogpNodes = configs.ogp
-      ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
-      : [];
+    if (nonArticlePage.useLayout) {
+      const ogpNodes = configs.ogp
+        ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
+        : [];
 
-    const unifiedResult = unified()
-      .use(rehypeParse, {
-        fragment: true,
-      })
-      .use(createRehypePlugins({
-        title: configs.blogName,
-        language: configs.language,
-        cssUrls: configs.cssUrls,
-        jsUrls: configs.jsUrls,
-        additionalHeadNodes: [
-          ...ogpNodes,
-          ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
-        ]
-      }))
-      .use(rehypeStringify)
-      .processSync(html);
+      const unifiedResult = unified()
+        .use(rehypeParse, {
+          fragment: true,
+        })
+        .use(createRehypePlugins({
+          title: configs.blogName,
+          language: configs.language,
+          cssUrls: configs.cssUrls,
+          jsUrls: configs.jsUrls,
+          additionalHeadNodes: [
+            ...ogpNodes,
+            ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
+          ]
+        }))
+        .use(rehypeStringify)
+        .processSync(html);
+
+      html = unifiedResult.contents;
+    }
 
     return Object.assign({}, nonArticlePage, {
-      html: unifiedResult.contents,
+      html,
     });
   });
 }
