@@ -385,6 +385,8 @@ export function generateArticlePages(
       .processSync(articlePage.markdown);
 
     const articlePageProps: ArticlePageProps = {
+      blogName: configs.blogName,
+      blogUrl: configs.blogUrl,
       contentHtml: contentHtmlData.contents,
       lastUpdatedAt: articlePage.lastUpdatedAt,
       formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
@@ -470,6 +472,7 @@ export function generateNonArticlePages(
     const nonArticlePageProps: NonArticlePageProps = {
       articles: articlesProps,
       blogName: configs.blogName,
+      blogUrl: configs.blogUrl,
       permalink: nonArticlePage.permalink,
       rootRelativePath: nonArticlePage.rootRelativePath,
       timeZone: configs.timeZone,

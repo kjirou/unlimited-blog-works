@@ -1,4 +1,6 @@
 export interface ArticlePageProps {
+  blogName: string,
+  blogUrl: string,
   contentHtml: string,
   formattedLastUpdatedAt: string,
   lastUpdatedAt: Date,
@@ -21,6 +23,7 @@ export interface NonArticlePageProps {
     rootRelativePath: string,
   }[],
   blogName: string,
+  blogUrl: string,
   permalink: string,
   rootRelativePath: string,
   timeZone: string,
