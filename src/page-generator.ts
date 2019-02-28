@@ -494,7 +494,7 @@ export function generateNonArticlePages(
 ): NonArticlePage[] {
   const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
-  const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
+  const articlesProps = articlePages.map(articlePage => {
     return {
       articleId: articlePage.articleId,
       lastUpdatedAt: articlePage.lastUpdatedAt,
@@ -504,12 +504,20 @@ export function generateNonArticlePages(
       rootRelativePath: articlePage.rootRelativePath,
     };
   });
+  const nonArticlesProps = nonArticlePages.map(nonArticlePage => {
+    return {
+      id: nonArticlePage.nonArticlePageId,
+      permalink: nonArticlePage.permalink,
+      rootRelativePath: nonArticlePage.rootRelativePath,
+    };
+  });
 
   return nonArticlePages.map(nonArticlePage => {
     const nonArticlePageProps: NonArticlePageProps = {
       articles: articlesProps,
       blogName: configs.blogName,
       blogUrl: configs.blogUrl,
+      nonArticles: nonArticlesProps,
       permalink: nonArticlePage.permalink,
       rootRelativePath: nonArticlePage.rootRelativePath,
       timeZone: configs.timeZone,

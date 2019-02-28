@@ -24,6 +24,11 @@ export interface NonArticlePageProps {
   }[],
   blogName: string,
   blogUrl: string,
+  nonArticles: {
+    id: string,
+    permalink: string,
+    rootRelativePath: string,
+  }[],
   permalink: string,
   rootRelativePath: string,
   timeZone: string,
