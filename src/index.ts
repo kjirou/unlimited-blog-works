@@ -12,7 +12,6 @@ import {
   createInitialUbwConfigs,
   fillWithDefaultUbwConfigs,
   generateArticlePages,
-  generateAtomFeedPage,
   generateNonArticlePages,
   getNextAutomaticArticleId,
   initializeArticlePages,
@@ -118,8 +117,6 @@ export function executeCompileWithSettings(settings: UbwSettings): Promise<Comma
 
   articlePages = generateArticlePages(blogRoot, configs, articlePages, nonArticlePages);
   nonArticlePages = generateNonArticlePages(blogRoot, configs, articlePages, nonArticlePages);
-
-  const feed = generateAtomFeedPage(configs, articlePages, nonArticlePages);
 
   fs.ensureDirSync(paths.publicationRoot);
   fs.ensureDirSync(paths.publicationArticlesRoot);

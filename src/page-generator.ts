@@ -133,6 +133,35 @@ export function createDefaultUbwConfigs(): UbwConfigs {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
         },
       },
+      {
+        nonArticlePageId: 'atom-feed',
+        url: 'atom-feed.xml',
+        render(props: NonArticlePageProps): string {
+          const feed = new Feed({
+            title: props.blogName,
+            id: props.blogUrl,
+          });
+
+          props.articles
+            .slice()
+            .sort((a, b) => {
+              return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
+            })
+            .slice(0, 100)
+            .forEach(article => {
+              feed.addItem({
+                title: article.pageTitle,
+                id: article.permalink,
+                // The "link" field is not required as specification of Atom,
+                //   but this "feed" library requests it.
+                link: article.permalink,
+                date: article.lastUpdatedAt,
+              });
+            });
+
+          return feed.atom1();
+        },
+      },
     ],
   };
 }
@@ -504,34 +533,4 @@ export function generateNonArticlePages(
       html: unifiedResult.contents,
     });
   });
-}
-
-export function generateAtomFeedPage(
-  configs: UbwConfigs,
-  articlePages: ArticlePage[],
-  nonArticlePages: NonArticlePage[]
-): string {
-  const feed = new Feed({
-    title: configs.blogName,
-    id: configs.blogUrl,
-  });
-
-  articlePages
-    .slice()
-    .sort((a, b) => {
-      return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
-    })
-    .slice(0, 100)
-    .forEach(articlePage => {
-      feed.addItem({
-        title: articlePage.pageTitle,
-        id: articlePage.permalink,
-        // The "link" field is not required as specification of Atom,
-        //   but this "feed" library requests it.
-        link: articlePage.permalink,
-        date: articlePage.lastUpdatedAt,
-      });
-    });
-
-  return feed.atom1();
 }
