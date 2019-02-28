@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://kjirou.github.io/unlimited-blog-works</id>
+    <title>Sample Blog</title>
+    <updated>2019-02-28T16:06:46.539Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <entry>
+        <title type="html"><![CDATA[A Sample Article]]></title>
+        <id>https://kjirou.github.io/unlimited-blog-works/articles/20190212-0002.html</id>
+        <link href="https://kjirou.github.io/unlimited-blog-works/articles/20190212-0002.html">
+        </link>
+        <updated>2019-02-12T23:54:21.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[About the Markdown Format]]></title>
+        <id>https://kjirou.github.io/unlimited-blog-works/articles/20190212-0001.html</id>
+        <link href="https://kjirou.github.io/unlimited-blog-works/articles/20190212-0001.html">
+        </link>
+        <updated>2019-02-12T21:55:23.000Z</updated>
+    </entry>
+</feed>

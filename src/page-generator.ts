@@ -35,6 +35,9 @@ const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 const visit = require('unist-util-visit');
 
+// NOTICE: Its type definition file exists but it is broken.
+const Feed = require('feed').Feed;
+
 export interface UbwConfigs {
   // The name of your blog
   //
@@ -92,6 +95,10 @@ export interface UbwConfigs {
     nonArticlePageId: string,
     // A relative URL from the "blogUrl"
     url: string,
+    // Page is output with layout
+    //
+    // When it is false, the return value of "render" is directly output as a page.
+    useLayout: boolean,
     // Non-article pages renderer
     render: (props: NonArticlePageProps) => string,
   }[],
@@ -126,8 +133,39 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       {
         nonArticlePageId: 'top',
         url: 'index.html',
+        useLayout: true,
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
+        },
+      },
+      {
+        nonArticlePageId: 'atom-feed',
+        url: 'atom-feed.xml',
+        useLayout: false,
+        render(props: NonArticlePageProps): string {
+          const feed = new Feed({
+            title: props.blogName,
+            id: props.blogUrl,
+          });
+
+          props.articles
+            .slice()
+            .sort((a, b) => {
+              return b.lastUpdatedAt.getTime() - a.lastUpdatedAt.getTime();
+            })
+            .slice(0, 100)
+            .forEach(article => {
+              feed.addItem({
+                title: article.pageTitle,
+                id: article.permalink,
+                // The "link" field is not required as specification of Atom,
+                //   but this "feed" library requests it.
+                link: article.permalink,
+                date: article.lastUpdatedAt,
+              });
+            });
+
+          return feed.atom1() + '\n';
         },
       },
     ],
@@ -263,6 +301,7 @@ export interface NonArticlePage {
   rootRelativePath: string,
   permalink: string,
   outputFilePath: string,
+  useLayout: boolean,
   html: string,
 }
 
@@ -382,6 +421,8 @@ export function generateArticlePages(
       .processSync(articlePage.markdown);
 
     const articlePageProps: ArticlePageProps = {
+      blogName: configs.blogName,
+      blogUrl: configs.blogUrl,
       contentHtml: contentHtmlData.contents,
       lastUpdatedAt: articlePage.lastUpdatedAt,
       formattedLastUpdatedAt: generateDateTimeString(articlePage.lastUpdatedAt, configs.timeZone),
@@ -431,6 +472,7 @@ export function initializeNonArticlePages(
       rootRelativePath: basePath + '/' + nonArticleConfigs.url,
       permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
       outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      useLayout: nonArticleConfigs.useLayout,
       html: '',
     };
   });
@@ -452,7 +494,7 @@ export function generateNonArticlePages(
 ): NonArticlePage[] {
   const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
-  const articlesProps: NonArticlePageProps['articles'] = articlePages.map(articlePage => {
+  const articlesProps = articlePages.map(articlePage => {
     return {
       articleId: articlePage.articleId,
       lastUpdatedAt: articlePage.lastUpdatedAt,
@@ -462,40 +504,53 @@ export function generateNonArticlePages(
       rootRelativePath: articlePage.rootRelativePath,
     };
   });
+  const nonArticlesProps = nonArticlePages.map(nonArticlePage => {
+    return {
+      id: nonArticlePage.nonArticlePageId,
+      permalink: nonArticlePage.permalink,
+      rootRelativePath: nonArticlePage.rootRelativePath,
+    };
+  });
 
   return nonArticlePages.map(nonArticlePage => {
     const nonArticlePageProps: NonArticlePageProps = {
       articles: articlesProps,
       blogName: configs.blogName,
+      blogUrl: configs.blogUrl,
+      nonArticles: nonArticlesProps,
       permalink: nonArticlePage.permalink,
       rootRelativePath: nonArticlePage.rootRelativePath,
       timeZone: configs.timeZone,
     };
-    const html = nonArticlePage.render(nonArticlePageProps);
+    let html = nonArticlePage.render(nonArticlePageProps);
 
-    const ogpNodes = configs.ogp
-      ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
-      : [];
+    if (nonArticlePage.useLayout) {
+      const ogpNodes = configs.ogp
+        ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
+        : [];
 
-    const unifiedResult = unified()
-      .use(rehypeParse, {
-        fragment: true,
-      })
-      .use(createRehypePlugins({
-        title: configs.blogName,
-        language: configs.language,
-        cssUrls: configs.cssUrls,
-        jsUrls: configs.jsUrls,
-        additionalHeadNodes: [
-          ...ogpNodes,
-          ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
-        ]
-      }))
-      .use(rehypeStringify)
-      .processSync(html);
+      const unifiedResult = unified()
+        .use(rehypeParse, {
+          fragment: true,
+        })
+        .use(createRehypePlugins({
+          title: configs.blogName,
+          language: configs.language,
+          cssUrls: configs.cssUrls,
+          jsUrls: configs.jsUrls,
+          additionalHeadNodes: [
+            ...ogpNodes,
+            ...configs.generateNonArticleHeadNodes(nonArticlePageProps),
+          ]
+        }))
+        .use(rehypeStringify)
+        .processSync(html);
+
+      html = unifiedResult.contents;
+    }
 
     return Object.assign({}, nonArticlePage, {
-      html: unifiedResult.contents,
+      html,
     });
   });
 }

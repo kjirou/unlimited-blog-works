@@ -4,6 +4,8 @@ import {NonArticlePageProps} from './shared';
 
 export default class TopLayout extends React.Component<NonArticlePageProps> {
   render(): JSX.Element {
+    const atomFeedPage = this.props.nonArticles.find(nonArticle => nonArticle.id === 'atom-feed') as any;
+
     return (
       <div className="ubw-non-article ubw-top">
         <div className="markdown-body ubw-main-content">
@@ -28,6 +30,10 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
             }
           </ul>
         </div>
+        <hr className="ubw-end-of-main-content" />
+        <ul className="ubw-meta-data">
+          <li><a href={atomFeedPage.rootRelativePath}>Atom Feed</a></li>
+        </ul>
       </div>
     );
   }

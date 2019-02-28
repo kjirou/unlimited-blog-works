@@ -104,6 +104,7 @@ describe('index', function() {
 
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
+              assert.strictEqual(typeof dump['blog-publication/atom-feed.xml'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'string');
               assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
