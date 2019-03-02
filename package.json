@@ -35,10 +35,7 @@
     "README.md",
     "bin",
     "dist",
-    "examples",
-    "setup",
-    "package.json",
-    "package-lock.json"
+    "package.json"
   ],
   "bin": {
     "ubw": "bin/cli.js"
