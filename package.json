@@ -35,7 +35,8 @@
     "README.md",
     "bin",
     "dist",
-    "package.json"
+    "package.json",
+    "presets"
   ],
   "bin": {
     "ubw": "bin/cli.js"
