@@ -1,6 +1,6 @@
 {
   "name": "unlimited-blog-works",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple static blog generator for publishing on GitHub Pages",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
@@ -35,7 +35,8 @@
     "README.md",
     "bin",
     "dist",
-    "package.json"
+    "package.json",
+    "presets"
   ],
   "bin": {
     "ubw": "bin/cli.js"
