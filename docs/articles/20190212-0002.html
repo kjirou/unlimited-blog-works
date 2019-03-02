@@ -24,16 +24,16 @@
         <p>There are many people who say cats are "cute", but I personally think that they are different.<br>If cats have a good point, the cats themselves are "<strong>free</strong>" and "<strong>peaceful</strong>".</p>
         <p>Freedom and peace are good things. Therefore, I think that it is healed by seeing a cat stupidly. It is regrettable!</p>
         <h2 id="write-a-sentence-about-programming">Write a sentence about programming<a class="ubw-heading-slug" aria-hidden href="#write-a-sentence-about-programming">#</a></h2>
-        <p>What to do now? I do not know much about programming too.<br>This command is made with Node.js, so let's talk about it.</p>
-        <p>I did not know how to generate the relative path of the URL, so this time I wrote the following code in <code>src/utils.ts</code></p>
-        <pre><code>export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
+        <p>I do not know much about programming too.<br>This command is made with Node.js, so let's talk about it.</p>
+        <p>I did not know how to generate the relative path of the URL, so this time I wrote like the following code.</p>
+        <pre><code>export function toRelativeUrl(fromPath: string, toPath: string): string {
   // NOTICE: Originally `path.relative()` should not be used for URLs.
   //         In this time, there is probably no inconsistency, so there is no problem.
   const relativeDir = path.relative(
-    path.dirname('.' + fromPermalink),
-    path.dirname('.' + toPermalink)
+    path.dirname('.' + fromPath),
+    path.dirname('.' + toPath)
   );
-  return path.join(relativeDir, path.basename(toPermalink));
+  return path.join(relativeDir, path.basename(toPath));
 }
 </code></pre>
         <p>How do you usually write?</p>
