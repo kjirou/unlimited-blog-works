@@ -1,7 +1,7 @@
 {
   "name": "unlimited-blog-works",
   "version": "0.0.0",
-  "description": "I am the bone of my blog.",
+  "description": "A simple static blog generator for publishing on GitHub Pages",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "url": "git+https://github.com/kjirou/unlimited-blog-works.git"
   },
   "keywords": [
+    "blog",
     "static-site-generator",
     "tool"
   ],
@@ -25,6 +26,10 @@
     "url": "https://github.com/kjirou/unlimited-blog-works/issues"
   },
   "homepage": "https://github.com/kjirou/unlimited-blog-works#readme",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=6"
+  },
   "files": [
     "LICENSE",
     "README.md",
