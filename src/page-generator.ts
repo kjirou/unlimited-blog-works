@@ -18,6 +18,7 @@ import {
   generateDateTimeString,
   generateBlogPaths,
   getPathnameWithoutTailingSlash,
+  removeTailingResourceNameFromPath,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
@@ -93,8 +94,10 @@ export interface UbwConfigs {
     //
     // For example, when the user wishes to use the existing setting, this value is used for identification.
     nonArticlePageId: string,
-    // A relative URL from the "blogUrl"
-    url: string,
+    // A relative url from the "blogUrl"
+    path: string,
+    // Whether "/{path}" is normalized to "/" due to external influences
+    pathIsNormalizedToSlash: boolean,
     // Page is output with layout
     //
     // When it is false, the return value of "render" is directly output as a page.
@@ -132,7 +135,8 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     nonArticles: [
       {
         nonArticlePageId: 'top',
-        url: 'index.html',
+        path: 'index.html',
+        pathIsNormalizedToSlash: true,
         useLayout: true,
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
@@ -140,7 +144,8 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       },
       {
         nonArticlePageId: 'atom-feed',
-        url: 'atom-feed.xml',
+        path: 'atom-feed.xml',
+        pathIsNormalizedToSlash: false,
         useLayout: false,
         render(props: NonArticlePageProps): string {
           const feed = new Feed({
@@ -466,12 +471,16 @@ export function initializeNonArticlePages(
   const basePath = getPathnameWithoutTailingSlash(configs.blogUrl);
 
   return configs.nonArticles.map(nonArticleConfigs => {
+    const blogRootRelativePath = nonArticleConfigs.pathIsNormalizedToSlash
+      ? removeTailingResourceNameFromPath(nonArticleConfigs.path)
+      : nonArticleConfigs.path;
+
     return {
       nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
-      rootRelativePath: basePath + '/' + nonArticleConfigs.url,
-      permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
-      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      rootRelativePath: basePath + '/' + blogRootRelativePath,
+      permalink: configs.blogUrl + '/' + blogRootRelativePath,
+      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.path),
       useLayout: nonArticleConfigs.useLayout,
       html: '',
     };

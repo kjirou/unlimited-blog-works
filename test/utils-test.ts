@@ -6,6 +6,7 @@ import {
   generateTodayDateString,
   getPathnameWithoutTailingSlash,
   permalinksToRelativeUrl,
+  removeTailingResourceNameFromPath,
   scanRemarkAstNode,
   toNormalizedAbsolutePath,
 } from '../src/utils';
@@ -70,6 +71,20 @@ describe('utils', function() {
     ].forEach(([urlInput, expected]) => {
       it(`"${urlInput}" -> "${expected}"`, function() {
         assert.strictEqual(getPathnameWithoutTailingSlash(urlInput), expected);
+      });
+    });
+  });
+
+  describe('removeTailingResourceNameFromPath', function() {
+    [
+      ['index.html', ''],
+      ['foo', ''],
+      ['./foo', './'],
+      ['/foo', '/'],
+      ['/foo/bar', '/foo/'],
+    ].forEach(([pathInput, expected]) => {
+      it(`"${pathInput}" -> "${expected}"`, function() {
+        assert.strictEqual(removeTailingResourceNameFromPath(pathInput), expected);
       });
     });
   });

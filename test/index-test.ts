@@ -193,7 +193,7 @@ describe('index', function() {
               );
               assert.notStrictEqual(
                 dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:url" content="https://example.com/bar/index.html">'),
+                  .indexOf('<meta property="og:url" content="https://example.com/bar/">'),
                 -1
               );
               assert.notStrictEqual(
