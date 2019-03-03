@@ -139,6 +139,20 @@ For details of setting, refer to the following source code and its comment at pr
 - [Default Values](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L110-L173)
 
 
+## :writing_hand: Markdown Format
+
+Basically it is a **GitHub compatible format**, so please refer to the following articles.
+
+- [Mastering Markdown](https://guides.github.com/features/mastering-markdown/)
+- [GitHub Flavored Markdown Spec](https://github.github.com/gfm/)
+
+However, for example, the following functions are not yet available.
+
+- [Emoji](https://help.github.com/articles/basic-writing-and-formatting-syntax/#using-emoji)
+- [Syntax highlighting](https://help.github.com/articles/creating-and-highlighting-code-blocks/#syntax-highlighting)
+- (There will be many other)
+
+
 ## :wrench: Development
 ### Softwares that needs to be locally installed
 
