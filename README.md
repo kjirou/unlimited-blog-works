@@ -18,7 +18,7 @@ npm install -g unlimited-blog-works
 - Generate blog source by command.
   - Sample blog source => [/exapmles/docs](/examples/docs)
 - Edit the Markdown formed article with your text editor or GitHub Web's editor.
-  - Sample article source => [/examples/docs/blog-source/articles/20190212-0001.md](/examples/docs/blog-source/articles/20190212-0001.md)
+  - Sample article source => [/examples/docs/blog-source/articles/20190212-0002.md](/examples/docs/blog-source/articles/20190212-0002.md)
 - Compile from Markdown to HTML by command and host it by [GitHub Pages](https://pages.github.com/).
   - Sample hosting => `git push` compilation results to [/docs](/docs) and is hosted to [https://kjirou.github.io/unlimited-blog-works/](https://kjirou.github.io/unlimited-blog-works/) by [the feature of GitHub](https://help.github.com/en/articles/configuring-a-publishing-source-for-github-pages#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
 
@@ -136,7 +136,7 @@ Most of the commands reflect the configuration of "ubw-configs.js".
 For details of setting, refer to the following source code and its comment at present.
 
 - [Properties](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L41-L105)
-- [Default Values](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L110-L173)
+- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L110-L173)
 
 
 ## :writing_hand: Markdown Format
