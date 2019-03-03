@@ -38,6 +38,14 @@ export function getPathnameWithoutTailingSlash(absoluteUrl: string): string {
   throw new Error('An invalid url passed');
 }
 
+/**
+ * @param path A relative url (e.g. "foo/bar", "./foo/bar") or
+ *               slash-started relative url (e.g. "/foo/bar")
+ */
+export function removeTailingResourceNameFromPath(path: string): string {
+  return path.replace(/(\/)?[^/]+$/, '$1');
+}
+
 export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
   // NOTICE: Originally `path.relative()` should not be used for URLs.
   //         In this time, there is probably no inconsistency, so there is no problem.
