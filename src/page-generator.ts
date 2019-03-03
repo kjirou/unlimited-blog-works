@@ -238,8 +238,24 @@ function createRehypePlugins(params: {
       properties: {
         className: 'ubw-heading-slug',
         ariaHidden: true,
+        // NOTICE: Apply to search with `visit`. It is not used in HTML.
+        dataUbwAutolink: true,
       },
     }],
+    // Remove #fragment from <h1>'s autolink
+    function(): any {
+      return function transformer(tree: RehypeAstNode): void {
+        visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: RehypeAstNode): void {
+          visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: RehypeAstNode): void {
+            if (anchorNode.properties && anchorNode.properties.dataUbwAutolink) {
+              // NOTE: The empty string will probably work except for IE(<= 10)
+              // Ref) https://hail2u.net/blog/coding/empty-href-value.html
+              anchorNode.properties.href = '';
+            }
+          });
+        });
+      };
+    },
     [rehypeDocument, documentOptions],
     function(): any {
       return function transformer(tree: RehypeAstNode): void {

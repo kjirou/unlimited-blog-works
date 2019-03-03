@@ -110,6 +110,8 @@ export interface RehypeAstNode {
   properties?: {
     ariaHidden?: boolean,
     className?: string[],
+    dataUbwAutolink: boolean,
+    href: string,
   },
   value?: string,
   children?: RehypeAstNode[],
