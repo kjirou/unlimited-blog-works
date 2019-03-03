@@ -93,8 +93,8 @@ export interface UbwConfigs {
     //
     // For example, when the user wishes to use the existing setting, this value is used for identification.
     nonArticlePageId: string,
-    // A relative URL from the "blogUrl"
-    url: string,
+    // A relative url from the "blogUrl"
+    path: string,
     // Page is output with layout
     //
     // When it is false, the return value of "render" is directly output as a page.
@@ -132,7 +132,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     nonArticles: [
       {
         nonArticlePageId: 'top',
-        url: 'index.html',
+        path: 'index.html',
         useLayout: true,
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
@@ -140,7 +140,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       },
       {
         nonArticlePageId: 'atom-feed',
-        url: 'atom-feed.xml',
+        path: 'atom-feed.xml',
         useLayout: false,
         render(props: NonArticlePageProps): string {
           const feed = new Feed({
@@ -469,9 +469,9 @@ export function initializeNonArticlePages(
     return {
       nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
-      rootRelativePath: basePath + '/' + nonArticleConfigs.url,
-      permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
-      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      rootRelativePath: basePath + '/' + nonArticleConfigs.path,
+      permalink: configs.blogUrl + '/' + nonArticleConfigs.path,
+      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.path),
       useLayout: nonArticleConfigs.useLayout,
       html: '',
     };
