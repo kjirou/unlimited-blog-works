@@ -108,6 +108,23 @@ describe('index', function() {
               assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
             });
         });
+
+        it('should add hyperlinks that refer the same page to page-title autolinks', function() {
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/index.html']),
+                true
+              );
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/articles/20190101-0001.html']),
+                true
+              );
+            });
+        });
       });
 
       describe('"_direct" directory', function() {
