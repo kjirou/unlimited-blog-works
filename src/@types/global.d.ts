@@ -25,11 +25,11 @@ interface RemarkAstNode {
 //
 
 declare module 'hastscript' {
+  function defaultExport(selector: string): HastscriptAst;
+  function defaultExport(selector: string, properties: HastscriptAst['properties']): HastscriptAst;
+  function defaultExport(selector: string, children: HastscriptAst[]): HastscriptAst;
   function defaultExport(
-    selector: string,
-    properties?: HastscriptAst['properties'],
-    children?: HastscriptAst[]
-  ): HastscriptAst;
+    selector: string, properties: HastscriptAst['properties'], children: HastscriptAst[]): HastscriptAst;
 
   namespace defaultExport {}
 
