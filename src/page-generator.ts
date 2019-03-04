@@ -206,6 +206,25 @@ function createRemarkPlugins(): any[] {
   ];
 }
 
+/**
+ * Generate an unified's transformer that empty a href of <h1>'s autolink
+ */
+export function generateH1AutolinkHrefReplacementTransformer(
+  autolinkMarkerAttributeName: string
+): (tree: HastscriptAst) => void {
+  return function transformer(tree: HastscriptAst): void {
+    visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+      visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
+        if (anchorNode.properties && anchorNode.properties[autolinkMarkerAttributeName] === true) {
+          // NOTE: The empty string will probably work except for IE(<= 10)
+          // Ref) https://hail2u.net/blog/coding/empty-href-value.html
+          anchorNode.properties.href = '';
+        }
+      });
+    });
+  }
+};
+
 function createRehypePlugins(params: {
   title: string,
   language: string,
@@ -240,19 +259,8 @@ function createRehypePlugins(params: {
         dataUbwAutolink: true,
       },
     }],
-    // Remove #fragment from <h1>'s autolink
     function(): any {
-      return function transformer(tree: HastscriptAst): void {
-        visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
-          visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
-            if (anchorNode.properties && anchorNode.properties.dataUbwAutolink) {
-              // NOTE: The empty string will probably work except for IE(<= 10)
-              // Ref) https://hail2u.net/blog/coding/empty-href-value.html
-              anchorNode.properties.href = '';
-            }
-          });
-        });
-      };
+      return generateH1AutolinkHrefReplacementTransformer('dataUbwAutolink');
     },
     [rehypeDocument, documentOptions],
     function(): any {
