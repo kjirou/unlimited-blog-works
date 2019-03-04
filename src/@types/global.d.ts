@@ -18,3 +18,22 @@ interface RemarkAstNode {
   depth?: number,
   children?: RemarkAstNode[],
 }
+
+
+//
+// modules
+//
+
+declare module 'hastscript' {
+  function defaultExport(
+    tag: string,
+    attributes: {
+      [attributeName: string]: string,
+    },
+    test?: string
+  ): RehypeAstNode;
+
+  namespace defaultExport {}
+
+  export = defaultExport;
+}

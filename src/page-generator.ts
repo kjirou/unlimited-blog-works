@@ -1,3 +1,4 @@
+import * as hast from 'hastscript';
 import * as path from 'path';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
@@ -20,7 +21,6 @@ import {
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
-const hast = require('hastscript');
 const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
