@@ -1,3 +1,4 @@
+import * as hast from 'hastscript';
 import * as path from 'path';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
@@ -12,8 +13,6 @@ import {
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
-  RehypeAstNode,
-  RemarkAstNode,
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,
@@ -22,7 +21,6 @@ import {
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
-const hast = require('hastscript');
 const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
@@ -80,12 +78,12 @@ export interface UbwConfigs {
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => HastscriptAst[],
   // Additional tags in <head> on non-articles
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => HastscriptAst[],
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
@@ -193,7 +191,7 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
   return Object.assign({}, createDefaultUbwConfigs(), configs);
 }
 
-function generateOgpNodes(title: string, url: string, siteName: string): RehypeAstNode[] {
+function generateOgpNodes(title: string, url: string, siteName: string): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
     hast('meta', {property: 'og:type', content: 'website'}),
@@ -208,12 +206,31 @@ function createRemarkPlugins(): any[] {
   ];
 }
 
+/**
+ * Generate an unified's transformer that empty a href of <h1>'s autolink
+ */
+export function generateH1AutolinkHrefReplacementTransformer(
+  autolinkMarkerAttributeName: string
+): (tree: HastscriptAst) => void {
+  return function transformer(tree: HastscriptAst): void {
+    visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+      visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
+        if (anchorNode.properties && anchorNode.properties[autolinkMarkerAttributeName] === true) {
+          // NOTE: The empty string will probably work except for IE(<= 10)
+          // Ref) https://hail2u.net/blog/coding/empty-href-value.html
+          anchorNode.properties.href = '';
+        }
+      });
+    });
+  }
+};
+
 function createRehypePlugins(params: {
   title: string,
   language: string,
   cssUrls: string[],
   jsUrls: string[],
-  additionalHeadNodes: RehypeAstNode[],
+  additionalHeadNodes: HastscriptAst[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -224,7 +241,7 @@ function createRehypePlugins(params: {
   documentOptions.js = params.jsUrls;
   const additionalHeadNodes = params.additionalHeadNodes;
 
-  const autolinkContent: RehypeAstNode = {
+  const autolinkContent: HastscriptAst = {
     type: 'text',
     value: '#',
   };
@@ -238,12 +255,17 @@ function createRehypePlugins(params: {
       properties: {
         className: 'ubw-heading-slug',
         ariaHidden: true,
+        // NOTICE: Apply to search with `visit`. It is not used in HTML.
+        dataUbwAutolink: true,
       },
     }],
+    function(): any {
+      return generateH1AutolinkHrefReplacementTransformer('dataUbwAutolink');
+    },
     [rehypeDocument, documentOptions],
     function(): any {
-      return function transformer(tree: RehypeAstNode): void {
-        visit(tree, {type: 'element', tagName: 'head'}, function(node: RehypeAstNode): void {
+      return function transformer(tree: HastscriptAst): void {
+        visit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
           params.additionalHeadNodes.forEach(nodeInHead => {
             (node.children || []).push(nodeInHead);
           });

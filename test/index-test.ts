@@ -16,9 +16,6 @@ import {
   NonArticlePageProps,
 } from '../src/templates/shared';
 import {
-  RehypeAstNode,
-} from '../src/utils';
-import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';
@@ -109,6 +106,23 @@ describe('index', function() {
               assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
+            });
+        });
+
+        it('should add hyperlinks that refer the same page to page-title autolinks', function() {
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/index.html']),
+                true
+              );
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/articles/20190101-0001.html']),
+                true
+              );
             });
         });
       });
@@ -205,7 +219,7 @@ describe('index', function() {
         });
 
         it('generateArticleHeadNodes', function() {
-          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),
@@ -231,7 +245,7 @@ describe('index', function() {
         });
 
         it('generateNonArticleHeadNodes', function() {
-          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),
