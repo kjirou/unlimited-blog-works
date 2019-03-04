@@ -6,7 +6,7 @@ interface HastscriptAst {
   type: string,
   tagName?: string,
   properties?: {
-    [propertyName: string]: string | string[] | boolean,
+    [propertyName: string]: string | string[] | number | boolean,
   },
   value?: string,
   children?: HastscriptAst[],
@@ -26,11 +26,9 @@ interface RemarkAstNode {
 
 declare module 'hastscript' {
   function defaultExport(
-    tag: string,
-    attributes: {
-      [attributeName: string]: string,
-    },
-    test?: string
+    selector: string,
+    properties?: HastscriptAst['properties'],
+    children?: HastscriptAst[]
   ): HastscriptAst;
 
   namespace defaultExport {}
