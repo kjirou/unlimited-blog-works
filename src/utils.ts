@@ -97,23 +97,6 @@ export function generateTodayDateString(date: Date, timeZone: string): string {
   return formatToTimeZone(date, 'YYYYMMDD', {timeZone});
 }
 
-export interface RemarkAstNode {
-  type: string,
-  value?: string,
-  depth?: number,
-  children?: RemarkAstNode[],
-}
-
-export interface RehypeAstNode {
-  type: string,
-  tagName?: string,
-  properties?: {
-    [propertyName: string]: string | string[] | boolean,
-  },
-  value?: string,
-  children?: RehypeAstNode[],
-}
-
 export function scanRemarkAstNode(
   node: RemarkAstNode,
   callback: (node: RemarkAstNode) => void

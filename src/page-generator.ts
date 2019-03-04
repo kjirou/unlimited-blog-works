@@ -12,8 +12,6 @@ import {
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
-  RehypeAstNode,
-  RemarkAstNode,
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,

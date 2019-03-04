@@ -16,9 +16,6 @@ import {
   NonArticlePageProps,
 } from '../src/templates/shared';
 import {
-  RehypeAstNode,
-} from '../src/utils';
-import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';
