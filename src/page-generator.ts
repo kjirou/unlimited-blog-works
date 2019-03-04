@@ -78,12 +78,12 @@ export interface UbwConfigs {
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => HastscriptAst[],
   // Additional tags in <head> on non-articles
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => HastscriptAst[],
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
@@ -191,7 +191,7 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
   return Object.assign({}, createDefaultUbwConfigs(), configs);
 }
 
-function generateOgpNodes(title: string, url: string, siteName: string): RehypeAstNode[] {
+function generateOgpNodes(title: string, url: string, siteName: string): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
     hast('meta', {property: 'og:type', content: 'website'}),
@@ -211,7 +211,7 @@ function createRehypePlugins(params: {
   language: string,
   cssUrls: string[],
   jsUrls: string[],
-  additionalHeadNodes: RehypeAstNode[],
+  additionalHeadNodes: HastscriptAst[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -222,7 +222,7 @@ function createRehypePlugins(params: {
   documentOptions.js = params.jsUrls;
   const additionalHeadNodes = params.additionalHeadNodes;
 
-  const autolinkContent: RehypeAstNode = {
+  const autolinkContent: HastscriptAst = {
     type: 'text',
     value: '#',
   };
@@ -242,9 +242,9 @@ function createRehypePlugins(params: {
     }],
     // Remove #fragment from <h1>'s autolink
     function(): any {
-      return function transformer(tree: RehypeAstNode): void {
-        visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: RehypeAstNode): void {
-          visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: RehypeAstNode): void {
+      return function transformer(tree: HastscriptAst): void {
+        visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+          visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
             if (anchorNode.properties && anchorNode.properties.dataUbwAutolink) {
               // NOTE: The empty string will probably work except for IE(<= 10)
               // Ref) https://hail2u.net/blog/coding/empty-href-value.html
@@ -256,8 +256,8 @@ function createRehypePlugins(params: {
     },
     [rehypeDocument, documentOptions],
     function(): any {
-      return function transformer(tree: RehypeAstNode): void {
-        visit(tree, {type: 'element', tagName: 'head'}, function(node: RehypeAstNode): void {
+      return function transformer(tree: HastscriptAst): void {
+        visit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
           params.additionalHeadNodes.forEach(nodeInHead => {
             (node.children || []).push(nodeInHead);
           });

@@ -202,7 +202,7 @@ describe('index', function() {
         });
 
         it('generateArticleHeadNodes', function() {
-          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),
@@ -228,7 +228,7 @@ describe('index', function() {
         });
 
         it('generateNonArticleHeadNodes', function() {
-          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),

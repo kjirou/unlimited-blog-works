@@ -2,14 +2,14 @@
 // globals
 //
 
-interface RehypeAstNode {
+interface HastscriptAst {
   type: string,
   tagName?: string,
   properties?: {
     [propertyName: string]: string | string[] | boolean,
   },
   value?: string,
-  children?: RehypeAstNode[],
+  children?: HastscriptAst[],
 }
 
 interface RemarkAstNode {
@@ -31,7 +31,7 @@ declare module 'hastscript' {
       [attributeName: string]: string,
     },
     test?: string
-  ): RehypeAstNode;
+  ): HastscriptAst;
 
   namespace defaultExport {}
 
