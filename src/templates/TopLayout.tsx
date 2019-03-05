@@ -33,6 +33,11 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
         <hr className="ubw-end-of-main-content" />
         <ul className="ubw-meta-data">
           <li><a href={atomFeedPage.rootRelativePath}>Atom Feed</a></li>
+          {
+            this.props.additionalTopPageLinks.map((data, index) => {
+              return <li key={'ubw-meta-data-additional-link-' + index}><a href={data.href}>{data.linkText}</a></li>;
+            })
+          }
         </ul>
       </div>
     );
