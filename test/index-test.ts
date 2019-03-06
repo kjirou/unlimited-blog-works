@@ -291,6 +291,44 @@ describe('index', function() {
               });
           });
         });
+
+        describe('nonArticles', function() {
+          describe('pathIsNormalizedToSlash', function() {
+            it('should render the link normalized to slash when the value is true', function() {
+              const topPageConfigs = settings.configs.nonArticles
+                .find(nonArticle => nonArticle.nonArticlePageId === 'top') as any;
+              topPageConfigs.pathIsNormalizedToSlash = true;
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  assert.strictEqual(result.exitCode, 0);
+
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/">Back to the Top</a>'),
+                    -1
+                  );
+                });
+            });
+
+            it('should render the link not normalized to slash when the value is false', function() {
+              const topPageConfigs = settings.configs.nonArticles
+                .find(nonArticle => nonArticle.nonArticlePageId === 'top') as any;
+              topPageConfigs.pathIsNormalizedToSlash = false;
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  assert.strictEqual(result.exitCode, 0);
+
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/index.html">Back to the Top</a>'),
+                    -1
+                  );
+                });
+            });
+          });
+        });
       });
     });
   });
