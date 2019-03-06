@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://example.com</id>
     <title>わたしのブログ</title>
-    <updated>2019-02-28T16:06:52.103Z</updated>
+    <updated>2019-03-06T13:52:03.486Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <entry>
         <title type="html"><![CDATA[二番目の記事です]]></title>

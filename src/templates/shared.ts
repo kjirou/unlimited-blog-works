@@ -14,6 +14,10 @@ export interface ArticlePageProps {
 }
 
 export interface NonArticlePageProps {
+  additionalTopPageLinks: {
+    linkText: string,
+    href: string,
+  }[],
   articles: {
     articleId: string,
     lastUpdatedAt: Date,

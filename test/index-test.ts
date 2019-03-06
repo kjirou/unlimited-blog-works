@@ -16,9 +16,6 @@ import {
   NonArticlePageProps,
 } from '../src/templates/shared';
 import {
-  RehypeAstNode,
-} from '../src/utils';
-import {
   dumpDir,
   prepareWorkspace,
 } from '../src/test-helper';
@@ -111,6 +108,23 @@ describe('index', function() {
               assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
             });
         });
+
+        it('should add hyperlinks that refer the same page to page-title autolinks', function() {
+          return executeCompile(configFilePath)
+            .then(result => {
+              assert.strictEqual(result.exitCode, 0);
+
+              const dump = dumpDir(workspaceRoot);
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/index.html']),
+                true
+              );
+              assert.strictEqual(
+                /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/articles/20190101-0001.html']),
+                true
+              );
+            });
+        });
       });
 
       describe('"_direct" directory', function() {
@@ -193,7 +207,7 @@ describe('index', function() {
               );
               assert.notStrictEqual(
                 dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:url" content="https://example.com/bar/index.html">'),
+                  .indexOf('<meta property="og:url" content="https://example.com/bar/">'),
                 -1
               );
               assert.notStrictEqual(
@@ -205,7 +219,7 @@ describe('index', function() {
         });
 
         it('generateArticleHeadNodes', function() {
-          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateArticleHeadNodes = function(props: ArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),
@@ -231,7 +245,7 @@ describe('index', function() {
         });
 
         it('generateNonArticleHeadNodes', function() {
-          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): RehypeAstNode[] {
+          settings.configs.generateNonArticleHeadNodes = function(props: NonArticlePageProps): HastscriptAst[] {
             return [
               hast('script', {src: '/path/to/foo.js'}),
               hast('link', {rel: '/path/to/bar.css'}),
@@ -252,6 +266,68 @@ describe('index', function() {
                 -1
               );
             });
+        });
+
+        describe('additionalTopPageLinks', function() {
+          it('can render as anchor tags', function() {
+            settings.configs.additionalTopPageLinks = [
+              {linkText: 'FOOOO', href: 'https://example.com/aaa'},
+              {linkText: 'BARRR', href: 'https://example.com/bbb'},
+            ];
+
+            return executeCompileWithSettings(settings)
+              .then(result => {
+                assert.strictEqual(result.exitCode, 0);
+
+                const dump = dumpDir(workspaceRoot);
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html'].indexOf('<a href="https://example.com/aaa">FOOOO</a>'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html'].indexOf('<a href="https://example.com/bbb">BARRR</a>'),
+                  -1
+                );
+              });
+          });
+        });
+
+        describe('nonArticles', function() {
+          describe('pathIsNormalizedToSlash', function() {
+            it('should render the link normalized to slash when the value is true', function() {
+              const topPageConfigs = settings.configs.nonArticles
+                .find(nonArticle => nonArticle.nonArticlePageId === 'top') as any;
+              topPageConfigs.pathIsNormalizedToSlash = true;
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  assert.strictEqual(result.exitCode, 0);
+
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/">Back to the Top</a>'),
+                    -1
+                  );
+                });
+            });
+
+            it('should render the link not normalized to slash when the value is false', function() {
+              const topPageConfigs = settings.configs.nonArticles
+                .find(nonArticle => nonArticle.nonArticlePageId === 'top') as any;
+              topPageConfigs.pathIsNormalizedToSlash = false;
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  assert.strictEqual(result.exitCode, 0);
+
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/index.html">Back to the Top</a>'),
+                    -1
+                  );
+                });
+            });
+          });
         });
       });
     });

@@ -37,11 +37,11 @@ ubw compile
 
 The following files will be generated.
 ```
-tree ./my-blog
+tree .
 .
 ├── blog-publication
 │   ├── articles
-│   │   └── 20190302-0001.html
+│   │   └── 20190306-0001.html
 │   ├── atom-feed.xml
 │   ├── external-resources
 │   │   ├── github-markdown.css
@@ -50,7 +50,7 @@ tree ./my-blog
 │   └── robots.txt
 ├── blog-source
 │   ├── articles
-│   │   └── 20190302-0001.md
+│   │   └── 20190306-0001.md
 │   └── external-resources
 │       ├── _direct
 │       │   └── robots.txt
@@ -62,17 +62,17 @@ tree ./my-blog
 ```
 
 ```
-cat blog-source/articles/20190302-0001.md
+cat blog-source/articles/20190306-0001.md
 ---
-publicId: 20190302-0001
-lastUpdatedAt: '2019-03-02 04:57:24+0000'
+publicId: 20190306-0001
+lastUpdatedAt: '2019-03-06 14:27:08+0000'
 ---
 
 # Page Title
 ```
 
 ```
-cat blog-publication/articles/20190302-0001.html
+cat blog-publication/articles/20190306-0001.html
 <!doctype html>
 <html lang="en">
   <head>
@@ -82,18 +82,18 @@ cat blog-publication/articles/20190302-0001.html
     <link rel="stylesheet" href="/external-resources/index.css">
     <meta property="og:title" content="Page Title">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://example.com/articles/20190302-0001.html">
+    <meta property="og:url" content="https://example.com/articles/20190306-0001.html">
     <meta property="og:site_name" content="My Blog">
   </head>
   <body>
     <div class="ubw-article">
       <div class="markdown-body ubw-main-content">
-        <h1 id="page-title">Page Title<a class="ubw-heading-slug" aria-hidden href="#page-title">#</a></h1>
+        <h1 id="page-title">Page Title<a class="ubw-heading-slug" aria-hidden data-ubw-autolink href="">#</a></h1>
       </div>
       <hr class="ubw-end-of-main-content">
       <ul class="ubw-meta-data">
-        <li class="ubw-meta-data-last-updated-at"><span>Last updated at:</span><span>2019-03-02 04:57:24 (UTC)</span></li>
-        <li class="ubw-meta-data-back-to-top"><a href="/index.html">Back to the Top</a></li>
+        <li class="ubw-meta-data-last-updated-at"><span>Last updated at:</span><span>2019-03-06 14:27:08 (UTC)</span></li>
+        <li class="ubw-meta-data-back-to-top"><a href="/">Back to the Top</a></li>
       </ul>
     </div>
   </body>
@@ -135,8 +135,8 @@ Most of the commands reflect the configuration of "ubw-configs.js".
 
 For details of setting, refer to the following source code and its comment at present.
 
-- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L41-L105)
-- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/8caadf1ec3ec7d335c63d45a9995ab3f126fc645/src/page-generator.ts#L110-L173)
+- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/bbb988c06551a4ac69628f828ef253b15d8d6882/src/page-generator.ts#L40-L113)
+- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/bbb988c06551a4ac69628f828ef253b15d8d6882/src/page-generator.ts#L118-L189)
 
 
 ## :writing_hand: Markdown Format

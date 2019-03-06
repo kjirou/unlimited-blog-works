@@ -1,3 +1,4 @@
+import * as hast from 'hastscript';
 import * as path from 'path';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
@@ -12,16 +13,14 @@ import {
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
-  RehypeAstNode,
-  RemarkAstNode,
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,
   getPathnameWithoutTailingSlash,
+  removeTailingResourceNameFromPath,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
-const hast = require('hastscript');
 const rehypeAutolinkHeadings = require('rehype-autolink-headings');
 const rehypeDocument = require('rehype-document');
 const rehypeFormat = require('rehype-format');
@@ -75,16 +74,23 @@ export interface UbwConfigs {
   // - og:url = blogUrl + each page path
   // - og:site_name = blogName
   ogp: boolean,
+  // [Experimental] Additional links the bottom of the top page
+  //
+  // If you want to hide "Powered by unlimited-blog-works", change this value to empty.
+  additionalTopPageLinks: {
+    linkText: string,
+    href: string,
+  }[],
   // Additional tags in <head> on articles
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => RehypeAstNode[],
+  generateArticleHeadNodes: (articlesProps: ArticlePageProps) => HastscriptAst[],
   // Additional tags in <head> on non-articles
   //
   // Set a callback that returns a list of HAST node.
   // Ref) https://github.com/syntax-tree/hastscript
-  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => RehypeAstNode[],
+  generateNonArticleHeadNodes: (nonArticlePageProps: NonArticlePageProps) => HastscriptAst[],
   // Article pages renderer
   renderArticle: (props: ArticlePageProps) => string,
   // Non-article pages configurations
@@ -93,8 +99,10 @@ export interface UbwConfigs {
     //
     // For example, when the user wishes to use the existing setting, this value is used for identification.
     nonArticlePageId: string,
-    // A relative URL from the "blogUrl"
-    url: string,
+    // A relative url from the "blogUrl"
+    path: string,
+    // Whether "/{path}" is normalized to "/" due to external influences
+    pathIsNormalizedToSlash: boolean,
     // Page is output with layout
     //
     // When it is false, the return value of "render" is directly output as a page.
@@ -120,6 +128,12 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     language: 'en',
     timeZone: 'UTC',
     ogp: true,
+    additionalTopPageLinks: [
+      {
+        linkText: 'Powered by unlimited-blog-works',
+        href: 'https://github.com/kjirou/unlimited-blog-works',
+      },
+    ],
     generateArticleHeadNodes() {
       return [];
     },
@@ -132,7 +146,8 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     nonArticles: [
       {
         nonArticlePageId: 'top',
-        url: 'index.html',
+        path: 'index.html',
+        pathIsNormalizedToSlash: true,
         useLayout: true,
         render(props: NonArticlePageProps): string {
           return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
@@ -140,7 +155,8 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       },
       {
         nonArticlePageId: 'atom-feed',
-        url: 'atom-feed.xml',
+        path: 'atom-feed.xml',
+        pathIsNormalizedToSlash: false,
         useLayout: false,
         render(props: NonArticlePageProps): string {
           const feed = new Feed({
@@ -188,7 +204,7 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
   return Object.assign({}, createDefaultUbwConfigs(), configs);
 }
 
-function generateOgpNodes(title: string, url: string, siteName: string): RehypeAstNode[] {
+function generateOgpNodes(title: string, url: string, siteName: string): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
     hast('meta', {property: 'og:type', content: 'website'}),
@@ -203,12 +219,31 @@ function createRemarkPlugins(): any[] {
   ];
 }
 
+/**
+ * Generate an unified's transformer that empty a href of <h1>'s autolink
+ */
+export function generateH1AutolinkHrefReplacementTransformer(
+  autolinkMarkerAttributeName: string
+): (tree: HastscriptAst) => void {
+  return function transformer(tree: HastscriptAst): void {
+    visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+      visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
+        if (anchorNode.properties && anchorNode.properties[autolinkMarkerAttributeName] === true) {
+          // NOTE: The empty string will probably work except for IE(<= 10)
+          // Ref) https://hail2u.net/blog/coding/empty-href-value.html
+          anchorNode.properties.href = '';
+        }
+      });
+    });
+  }
+};
+
 function createRehypePlugins(params: {
   title: string,
   language: string,
   cssUrls: string[],
   jsUrls: string[],
-  additionalHeadNodes: RehypeAstNode[],
+  additionalHeadNodes: HastscriptAst[],
 }): any[] {
   const documentOptions: any = {
     title: params.title,
@@ -219,7 +254,7 @@ function createRehypePlugins(params: {
   documentOptions.js = params.jsUrls;
   const additionalHeadNodes = params.additionalHeadNodes;
 
-  const autolinkContent: RehypeAstNode = {
+  const autolinkContent: HastscriptAst = {
     type: 'text',
     value: '#',
   };
@@ -233,12 +268,17 @@ function createRehypePlugins(params: {
       properties: {
         className: 'ubw-heading-slug',
         ariaHidden: true,
+        // NOTICE: Apply to search with `visit`. It is not used in HTML.
+        dataUbwAutolink: true,
       },
     }],
+    function(): any {
+      return generateH1AutolinkHrefReplacementTransformer('dataUbwAutolink');
+    },
     [rehypeDocument, documentOptions],
     function(): any {
-      return function transformer(tree: RehypeAstNode): void {
-        visit(tree, {type: 'element', tagName: 'head'}, function(node: RehypeAstNode): void {
+      return function transformer(tree: HastscriptAst): void {
+        visit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
           params.additionalHeadNodes.forEach(nodeInHead => {
             (node.children || []).push(nodeInHead);
           });
@@ -466,12 +506,16 @@ export function initializeNonArticlePages(
   const basePath = getPathnameWithoutTailingSlash(configs.blogUrl);
 
   return configs.nonArticles.map(nonArticleConfigs => {
+    const blogRootRelativePath = nonArticleConfigs.pathIsNormalizedToSlash
+      ? removeTailingResourceNameFromPath(nonArticleConfigs.path)
+      : nonArticleConfigs.path;
+
     return {
       nonArticlePageId: nonArticleConfigs.nonArticlePageId,
       render: nonArticleConfigs.render,
-      rootRelativePath: basePath + '/' + nonArticleConfigs.url,
-      permalink: configs.blogUrl + '/' + nonArticleConfigs.url,
-      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.url),
+      rootRelativePath: basePath + '/' + blogRootRelativePath,
+      permalink: configs.blogUrl + '/' + blogRootRelativePath,
+      outputFilePath: path.join(paths.publicationRoot, nonArticleConfigs.path),
       useLayout: nonArticleConfigs.useLayout,
       html: '',
     };
@@ -514,6 +558,7 @@ export function generateNonArticlePages(
 
   return nonArticlePages.map(nonArticlePage => {
     const nonArticlePageProps: NonArticlePageProps = {
+      additionalTopPageLinks: configs.additionalTopPageLinks,
       articles: articlesProps,
       blogName: configs.blogName,
       blogUrl: configs.blogUrl,

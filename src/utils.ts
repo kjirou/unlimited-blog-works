@@ -38,6 +38,14 @@ export function getPathnameWithoutTailingSlash(absoluteUrl: string): string {
   throw new Error('An invalid url passed');
 }
 
+/**
+ * @param path A relative url (e.g. "foo/bar", "./foo/bar") or
+ *               slash-started relative url (e.g. "/foo/bar")
+ */
+export function removeTailingResourceNameFromPath(path: string): string {
+  return path.replace(/(\/)?[^/]+$/, '$1');
+}
+
 export function permalinksToRelativeUrl(fromPermalink: string, toPermalink: string): string {
   // NOTICE: Originally `path.relative()` should not be used for URLs.
   //         In this time, there is probably no inconsistency, so there is no problem.
@@ -87,24 +95,6 @@ export function generateDateTimeString(date: Date, timeZone: string): string {
 
 export function generateTodayDateString(date: Date, timeZone: string): string {
   return formatToTimeZone(date, 'YYYYMMDD', {timeZone});
-}
-
-export interface RemarkAstNode {
-  type: string,
-  value?: string,
-  depth?: number,
-  children?: RemarkAstNode[],
-}
-
-export interface RehypeAstNode {
-  type: string,
-  tagName?: string,
-  properties?: {
-    ariaHidden?: boolean,
-    className?: string[],
-  },
-  value?: string,
-  children?: RehypeAstNode[],
 }
 
 export function scanRemarkAstNode(

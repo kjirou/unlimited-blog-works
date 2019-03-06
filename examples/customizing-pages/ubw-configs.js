@@ -10,7 +10,8 @@ const renderArticle = (props) => {
 const nonArticles = [
   {
     nonArticlePageId: 'my-top',
-    url: 'index.html',
+    path: 'index.html',
+    pathIsNormalizedToSlash: false,
     useLayout: true,
     render(props) {
       return `<h1><a href="/author.html">Author's Blog</a></h1>
@@ -19,7 +20,8 @@ const nonArticles = [
   },
   {
     nonArticlePageId: 'author',
-    url: 'author.html',
+    path: 'author.html',
+    pathIsNormalizedToSlash: false,
     useLayout: true,
     render(props) {
       return '<p>My name is Foo</p>';
