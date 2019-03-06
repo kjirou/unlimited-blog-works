@@ -75,6 +75,8 @@ export interface UbwConfigs {
   // - og:site_name = blogName
   ogp: boolean,
   // [Experimental] Additional links the bottom of the top page
+  //
+  // If you want to hide "Powered by unlimited-blog-works", change this value to empty.
   additionalTopPageLinks: {
     linkText: string,
     href: string,
