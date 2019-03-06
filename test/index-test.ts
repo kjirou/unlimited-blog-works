@@ -267,6 +267,30 @@ describe('index', function() {
               );
             });
         });
+
+        describe('additionalTopPageLinks', function() {
+          it('can render as anchor tags', function() {
+            settings.configs.additionalTopPageLinks = [
+              {linkText: 'FOOOO', href: 'https://example.com/aaa'},
+              {linkText: 'BARRR', href: 'https://example.com/bbb'},
+            ];
+
+            return executeCompileWithSettings(settings)
+              .then(result => {
+                assert.strictEqual(result.exitCode, 0);
+
+                const dump = dumpDir(workspaceRoot);
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html'].indexOf('<a href="https://example.com/aaa">FOOOO</a>'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html'].indexOf('<a href="https://example.com/bbb">BARRR</a>'),
+                  -1
+                );
+              });
+          });
+        });
       });
     });
   });
