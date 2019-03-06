@@ -74,6 +74,13 @@ export interface UbwConfigs {
   // - og:url = blogUrl + each page path
   // - og:site_name = blogName
   ogp: boolean,
+  // [Experimental] Additional links the bottom of the top page
+  //
+  // If you want to hide "Powered by unlimited-blog-works", change this value to empty.
+  additionalTopPageLinks: {
+    linkText: string,
+    href: string,
+  }[],
   // Additional tags in <head> on articles
   //
   // Set a callback that returns a list of HAST node.
@@ -121,6 +128,12 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     language: 'en',
     timeZone: 'UTC',
     ogp: true,
+    additionalTopPageLinks: [
+      {
+        linkText: 'Powered by unlimited-blog-works',
+        href: 'https://github.com/kjirou/unlimited-blog-works',
+      },
+    ],
     generateArticleHeadNodes() {
       return [];
     },
@@ -545,6 +558,7 @@ export function generateNonArticlePages(
 
   return nonArticlePages.map(nonArticlePage => {
     const nonArticlePageProps: NonArticlePageProps = {
+      additionalTopPageLinks: configs.additionalTopPageLinks,
       articles: articlesProps,
       blogName: configs.blogName,
       blogUrl: configs.blogUrl,
