@@ -9,6 +9,7 @@ import {
   executeCompile,
   executeCompileWithSettings,
   executeInit,
+  executeVersion,
   requireSettings,
 } from '../src/index';
 import {
@@ -28,6 +29,16 @@ describe('index', function() {
 
   beforeEach(function() {
     workspaceRoot = prepareWorkspace();
+  });
+
+  describe('executeVersion', function() {
+    it('can return a string that seems to be version', function() {
+      return executeVersion()
+        .then(result => {
+          assert.strictEqual(result.exitCode, 0);
+          assert.strictEqual(/^\d+\.\d+\.\d+$/.test(result.message), true);
+        });
+    });
   });
 
   describe('executeInit', function() {
