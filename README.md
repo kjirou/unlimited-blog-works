@@ -117,16 +117,21 @@ cat blog-publication/articles/20190306-0001.html
 ## :books: CLI API Reference
 
 - `ubw article new [OPTIONS]`
+  - Create an empty article.
   - `OPTIONS`
     - `--config-file, -c`
       - Pass the path of `ubw-configs.js`. If not specified, use the one in the current directory.
 - `ubw compile [OPTIONS]`
+  - Compile Markdown articles into HTML.
   - `OPTIONS`
     - `--config-file, -c`
       - Pass the path of `ubw-configs.js`. If not specified, use the one in the current directory.
 - `ubw init BLOG_SOURCE_DIR`
+  - Initialize a blog repository.
   - `BLOG_SOURCE_DIR`
     - Specify a location to generate a blog repository.
+- `ubw version`
+  - Display the version.
 
 
 ## :scroll: ubw-configs.js
