@@ -41,6 +41,7 @@ const parsedSubCommands = parseCommands(
       },
       compile: null,
       init: null,
+      version: null,
     },
   },
   process.argv.slice(2)
@@ -73,6 +74,8 @@ if (subCommand === 'article') {
     ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
     : defaultConfigFilePath;
   promise = ubw.executeCompile(configFilePath);
+} else if (subCommand === 'version') {
+  promise = ubw.executeVersion();
 }
 
 if (!promise) {

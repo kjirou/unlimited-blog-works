@@ -189,3 +189,12 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
     message: 'Done "article new"',
   });
 }
+
+export function executeVersion(): Promise<CommandResult> {
+  const packageJson = require('../package.json') as {version: string};
+
+  return Promise.resolve({
+    exitCode: 0,
+    message: packageJson.version,
+  });
+}
