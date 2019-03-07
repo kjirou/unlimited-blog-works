@@ -13,8 +13,5 @@
     /* Additional Checks */
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true
-    // TODO: Comment out until development stabilizes.
-    //"noUnusedLocals": true,
-    //"noUnusedParameters": true
   }
 }
