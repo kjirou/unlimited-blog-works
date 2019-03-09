@@ -57,9 +57,7 @@ const commands = {
   },
   'init': ({argv, cwd}) => {
     const options = minimist(argv);
-    const [
-      destinationDirPathInput,
-    ] = options._;
+    const [destinationDirPathInput] = options._;
     const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
     return ubw.executeInit(destinationDirPath);
   },
