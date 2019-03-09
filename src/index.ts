@@ -201,6 +201,13 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   });
 }
 
+export function executeNow(): Promise<CommandResult> {
+  return Promise.resolve({
+    exitCode: 0,
+    message: generateDateTimeString(new Date(), 'UTC') + '+0000',
+  });
+}
+
 export function executeVersion(): Promise<CommandResult> {
   const packageJson = require('../package.json') as {version: string};
 

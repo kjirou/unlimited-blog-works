@@ -61,6 +61,9 @@ const commands = {
     const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
     return ubw.executeInit(destinationDirPath);
   },
+  'now': () => {
+    return ubw.executeNow();
+  },
   'unknown': () => {
     return Promise.resolve({
       exitCode: 1,
@@ -87,6 +90,7 @@ const parsedSubCommands = parseCommands(
       compile: null,
       help: null,
       init: null,
+      now: null,
       version: null,
     },
   },
