@@ -39,7 +39,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(/^\d+\.\d+\.\d+$/.test(result.message), true);
-        });
+        })
+      ;
     });
   });
 
@@ -49,7 +50,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(result.message.length > 0, true);
-        });
+        })
+      ;
     });
   });
 
@@ -69,7 +71,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(result.message, '2019-01-01 00:00:00+0000');
-        });
+        })
+      ;
     });
   });
 
@@ -83,7 +86,8 @@ describe('index', function() {
           assert.strictEqual(typeof dump['ubw-configs.js'], 'string');
           assert.strictEqual(typeof dump['blog-source/external-resources/index.css'], 'string');
           assert.strictEqual(typeof dump['blog-source/external-resources/github-markdown.css'], 'string');
-        });
+        })
+      ;
     });
   });
 
@@ -109,6 +113,7 @@ describe('index', function() {
             const dump = dumpDir(workspaceRoot);
             assert.strictEqual(typeof dump['blog-source/articles/20190101-0001.md'], 'string');
           })
+        ;
       });
     });
   });
@@ -149,7 +154,8 @@ describe('index', function() {
               assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
-            });
+            })
+          ;
         });
 
         it('should add hyperlinks that refer the same page to page-title autolinks', function() {
@@ -166,7 +172,8 @@ describe('index', function() {
                 /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/articles/20190101-0001.html']),
                 true
               );
-            });
+            })
+          ;
         });
       });
 
@@ -181,7 +188,8 @@ describe('index', function() {
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-            });
+            })
+          ;
         });
 
         it('should succeed even if the "_direct" dir is empty', function() {
@@ -194,7 +202,8 @@ describe('index', function() {
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-            });
+            })
+          ;
         });
       });
 
@@ -395,7 +404,8 @@ describe('index', function() {
                   .indexOf('<link rel="/path/to/bar.css">'),
                 -1
               );
-            });
+            })
+          ;
         });
 
         it('generateNonArticleHeadNodes', function() {
@@ -419,7 +429,8 @@ describe('index', function() {
                 dump['blog-publication/index.html'].indexOf('<link rel="/path/to/bar.css">'),
                 -1
               );
-            });
+            })
+          ;
         });
 
         describe('additionalTopPageLinks', function() {
@@ -442,7 +453,8 @@ describe('index', function() {
                   dump['blog-publication/index.html'].indexOf('<a href="https://example.com/bbb">BARRR</a>'),
                   -1
                 );
-              });
+              })
+            ;
           });
         });
 
@@ -462,7 +474,8 @@ describe('index', function() {
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/">Back to the Top</a>'),
                     -1
                   );
-                });
+                })
+              ;
             });
 
             it('should render the link not normalized to slash when the value is false', function() {
@@ -479,7 +492,8 @@ describe('index', function() {
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/index.html">Back to the Top</a>'),
                     -1
                   );
-                });
+                })
+              ;
             });
           });
         });
