@@ -132,6 +132,8 @@ cat blog-publication/articles/20190306-0001.html
   - Initialize a blog repository.
   - `BLOG_SOURCE_DIR`
     - Specify a location to generate a blog repository.
+- `ubw now`
+  - Display current time by "YYYY-MM-DD HH:ii:ss+0000" format. This value can be used as `lastUpdatedAt` in the article.
 - `ubw version`
   - Display the version.
 
