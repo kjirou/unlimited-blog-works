@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 
 import {
+  classifyUrl,
   extractPageTitle,
   generateDateTimeString,
   generateTodayDateString,
@@ -70,6 +71,24 @@ describe('utils', function() {
     ].forEach(([pathInput, expected]) => {
       it(`"${pathInput}" -> "${expected}"`, function() {
         assert.strictEqual(toNormalizedAbsolutePath(pathInput, '/base'), expected);
+      });
+    });
+  });
+
+  describe('classifyUrl', function() {
+    [
+      ['https://example.com', 'absolute'],
+      ['http://example.com', 'absolute'],
+      ['https://example.com/', 'absolute'],
+      ['/foo', 'root-relative'],
+      ['/foo/bar', 'root-relative'],
+      ['foo', 'relative'],
+      ['./foo', 'relative'],
+      ['../foo', 'relative'],
+      ['', 'unknown'],
+    ].forEach(([urlLikeInput, expected]) => {
+      it(`"${urlLikeInput}" -> "${expected}"`, function() {
+        assert.strictEqual(classifyUrl(urlLikeInput), expected);
       });
     });
   });

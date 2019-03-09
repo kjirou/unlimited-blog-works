@@ -22,6 +22,21 @@ export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: st
   return path.normalize(absolutePath);
 }
 
+export function classifyUrl(urlLike: string): 'absolute' | 'root-relative' | 'relative' | 'unknown' {
+  const urlObj = url.parse(urlLike);
+  if (typeof urlObj.host === 'string') {
+    return 'absolute';
+  } else if (typeof urlObj.pathname === 'string') {
+    if (/^\//.test(urlObj.pathname)) {
+      return 'root-relative';
+    } else {
+      return 'relative';
+    }
+  } else {
+    return 'unknown';
+  }
+}
+
 /**
  * It is mainly used to normalize the following last case.
  *
