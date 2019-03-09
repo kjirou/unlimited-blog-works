@@ -70,12 +70,17 @@ export interface UbwConfigs {
   timeZone: string,
   // Easy OGP setting
   //
-  // When you pass an object, the following settings are made for all articles.
+  // When you pass true, the following settings are made for all articles.
   // - og:title = Set the page name by top heading.
   // - og:type = It is always "website".
+  // - og:image = The head image of each article or "defaultOgpImageUrl" or not.
   // - og:url = blogUrl + each page path
   // - og:site_name = blogName
   ogp: boolean,
+  // An absolute url to use default og:image for each article
+  //
+  // It is disabled if it is empty or "ogp" is false.
+  defaultOgpImageUrl: string,
   // [Experimental] Additional links the bottom of the top page
   //
   // If you want to hide "Powered by unlimited-blog-works", change this value to empty.
@@ -130,6 +135,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     language: 'en',
     timeZone: 'UTC',
     ogp: true,
+    defaultOgpImageUrl: '',
     additionalTopPageLinks: [
       {
         linkText: 'Powered by unlimited-blog-works',
@@ -434,7 +440,7 @@ export function preprocessArticlePages(
     const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
     const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
-    let ogpImageUrl = '';
+    let ogpImageUrl = configs.defaultOgpImageUrl;
     if (configs.ogp) {
       scanRemarkAstNode(ast, (node) => {
         if (node.type === 'image') {
@@ -596,7 +602,7 @@ export function generateNonArticlePages(
 
     if (nonArticlePage.useLayout) {
       const ogpNodes = configs.ogp
-        ? generateOgpNodes(configs.blogName, '', nonArticlePage.permalink, configs.blogName)
+        ? generateOgpNodes(configs.blogName, configs.defaultOgpImageUrl, nonArticlePage.permalink, configs.blogName)
         : [];
 
       const unifiedResult = unified()
