@@ -14,6 +14,7 @@ import {
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
+  classifyUrl,
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,
@@ -210,6 +211,20 @@ export function createInitialUbwConfigs(): ActualUbwConfigs {
 
 export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs {
   return Object.assign({}, createDefaultUbwConfigs(), configs);
+}
+
+function findFirstImageUrl(node: RemarkAstNode): string {
+  let found = '';
+  scanRemarkAstNode(node, (node_) => {
+    if (node_.type === 'image') {
+      if (node_.url) {
+        found = node_.url;
+      }
+      return true;
+    }
+    return false;
+  });
+  return found;
 }
 
 function generateOgpNodes(
@@ -440,18 +455,20 @@ export function preprocessArticlePages(
     const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
     const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
-    let ogpImageUrl = configs.defaultOgpImageUrl;
+    let ogpImageUrl = '';
     if (configs.ogp) {
-      scanRemarkAstNode(ast, (node) => {
-        if (node.type === 'image') {
-          if (node.url) {
-            const relativeOgpImageFilePath = node.url;
-            ogpImageUrl = urlModule.resolve(`${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/`, node.url);
-          }
-          return true;
+      ogpImageUrl = configs.defaultOgpImageUrl;
+      const foundUrl = findFirstImageUrl(ast);
+      if (foundUrl) {
+        const urlType = classifyUrl(foundUrl);
+        if (urlType === 'absolute') {
+          ogpImageUrl = foundUrl;
+        } else if (urlType === 'root-relative') {
+          ogpImageUrl = `${configs.blogUrl}${foundUrl}`;
+        } else if (urlType === 'relative') {
+          ogpImageUrl = urlModule.resolve(`${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/`, foundUrl);
         }
-        return false;
-      });
+      }
     }
 
     return Object.assign({}, articlePage, {
