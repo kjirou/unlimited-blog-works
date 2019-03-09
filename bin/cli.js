@@ -45,6 +45,15 @@ const commands = {
       : defaultConfigFilePath;
     return ubw.executeArticleNew(configFilePath);
   },
+  'article--touch': ({argv, cwd, defaultConfigFilePath}) => {
+    const options = minimist(argv, appendConfigFileParser({}));
+    const [articleFilePathInput] = options._;
+    const configFilePath = options['config-file']
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
+      : defaultConfigFilePath;
+    const articleFilePath = ubw.cliUtils.toNormalizedAbsolutePath(articleFilePathInput, cwd);
+    return ubw.executeArticleTouch(configFilePath, articleFilePath);
+  },
   'compile': ({argv, cwd, defaultConfigFilePath}) => {
     const options = minimist(argv, appendConfigFileParser({}));
     const configFilePath = options['config-file']
@@ -84,6 +93,7 @@ const parsedSubCommands = parseCommands(
       article: {
         commands: {
           new: null,
+          touch: null,
         },
       },
       compile: null,

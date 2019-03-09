@@ -102,6 +102,20 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   });
 }
 
+export function executeArticleTouch(configFilePath: string, articleFilePath: string): Promise<CommandResult> {
+  const {
+    configs,
+    blogRoot,
+  } = requireSettings(configFilePath);
+
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
+
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "article touch"',
+  });
+}
+
 export function executeCompile(configFilePath: string): Promise<CommandResult> {
   const settings = requireSettings(configFilePath);
   return executeCompileWithSettings(settings);
