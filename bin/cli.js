@@ -52,6 +52,9 @@ const commands = {
       : defaultConfigFilePath;
     return ubw.executeCompile(configFilePath);
   },
+  'help': () => {
+    return ubw.executeHelp();
+  },
   'init': ({argv, cwd}) => {
     const options = minimist(argv);
     const [
@@ -84,6 +87,7 @@ const parsedSubCommands = parseCommands(
         },
       },
       compile: null,
+      help: null,
       init: null,
       version: null,
     },

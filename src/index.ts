@@ -190,6 +190,13 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   });
 }
 
+export function executeHelp(): Promise<CommandResult> {
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Please see the README of https://github.com/kjirou/unlimited-blog-works',
+  });
+}
+
 export function executeVersion(): Promise<CommandResult> {
   const packageJson = require('../package.json') as {version: string};
 

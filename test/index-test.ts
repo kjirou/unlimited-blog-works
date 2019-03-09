@@ -8,6 +8,7 @@ import {
   executeArticleNew,
   executeCompile,
   executeCompileWithSettings,
+  executeHelp,
   executeInit,
   executeVersion,
   requireSettings,
@@ -37,6 +38,16 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(/^\d+\.\d+\.\d+$/.test(result.message), true);
+        });
+    });
+  });
+
+  describe('executeHelp', function() {
+    it('can return a sentence of something', function() {
+      return executeHelp()
+        .then(result => {
+          assert.strictEqual(result.exitCode, 0);
+          assert.strictEqual(result.message.length > 0, true);
         });
     });
   });
