@@ -127,30 +127,21 @@ describe('utils', function() {
       scanRemarkAstNode(
         {
           type: 'foo',
-          value: 'FOO',
           children: [
             {
               type: 'bar',
-              value: 'BAR',
               children: [
-                {
-                  type: 'baz',
-                  value: 'BAZ',
-                },
+                {type: 'baz'},
               ],
             },
           ],
         },
         (node) => {
-          results.push(node.value as string);
+          results.push(node.type);
           return false;
         }
       );
-      assert.deepStrictEqual(results, [
-        'FOO',
-        'BAR',
-        'BAZ',
-      ]);
+      assert.deepStrictEqual(results, ['foo', 'bar', 'baz']);
     });
 
     it('can evalute children\'s siblings', function() {
@@ -158,28 +149,17 @@ describe('utils', function() {
       scanRemarkAstNode(
         {
           type: 'foo',
-          value: 'FOO',
           children: [
-            {
-              type: 'x',
-              value: 'X',
-            },
-            {
-              type: 'y',
-              value: 'Y',
-            },
+            {type: 'x'},
+            {type: 'y'},
           ],
         },
         (node) => {
-          results.push(node.value as string);
+          results.push(node.type);
           return false;
         }
       );
-      assert.deepStrictEqual(results, [
-        'FOO',
-        'X',
-        'Y',
-      ]);
+      assert.deepStrictEqual(results, ['foo', 'x', 'y']);
     });
 
     it('can stop scanning if the callback returns true', function() {
