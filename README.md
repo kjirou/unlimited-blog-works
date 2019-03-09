@@ -126,6 +126,8 @@ cat blog-publication/articles/20190306-0001.html
   - `OPTIONS`
     - `--config-file, -c`
       - Pass the path of `ubw-configs.js`. If not specified, use the one in the current directory.
+- `ubw help`
+  - Display the help. Currently just display the URL to here.
 - `ubw init BLOG_SOURCE_DIR`
   - Initialize a blog repository.
   - `BLOG_SOURCE_DIR`
