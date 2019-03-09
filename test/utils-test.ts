@@ -27,6 +27,20 @@ describe('utils', function() {
         );
       });
     });
+
+    describe('timeZoneSuffix option', function() {
+      [
+        ['2019-01-01 00:00:00+0000', 'UTC', '2019-01-01 00:00:00+0000'],
+        ['2019-01-01 00:00:00+0000', 'Asia/Tokyo', '2019-01-01 09:00:00+0900'],
+      ].forEach(([actual, expectedTimeZone, expected]) => {
+        it(`${actual} -> (${expectedTimeZone}) ${expected}`, function() {
+          assert.strictEqual(
+            generateDateTimeString(new Date(actual), expectedTimeZone, {timeZoneSuffix: true}),
+            expected
+          );
+        });
+      });
+    });
   });
 
   describe('generateTodayDateString', function() {

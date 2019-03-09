@@ -89,8 +89,16 @@ export function generateBlogPaths(blogRoot: string, relativePublicationDirPath: 
   };
 }
 
-export function generateDateTimeString(date: Date, timeZone: string): string {
-  return formatToTimeZone(date, 'YYYY-MM-DD HH:mm:ss', {timeZone});
+export function generateDateTimeString(
+  date: Date,
+  timeZone: string,
+  options: {timeZoneSuffix?: boolean} = {}
+): string {
+  let formatString = 'YYYY-MM-DD HH:mm:ss';
+  if (options.timeZoneSuffix === true) {
+    formatString += 'ZZ';
+  }
+  return formatToTimeZone(date, formatString, {timeZone});
 }
 
 export function generateTodayDateString(date: Date, timeZone: string): string {
