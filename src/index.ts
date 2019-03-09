@@ -30,46 +30,9 @@ import {
 import TopLayout from './templates/TopLayout';
 import {NonArticlePageProps} from './templates/shared';
 
-export const createDefaultUbwConfigs = createDefaultUbwConfigs_;
-
-export const cliUtils = {
-  CONFIG_FILE_NAME,
-  toNormalizedAbsolutePath,
-};
-
 export interface CommandResult {
   exitCode: number,
   message: string,
-}
-
-export function executeInit(blogRoot: string): Promise<CommandResult> {
-  const configFilePath = path.join(blogRoot, CONFIG_FILE_NAME);
-
-  const initialConfigs = createInitialUbwConfigs();
-  const configs = fillWithDefaultUbwConfigs(initialConfigs);
-
-  const configFileSource = [
-    'module.exports = function ubwConfigs() {',
-    `return ${JSON.stringify(initialConfigs, null, 2)};`
-      .split('\n')
-      .map(line => '  ' + line)
-      .join('\n'),
-    '}',
-    '',
-  ].join('\n');
-
-  fs.ensureDirSync(blogRoot);
-  fs.writeFileSync(configFilePath, configFileSource);
-
-  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
-
-  fs.ensureDirSync(paths.sourceExternalResourcesRoot);
-  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
-
-  return Promise.resolve({
-    exitCode: 0,
-    message: 'Done "init"',
-  });
 }
 
 export interface UbwSettings {
@@ -87,6 +50,56 @@ export function requireSettings(configFilePath: string): UbwSettings {
     configs,
     blogRoot,
   };
+}
+
+export const createDefaultUbwConfigs = createDefaultUbwConfigs_;
+
+export const cliUtils = {
+  CONFIG_FILE_NAME,
+  toNormalizedAbsolutePath,
+};
+
+//
+// Executables
+//
+
+export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
+  const {
+    configs,
+    blogRoot,
+  } = requireSettings(configFilePath);
+
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
+
+  fs.ensureDirSync(paths.sourceRoot);
+  fs.ensureDirSync(paths.sourceArticlesRoot);
+
+  const articlePages: ArticlePage[] =
+    initializeArticlePages(blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot));
+
+  const now = new Date();
+  const todayDateString = generateTodayDateString(now, configs.timeZone);
+  const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
+  const frontMatters = createInitialArticleFrontMatters(
+    articleId,
+    // TODO: Make to append the TZ suffix by options
+    generateDateTimeString(now, 'UTC') + '+0000'
+  );
+
+  fs.writeFileSync(
+    path.join(paths.sourceArticlesRoot, articleId + '.md'),
+    [
+      // TODO: Want to wrap string variables with double quotes always.
+      '---\n' + yaml.safeDump(frontMatters) + '---',
+      '',
+      '# Page Title\n',
+    ].join('\n')
+  );
+
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "article new"',
+  });
 }
 
 export function executeCompile(configFilePath: string): Promise<CommandResult> {
@@ -151,49 +164,40 @@ export function executeCompileWithSettings(settings: UbwSettings): Promise<Comma
   });
 }
 
-export function executeArticleNew(configFilePath: string): Promise<CommandResult> {
-  const {
-    configs,
-    blogRoot,
-  } = requireSettings(configFilePath);
-
-  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
-
-  fs.ensureDirSync(paths.sourceRoot);
-  fs.ensureDirSync(paths.sourceArticlesRoot);
-
-  const articlePages: ArticlePage[] =
-    initializeArticlePages(blogRoot, configs, fs.readdirSync(paths.sourceArticlesRoot));
-
-  const now = new Date();
-  const todayDateString = generateTodayDateString(now, configs.timeZone);
-  const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
-  const frontMatters = createInitialArticleFrontMatters(
-    articleId,
-    // TODO: Make to append the TZ suffix by options
-    generateDateTimeString(now, 'UTC') + '+0000'
-  );
-
-  fs.writeFileSync(
-    path.join(paths.sourceArticlesRoot, articleId + '.md'),
-    [
-      // TODO: Want to wrap string variables with double quotes always.
-      '---\n' + yaml.safeDump(frontMatters) + '---',
-      '',
-      '# Page Title\n',
-    ].join('\n')
-  );
-
-  return Promise.resolve({
-    exitCode: 0,
-    message: 'Done "article new"',
-  });
-}
-
 export function executeHelp(): Promise<CommandResult> {
   return Promise.resolve({
     exitCode: 0,
     message: 'Please see the README of https://github.com/kjirou/unlimited-blog-works',
+  });
+}
+
+export function executeInit(blogRoot: string): Promise<CommandResult> {
+  const configFilePath = path.join(blogRoot, CONFIG_FILE_NAME);
+
+  const initialConfigs = createInitialUbwConfigs();
+  const configs = fillWithDefaultUbwConfigs(initialConfigs);
+
+  const configFileSource = [
+    'module.exports = function ubwConfigs() {',
+    `return ${JSON.stringify(initialConfigs, null, 2)};`
+      .split('\n')
+      .map(line => '  ' + line)
+      .join('\n'),
+    '}',
+    '',
+  ].join('\n');
+
+  fs.ensureDirSync(blogRoot);
+  fs.writeFileSync(configFilePath, configFileSource);
+
+  const paths = generateBlogPaths(blogRoot, configs.publicationDir);
+
+  fs.ensureDirSync(paths.sourceExternalResourcesRoot);
+  fs.copySync(PRESETS_EXTERNAL_RESOURCES_ROOT, paths.sourceExternalResourcesRoot);
+
+  return Promise.resolve({
+    exitCode: 0,
+    message: 'Done "init"',
   });
 }
 
