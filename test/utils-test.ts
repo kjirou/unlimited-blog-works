@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 
 import {
+  classifyUrl,
   extractPageTitle,
   generateDateTimeString,
   generateTodayDateString,
@@ -74,6 +75,24 @@ describe('utils', function() {
     });
   });
 
+  describe('classifyUrl', function() {
+    [
+      ['https://example.com', 'absolute'],
+      ['http://example.com', 'absolute'],
+      ['https://example.com/', 'absolute'],
+      ['/foo', 'root-relative'],
+      ['/foo/bar', 'root-relative'],
+      ['foo', 'relative'],
+      ['./foo', 'relative'],
+      ['../foo', 'relative'],
+      ['', 'unknown'],
+    ].forEach(([urlLikeInput, expected]) => {
+      it(`"${urlLikeInput}" -> "${expected}"`, function() {
+        assert.strictEqual(classifyUrl(urlLikeInput), expected);
+      });
+    });
+  });
+
   describe('getPathnameWithoutTailingSlash', function() {
     [
       ['https://example.com', ''],
@@ -127,29 +146,21 @@ describe('utils', function() {
       scanRemarkAstNode(
         {
           type: 'foo',
-          value: 'FOO',
           children: [
             {
               type: 'bar',
-              value: 'BAR',
               children: [
-                {
-                  type: 'baz',
-                  value: 'BAZ',
-                },
+                {type: 'baz'},
               ],
             },
           ],
         },
         (node) => {
-          results.push(node.value as string);
+          results.push(node.type);
+          return false;
         }
       );
-      assert.deepStrictEqual(results, [
-        'FOO',
-        'BAR',
-        'BAZ',
-      ]);
+      assert.deepStrictEqual(results, ['foo', 'bar', 'baz']);
     });
 
     it('can evalute children\'s siblings', function() {
@@ -157,27 +168,35 @@ describe('utils', function() {
       scanRemarkAstNode(
         {
           type: 'foo',
-          value: 'FOO',
           children: [
-            {
-              type: 'x',
-              value: 'X',
-            },
-            {
-              type: 'y',
-              value: 'Y',
-            },
+            {type: 'x'},
+            {type: 'y'},
           ],
         },
         (node) => {
-          results.push(node.value as string);
+          results.push(node.type);
+          return false;
         }
       );
-      assert.deepStrictEqual(results, [
-        'FOO',
-        'X',
-        'Y',
-      ]);
+      assert.deepStrictEqual(results, ['foo', 'x', 'y']);
+    });
+
+    it('can stop scanning if the callback returns true', function() {
+      const results: string[] = [];
+      scanRemarkAstNode(
+        {
+          type: 'x',
+          children: [
+            {type: 'stopper'},
+            {type: 'y'},
+          ],
+        },
+        (node) => {
+          results.push(node.type);
+          return node.type === 'stopper';
+        }
+      );
+      assert.deepStrictEqual(results, ['x', 'stopper']);
     });
   });
 

@@ -1,8 +1,9 @@
 import * as hast from 'hastscript';
+import * as yaml from 'js-yaml';
 import * as path from 'path';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import * as yaml from 'js-yaml';
+import * as urlModule from 'url';
 
 import ArticleLayout from './templates/ArticleLayout';
 import TopLayout from './templates/TopLayout';
@@ -13,11 +14,13 @@ import {
 import {
   RELATIVE_ARTICLES_DIR_PATH,
   RELATIVE_EXTERNAL_RESOURCES_DIR_PATH,
+  classifyUrl,
   extractPageTitle,
   generateDateTimeString,
   generateBlogPaths,
   getPathnameWithoutTailingSlash,
   removeTailingResourceNameFromPath,
+  scanRemarkAstNode,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
@@ -68,12 +71,17 @@ export interface UbwConfigs {
   timeZone: string,
   // Easy OGP setting
   //
-  // When you pass an object, the following settings are made for all articles.
+  // When you pass true, the following settings are made for all articles.
   // - og:title = Set the page name by top heading.
   // - og:type = It is always "website".
+  // - og:image = The head image of each article or "defaultOgpImageUrl" or not.
   // - og:url = blogUrl + each page path
   // - og:site_name = blogName
   ogp: boolean,
+  // An absolute url to use default og:image for each article
+  //
+  // It is disabled if it is empty or "ogp" is false.
+  defaultOgpImageUrl: string,
   // [Experimental] Additional links the bottom of the top page
   //
   // If you want to hide "Powered by unlimited-blog-works", change this value to empty.
@@ -128,6 +136,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
     language: 'en',
     timeZone: 'UTC',
     ogp: true,
+    defaultOgpImageUrl: '',
     additionalTopPageLinks: [
       {
         linkText: 'Powered by unlimited-blog-works',
@@ -204,10 +213,30 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
   return Object.assign({}, createDefaultUbwConfigs(), configs);
 }
 
-function generateOgpNodes(title: string, url: string, siteName: string): HastscriptAst[] {
+function findFirstImageUrl(node: RemarkAstNode): string {
+  let found = '';
+  scanRemarkAstNode(node, (node_) => {
+    if (node_.type === 'image') {
+      if (node_.url) {
+        found = node_.url;
+      }
+      return true;
+    }
+    return false;
+  });
+  return found;
+}
+
+function generateOgpNodes(
+  title: string,
+  image: string,
+  url: string,
+  siteName: string
+): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
     hast('meta', {property: 'og:type', content: 'website'}),
+    ...(image !== '' ? [hast('meta', {property: 'og:image', content: image})] : []),
     hast('meta', {property: 'og:url', content: url}),
     hast('meta', {property: 'og:site_name', content: siteName}),
   ];
@@ -329,6 +358,7 @@ export interface ArticlePage {
   outputFilePath: string,
   rootRelativePath: string,
   permalink: string,
+  ogpImageUrl: string,  // "" means that it does not exist.
   html: string,
   markdown: string,
   pageTitle: string,
@@ -353,6 +383,7 @@ export function createArticlePage(): ArticlePage {
     outputFilePath: '',
     rootRelativePath: '',
     permalink: '',
+    ogpImageUrl: '',
     html: '',
     markdown: '',
     pageTitle: '',
@@ -405,8 +436,8 @@ export function preprocessArticlePages(
 ): ArticlePage[] {
   const paths = generateBlogPaths(blogRoot, configs.publicationDir);
 
-  // NOTE: unified().parse() で生成した Syntax Tree を再利用して、
-  //       unified().stringify() で処理する方法が不明だった。
+  // NOTE: .html を生成する際にも .md を Ast にする変換は行なっており、つまりは二度同じことをしている。
+  //       これは、unified().parse() で生成した Ast を再利用して .stringify() へ直接渡す方法が不明だったため。
   return articlePages.map(articlePage => {
     const ast = unified()
       .use(remarkParse)
@@ -424,11 +455,28 @@ export function preprocessArticlePages(
     const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
     const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
 
+    let ogpImageUrl = '';
+    if (configs.ogp) {
+      ogpImageUrl = configs.defaultOgpImageUrl;
+      const foundUrl = findFirstImageUrl(ast);
+      if (foundUrl) {
+        const urlType = classifyUrl(foundUrl);
+        if (urlType === 'absolute') {
+          ogpImageUrl = foundUrl;
+        } else if (urlType === 'root-relative') {
+          ogpImageUrl = `${configs.blogUrl}${foundUrl}`;
+        } else if (urlType === 'relative') {
+          ogpImageUrl = urlModule.resolve(`${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/`, foundUrl);
+        }
+      }
+    }
+
     return Object.assign({}, articlePage, {
       // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       rootRelativePath,
       permalink,
+      ogpImageUrl,
       pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
@@ -472,7 +520,7 @@ export function generateArticlePages(
     const articleHtml = configs.renderArticle(articlePageProps);
 
     const ogpNodes = configs.ogp
-      ? generateOgpNodes(articlePage.pageTitle, articlePage.permalink, configs.blogName)
+      ? generateOgpNodes(articlePage.pageTitle, articlePage.ogpImageUrl, articlePage.permalink, configs.blogName)
       : [];
 
     const unifiedResult = unified()
@@ -571,7 +619,7 @@ export function generateNonArticlePages(
 
     if (nonArticlePage.useLayout) {
       const ogpNodes = configs.ogp
-        ? generateOgpNodes(configs.blogName, nonArticlePage.permalink, configs.blogName)
+        ? generateOgpNodes(configs.blogName, configs.defaultOgpImageUrl, nonArticlePage.permalink, configs.blogName)
         : [];
 
       const unifiedResult = unified()

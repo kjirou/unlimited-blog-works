@@ -22,6 +22,21 @@ export function toNormalizedAbsolutePath(pathInput: string, baseAbsolutePath: st
   return path.normalize(absolutePath);
 }
 
+export function classifyUrl(urlLike: string): 'absolute' | 'root-relative' | 'relative' | 'unknown' {
+  const urlObj = url.parse(urlLike);
+  if (typeof urlObj.host === 'string') {
+    return 'absolute';
+  } else if (typeof urlObj.pathname === 'string') {
+    if (/^\//.test(urlObj.pathname)) {
+      return 'root-relative';
+    } else {
+      return 'relative';
+    }
+  } else {
+    return 'unknown';
+  }
+}
+
 /**
  * It is mainly used to normalize the following last case.
  *
@@ -107,14 +122,23 @@ export function generateTodayDateString(date: Date, timeZone: string): string {
 
 export function scanRemarkAstNode(
   node: RemarkAstNode,
-  callback: (node: RemarkAstNode) => void
+  callback: (node: RemarkAstNode) => boolean
 ): void {
-  callback(node);
-  if (node.children) {
-    node.children.forEach(childNode => {
-      scanRemarkAstNode(childNode, callback);
-    });
+  function scanNode(
+    node_: RemarkAstNode,
+    callback_: (node: RemarkAstNode) => boolean
+  ): boolean {
+    if (callback_(node_)) {
+      return true;
+    };
+    if (node_.children) {
+      return node_.children.some(childNode => {
+        return scanNode(childNode, callback_);
+      });
+    }
+    return false;
   }
+  scanNode(node, callback);
 }
 
 export function extractPageTitle(node: RemarkAstNode): string {
@@ -126,8 +150,10 @@ export function extractPageTitle(node: RemarkAstNode): string {
         if (trimmed) {
           fragments.push(trimmed);
         }
+        return false;
       });
     }
+    return false;
   });
   return fragments.join(' ');
 }

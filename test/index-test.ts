@@ -39,7 +39,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(/^\d+\.\d+\.\d+$/.test(result.message), true);
-        });
+        })
+      ;
     });
   });
 
@@ -49,7 +50,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(result.message.length > 0, true);
-        });
+        })
+      ;
     });
   });
 
@@ -69,7 +71,8 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(result.message, '2019-01-01 00:00:00+0000');
-        });
+        })
+      ;
     });
   });
 
@@ -83,7 +86,8 @@ describe('index', function() {
           assert.strictEqual(typeof dump['ubw-configs.js'], 'string');
           assert.strictEqual(typeof dump['blog-source/external-resources/index.css'], 'string');
           assert.strictEqual(typeof dump['blog-source/external-resources/github-markdown.css'], 'string');
-        });
+        })
+      ;
     });
   });
 
@@ -109,6 +113,7 @@ describe('index', function() {
             const dump = dumpDir(workspaceRoot);
             assert.strictEqual(typeof dump['blog-source/articles/20190101-0001.md'], 'string');
           })
+        ;
       });
     });
   });
@@ -149,7 +154,8 @@ describe('index', function() {
               assert.strictEqual(typeof dump['blog-publication/external-resources/index.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/external-resources/github-markdown.css'], 'string');
               assert.strictEqual(typeof dump['blog-publication/articles/20190101-0001.html'], 'string');
-            });
+            })
+          ;
         });
 
         it('should add hyperlinks that refer the same page to page-title autolinks', function() {
@@ -166,7 +172,8 @@ describe('index', function() {
                 /<h1 .+href="".+<\/h1>/.test(dump['blog-publication/articles/20190101-0001.html']),
                 true
               );
-            });
+            })
+          ;
         });
       });
 
@@ -176,12 +183,11 @@ describe('index', function() {
 
           return executeCompile(configFilePath)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-            });
+            })
+          ;
         });
 
         it('should succeed even if the "_direct" dir is empty', function() {
@@ -189,12 +195,11 @@ describe('index', function() {
 
           return executeCompile(configFilePath)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
-            });
+            })
+          ;
         });
       });
 
@@ -206,59 +211,168 @@ describe('index', function() {
           settings = requireSettings(configFilePath);
         });
 
-        it('ogp', function() {
-          Object.assign(settings.configs, {
-            blogName: 'FOO',
-            blogUrl: 'https://example.com/bar',
+        describe('ogp, defaultOgpImageUrl', function() {
+          beforeEach(function() {
+            Object.assign(settings.configs, {
+              blogName: 'FOO',
+              blogUrl: 'https://example.com/bar',
+            });
           });
 
-          return executeCompileWithSettings(settings)
-            .then(result => {
-              assert.strictEqual(result.exitCode, 0);
+          it('og:title, og:url, og:site_name, og:type', function() {
+            return executeCompileWithSettings(settings)
+              .then(result => {
+                const dump = dumpDir(workspaceRoot);
+                assert.notStrictEqual(
+                  dump['blog-publication/articles/20190101-0001.html']
+                    .indexOf('<meta property="og:type" content="website">'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/articles/20190101-0001.html']
+                    .indexOf('<meta property="og:url" content="https://example.com/bar/articles/20190101-0001.html">'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/articles/20190101-0001.html']
+                    .indexOf('<meta property="og:site_name" content="FOO">'),
+                  -1
+                );
 
-              const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
-                dump['blog-publication/articles/20190101-0001.html']
-                  .indexOf('<meta property="og:title" content="Page Title">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/articles/20190101-0001.html']
-                  .indexOf('<meta property="og:type" content="website">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/articles/20190101-0001.html']
-                  .indexOf('<meta property="og:url" content="https://example.com/bar/articles/20190101-0001.html">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/articles/20190101-0001.html']
-                  .indexOf('<meta property="og:site_name" content="FOO">'),
-                -1
-              );
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html']
+                    .indexOf('<meta property="og:type" content="website">'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html']
+                    .indexOf('<meta property="og:url" content="https://example.com/bar/">'),
+                  -1
+                );
+                assert.notStrictEqual(
+                  dump['blog-publication/index.html']
+                    .indexOf('<meta property="og:site_name" content="FOO">'),
+                  -1
+                );
+              })
+            ;
+          });
 
-              assert.notStrictEqual(
-                dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:title" content="FOO">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:type" content="website">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:url" content="https://example.com/bar/">'),
-                -1
-              );
-              assert.notStrictEqual(
-                dump['blog-publication/index.html']
-                  .indexOf('<meta property="og:site_name" content="FOO">'),
-                -1
-              );
+          describe('og:image', function() {
+            let articleSource: string;
+
+            beforeEach(function() {
+              articleSource = fs.readFileSync(path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'))
+                .toString();
+              settings.configs.defaultOgpImageUrl = 'https://example.com/default.png';
             });
+
+            it('should use defaultOgpImageUrl when the article does not have any images', function() {
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html']
+                      .indexOf('<meta property="og:image" content="https://example.com/default.png">'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should not render "og:image" when the article does not have any images and defaultOgpImageUrl is an empty', function() {
+              settings.configs.defaultOgpImageUrl = '';
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.strictEqual(
+                    dump['blog-publication/articles/20190101-0001.html'].indexOf('og:image'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should use the first "![](url)" of the article', function() {
+              fs.writeFileSync(
+                path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'),
+                articleSource + '![](http://foo.com/a.png) ![](http://bar.com/b.png)'
+              );
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html']
+                      .indexOf('<meta property="og:image" content="http://foo.com/a.png">'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should resolve the "![](relative-url)" of the article', function() {
+              fs.writeFileSync(
+                path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'),
+                articleSource + '![](./a.png)'
+              );
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html']
+                      .indexOf('<meta property="og:image" content="https://example.com/bar/articles/a.png">'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should resolve the "![](root-relative-url)" of the article', function() {
+              fs.writeFileSync(
+                path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'),
+                articleSource + '![](/a.png)'
+              );
+
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/articles/20190101-0001.html']
+                      .indexOf('<meta property="og:image" content="https://example.com/bar/a.png">'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should use defaultOgpImageUrl in non-articles', function() {
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.notStrictEqual(
+                    dump['blog-publication/index.html']
+                      .indexOf('<meta property="og:image" content="https://example.com/default.png">'),
+                    -1
+                  );
+                })
+              ;
+            });
+
+            it('should not render "og:image" in non-articles when defaultOgpImageUrl is an empty', function() {
+              settings.configs.defaultOgpImageUrl = '';
+              return executeCompileWithSettings(settings)
+                .then(result => {
+                  const dump = dumpDir(workspaceRoot);
+                  assert.strictEqual(
+                    dump['blog-publication/index.html'].indexOf('og:image'),
+                    -1
+                  );
+                })
+              ;
+            });
+          });
         });
 
         it('generateArticleHeadNodes', function() {
@@ -271,8 +385,6 @@ describe('index', function() {
 
           return executeCompileWithSettings(settings)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.notStrictEqual(
                 dump['blog-publication/articles/20190101-0001.html']
@@ -284,7 +396,8 @@ describe('index', function() {
                   .indexOf('<link rel="/path/to/bar.css">'),
                 -1
               );
-            });
+            })
+          ;
         });
 
         it('generateNonArticleHeadNodes', function() {
@@ -297,8 +410,6 @@ describe('index', function() {
 
           return executeCompileWithSettings(settings)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.notStrictEqual(
                 dump['blog-publication/index.html'].indexOf('<script src="/path/to/foo.js"></script>'),
@@ -308,7 +419,8 @@ describe('index', function() {
                 dump['blog-publication/index.html'].indexOf('<link rel="/path/to/bar.css">'),
                 -1
               );
-            });
+            })
+          ;
         });
 
         describe('additionalTopPageLinks', function() {
@@ -320,8 +432,6 @@ describe('index', function() {
 
             return executeCompileWithSettings(settings)
               .then(result => {
-                assert.strictEqual(result.exitCode, 0);
-
                 const dump = dumpDir(workspaceRoot);
                 assert.notStrictEqual(
                   dump['blog-publication/index.html'].indexOf('<a href="https://example.com/aaa">FOOOO</a>'),
@@ -331,7 +441,8 @@ describe('index', function() {
                   dump['blog-publication/index.html'].indexOf('<a href="https://example.com/bbb">BARRR</a>'),
                   -1
                 );
-              });
+              })
+            ;
           });
         });
 
@@ -344,14 +455,13 @@ describe('index', function() {
 
               return executeCompileWithSettings(settings)
                 .then(result => {
-                  assert.strictEqual(result.exitCode, 0);
-
                   const dump = dumpDir(workspaceRoot);
                   assert.notStrictEqual(
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/">Back to the Top</a>'),
                     -1
                   );
-                });
+                })
+              ;
             });
 
             it('should render the link not normalized to slash when the value is false', function() {
@@ -361,14 +471,13 @@ describe('index', function() {
 
               return executeCompileWithSettings(settings)
                 .then(result => {
-                  assert.strictEqual(result.exitCode, 0);
-
                   const dump = dumpDir(workspaceRoot);
                   assert.notStrictEqual(
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/index.html">Back to the Top</a>'),
                     -1
                   );
-                });
+                })
+              ;
             });
           });
         });

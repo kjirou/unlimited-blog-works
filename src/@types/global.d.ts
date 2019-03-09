@@ -16,6 +16,7 @@ interface RemarkAstNode {
   type: string,
   value?: string,
   depth?: number,
+  url?: string,
   children?: RemarkAstNode[],
 }
 
