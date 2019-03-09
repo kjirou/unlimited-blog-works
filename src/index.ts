@@ -82,8 +82,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
   const frontMatters = createInitialArticleFrontMatters(
     articleId,
-    // TODO: Make to append the TZ suffix by options
-    generateDateTimeString(now, 'UTC') + '+0000'
+    generateDateTimeString(now, 'UTC', {timeZoneSuffix: true})
   );
 
   fs.writeFileSync(
@@ -204,7 +203,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 export function executeNow(): Promise<CommandResult> {
   return Promise.resolve({
     exitCode: 0,
-    message: generateDateTimeString(new Date(), 'UTC') + '+0000',
+    message: generateDateTimeString(new Date(), 'UTC', {timeZoneSuffix: true}),
   });
 }
 
