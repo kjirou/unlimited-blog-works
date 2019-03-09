@@ -82,8 +82,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
   const articleId = getNextAutomaticArticleId(articlePages, todayDateString);
   const frontMatters = createInitialArticleFrontMatters(
     articleId,
-    // TODO: Make to append the TZ suffix by options
-    generateDateTimeString(now, 'UTC') + '+0000'
+    generateDateTimeString(now, 'UTC', {timeZoneSuffix: true})
   );
 
   fs.writeFileSync(
@@ -98,7 +97,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "article new"',
+    message: '',
   });
 }
 
@@ -160,7 +159,7 @@ export function executeCompileWithSettings(settings: UbwSettings): Promise<Comma
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "compile"',
+    message: '',
   });
 }
 
@@ -197,7 +196,14 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "init"',
+    message: '',
+  });
+}
+
+export function executeNow(): Promise<CommandResult> {
+  return Promise.resolve({
+    exitCode: 0,
+    message: generateDateTimeString(new Date(), 'UTC', {timeZoneSuffix: true}),
   });
 }
 

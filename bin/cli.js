@@ -57,11 +57,12 @@ const commands = {
   },
   'init': ({argv, cwd}) => {
     const options = minimist(argv);
-    const [
-      destinationDirPathInput,
-    ] = options._;
+    const [destinationDirPathInput] = options._;
     const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
     return ubw.executeInit(destinationDirPath);
+  },
+  'now': () => {
+    return ubw.executeNow();
   },
   'unknown': () => {
     return Promise.resolve({
@@ -89,6 +90,7 @@ const parsedSubCommands = parseCommands(
       compile: null,
       help: null,
       init: null,
+      now: null,
       version: null,
     },
   },

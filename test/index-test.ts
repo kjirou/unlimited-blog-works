@@ -10,6 +10,7 @@ import {
   executeCompileWithSettings,
   executeHelp,
   executeInit,
+  executeNow,
   executeVersion,
   requireSettings,
 } from '../src/index';
@@ -48,6 +49,26 @@ describe('index', function() {
         .then(result => {
           assert.strictEqual(result.exitCode, 0);
           assert.strictEqual(result.message.length > 0, true);
+        });
+    });
+  });
+
+  describe('executeNow', function() {
+    let clock: any;
+
+    beforeEach(function() {
+      clock = sinon.useFakeTimers(new Date('2019-01-01 00:00:00+0000'));
+    });
+
+    afterEach(function() {
+      clock.restore();
+    });
+
+    it('should return an UTC formatted date-time string', function() {
+      return executeNow()
+        .then(result => {
+          assert.strictEqual(result.exitCode, 0);
+          assert.strictEqual(result.message, '2019-01-01 00:00:00+0000');
         });
     });
   });
