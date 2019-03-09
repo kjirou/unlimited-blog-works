@@ -107,14 +107,23 @@ export function generateTodayDateString(date: Date, timeZone: string): string {
 
 export function scanRemarkAstNode(
   node: RemarkAstNode,
-  callback: (node: RemarkAstNode) => void
+  callback: (node: RemarkAstNode) => boolean
 ): void {
-  callback(node);
-  if (node.children) {
-    node.children.forEach(childNode => {
-      scanRemarkAstNode(childNode, callback);
-    });
+  function scanNode(
+    node_: RemarkAstNode,
+    callback_: (node: RemarkAstNode) => boolean
+  ): boolean {
+    if (callback_(node_)) {
+      return true;
+    };
+    if (node_.children) {
+      return node_.children.some(childNode => {
+        return scanNode(childNode, callback_);
+      });
+    }
+    return false;
   }
+  scanNode(node, callback);
 }
 
 export function extractPageTitle(node: RemarkAstNode): string {
@@ -126,8 +135,10 @@ export function extractPageTitle(node: RemarkAstNode): string {
         if (trimmed) {
           fragments.push(trimmed);
         }
+        return false;
       });
     }
+    return false;
   });
   return fragments.join(' ');
 }

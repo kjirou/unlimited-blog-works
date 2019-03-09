@@ -143,6 +143,7 @@ describe('utils', function() {
         },
         (node) => {
           results.push(node.value as string);
+          return false;
         }
       );
       assert.deepStrictEqual(results, [
@@ -171,6 +172,7 @@ describe('utils', function() {
         },
         (node) => {
           results.push(node.value as string);
+          return false;
         }
       );
       assert.deepStrictEqual(results, [
@@ -178,6 +180,24 @@ describe('utils', function() {
         'X',
         'Y',
       ]);
+    });
+
+    it('can stop scanning if the callback returns true', function() {
+      const results: string[] = [];
+      scanRemarkAstNode(
+        {
+          type: 'x',
+          children: [
+            {type: 'stopper'},
+            {type: 'y'},
+          ],
+        },
+        (node) => {
+          results.push(node.type);
+          return node.type === 'stopper';
+        }
+      );
+      assert.deepStrictEqual(results, ['x', 'stopper']);
     });
   });
 
