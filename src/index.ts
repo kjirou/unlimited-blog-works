@@ -98,7 +98,7 @@ export function executeArticleNew(configFilePath: string): Promise<CommandResult
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "article new"',
+    message: '',
   });
 }
 
@@ -160,7 +160,7 @@ export function executeCompileWithSettings(settings: UbwSettings): Promise<Comma
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "compile"',
+    message: '',
   });
 }
 
@@ -197,7 +197,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
 
   return Promise.resolve({
     exitCode: 0,
-    message: 'Done "init"',
+    message: '',
   });
 }
 
