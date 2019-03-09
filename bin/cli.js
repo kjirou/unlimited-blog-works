@@ -61,6 +61,12 @@ if (subCommand === 'article') {
       : defaultConfigFilePath;
     promise = ubw.executeArticleNew(configFilePath);
   }
+} else if (subCommand === 'compile') {
+  const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
+  const configFilePath = options['config-file']
+    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
+    : defaultConfigFilePath;
+  promise = ubw.executeCompile(configFilePath);
 } else if (subCommand === 'init') {
   const options = minimist(parsedSubCommands.argv);
   const [
@@ -68,12 +74,6 @@ if (subCommand === 'article') {
   ] = options._;
   const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
   promise = ubw.executeInit(destinationDirPath);
-} else if (subCommand === 'compile') {
-  const options = minimist(parsedSubCommands.argv, appendConfigFileParser({}));
-  const configFilePath = options['config-file']
-    ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
-    : defaultConfigFilePath;
-  promise = ubw.executeCompile(configFilePath);
 } else if (subCommand === 'version') {
   promise = ubw.executeVersion();
 }
