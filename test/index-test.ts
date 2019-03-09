@@ -183,8 +183,6 @@ describe('index', function() {
 
           return executeCompile(configFilePath)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
@@ -197,8 +195,6 @@ describe('index', function() {
 
           return executeCompile(configFilePath)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.strictEqual(typeof dump['blog-publication/index.html'], 'string');
               assert.strictEqual(typeof dump['blog-publication/robots.txt'], 'undefined');
@@ -226,8 +222,6 @@ describe('index', function() {
           it('og:title, og:url, og:site_name, og:type', function() {
             return executeCompileWithSettings(settings)
               .then(result => {
-                assert.strictEqual(result.exitCode, 0);
-
                 const dump = dumpDir(workspaceRoot);
                 assert.notStrictEqual(
                   dump['blog-publication/articles/20190101-0001.html']
@@ -391,8 +385,6 @@ describe('index', function() {
 
           return executeCompileWithSettings(settings)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.notStrictEqual(
                 dump['blog-publication/articles/20190101-0001.html']
@@ -418,8 +410,6 @@ describe('index', function() {
 
           return executeCompileWithSettings(settings)
             .then(result => {
-              assert.strictEqual(result.exitCode, 0);
-
               const dump = dumpDir(workspaceRoot);
               assert.notStrictEqual(
                 dump['blog-publication/index.html'].indexOf('<script src="/path/to/foo.js"></script>'),
@@ -442,8 +432,6 @@ describe('index', function() {
 
             return executeCompileWithSettings(settings)
               .then(result => {
-                assert.strictEqual(result.exitCode, 0);
-
                 const dump = dumpDir(workspaceRoot);
                 assert.notStrictEqual(
                   dump['blog-publication/index.html'].indexOf('<a href="https://example.com/aaa">FOOOO</a>'),
@@ -467,8 +455,6 @@ describe('index', function() {
 
               return executeCompileWithSettings(settings)
                 .then(result => {
-                  assert.strictEqual(result.exitCode, 0);
-
                   const dump = dumpDir(workspaceRoot);
                   assert.notStrictEqual(
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/">Back to the Top</a>'),
@@ -485,8 +471,6 @@ describe('index', function() {
 
               return executeCompileWithSettings(settings)
                 .then(result => {
-                  assert.strictEqual(result.exitCode, 0);
-
                   const dump = dumpDir(workspaceRoot);
                   assert.notStrictEqual(
                     dump['blog-publication/articles/20190101-0001.html'].indexOf('<a href="/index.html">Back to the Top</a>'),
