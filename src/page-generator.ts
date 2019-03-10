@@ -20,7 +20,6 @@ import {
   generateBlogPaths,
   getPathnameWithoutTailingSlash,
   removeTailingResourceNameFromPath,
-  scanRemarkAstNode,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
@@ -216,14 +215,13 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
 
 function findFirstImageUrl(node: RemarkAstNode): string {
   let found = '';
-  scanRemarkAstNode(node, (node_) => {
-    if (node_.type === 'image') {
-      if (node_.url) {
-        found = node_.url;
+  unistUtilVisit(node, (n: any) => {
+    if (n.type === 'image') {
+      if (n.url) {
+        found = n.url;
+        return unistUtilVisit.EXIT;
       }
-      return true;
     }
-    return false;
   });
   return found;
 }

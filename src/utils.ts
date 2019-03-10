@@ -5,6 +5,8 @@ import {formatToTimeZone} from 'date-fns-timezone';
 import * as path from 'path';
 import * as url from 'url';
 
+const unistUtilVisit = require('unist-util-visit');
+
 const RELATIVE_SOURCE_DIR_PATH: string = 'blog-source';
 export const RELATIVE_ARTICLES_DIR_PATH: string = 'articles';
 export const RELATIVE_EXTERNAL_RESOURCES_DIR_PATH: string = 'external-resources';
@@ -143,17 +145,18 @@ export function scanRemarkAstNode(
 
 export function extractPageTitle(node: RemarkAstNode): string {
   const fragments: string[] = [];
-  scanRemarkAstNode(node, (heading1Node) => {
+
+  unistUtilVisit(node, (heading1Node: any) => {
     if (heading1Node.type === 'heading' && heading1Node.depth === 1) {
-      scanRemarkAstNode(heading1Node, (node_) => {
-        const trimmed = (node_.value || '').trim();
+      unistUtilVisit(heading1Node, (n: any) => {
+        const trimmed = (n.value || '').trim();
         if (trimmed) {
           fragments.push(trimmed);
         }
-        return false;
       });
+      return unistUtilVisit.EXIT;
     }
-    return false;
   });
+
   return fragments.join(' ');
 }
