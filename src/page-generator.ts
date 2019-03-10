@@ -36,7 +36,7 @@ const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
 const unistUtilRemove = require('unist-util-remove');
-const visit = require('unist-util-visit');
+const unistUtilVisit = require('unist-util-visit');
 
 // NOTICE: Its type definition file exists but it is broken.
 const Feed = require('feed').Feed;
@@ -244,7 +244,7 @@ export function extractOgpDescription(node: RemarkAstNode): string {
 
   const words: string[] = [];
 
-  visit(filtered, {type: 'text'}, (n: any) => {
+  unistUtilVisit(filtered, {type: 'text'}, (n: any) => {
     if (n.value) {
       words.push(n.value);
     }
@@ -291,8 +291,8 @@ export function generateH1AutolinkHrefReplacementTransformer(
   autolinkMarkerAttributeName: string
 ): (tree: HastscriptAst) => void {
   return function transformer(tree: HastscriptAst): void {
-    visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
-      visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
+    unistUtilVisit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+      unistUtilVisit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
         if (anchorNode.properties && anchorNode.properties[autolinkMarkerAttributeName] === true) {
           // NOTE: The empty string will probably work except for IE(<= 10)
           // Ref) https://hail2u.net/blog/coding/empty-href-value.html
@@ -333,7 +333,7 @@ function createRehypePlugins(params: {
       properties: {
         className: 'ubw-heading-slug',
         ariaHidden: true,
-        // NOTICE: Apply to search with `visit`. It is not used in HTML.
+        // NOTICE: Apply to search with `unist-util-*`. It is not used in HTML.
         dataUbwAutolink: true,
       },
     }],
@@ -343,7 +343,7 @@ function createRehypePlugins(params: {
     [rehypeDocument, documentOptions],
     function(): any {
       return function transformer(tree: HastscriptAst): void {
-        visit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
+        unistUtilVisit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
           params.additionalHeadNodes.forEach(nodeInHead => {
             (node.children || []).push(nodeInHead);
           });
