@@ -228,7 +228,7 @@ function findFirstImageUrl(node: RemarkAstNode): string {
   return found;
 }
 
-function extractOgpDescription(node: RemarkAstNode): string {
+export function extractOgpDescription(node: RemarkAstNode): string {
   const filtered = unistUtilRemove(node, (n: any) => (
     n.type === 'yaml' ||
     n.type === 'heading' && n.depth === 1 ||
@@ -258,7 +258,7 @@ function extractOgpDescription(node: RemarkAstNode): string {
 
   return collapsed.length <= recommendedMaxLength
     ? collapsed
-    : collapsed.slice(recommendedMaxLength - 3) + '...';
+    : collapsed.slice(0, recommendedMaxLength - 3) + '...';
 }
 
 function generateOgpNodes(
