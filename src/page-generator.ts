@@ -227,7 +227,10 @@ function findFirstImageUrl(node: RemarkAstNode): string {
 }
 
 export function extractOgpDescription(node: RemarkAstNode): string {
-  const filtered = unistUtilRemove(node, (n: any) => (
+  // TODO: This is a temporary fix for an issue which "unist-util-remove" breaks its params.
+  const copied = JSON.parse(JSON.stringify(node));
+
+  const filtered = unistUtilRemove(copied, (n: any) => (
     n.type === 'yaml' ||
     n.type === 'heading' && n.depth === 1 ||
     // NOTE: link を除外しているのは、Slack がチャットでそれを展開してしまうため。
