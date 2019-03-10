@@ -4,11 +4,103 @@ import * as hast from 'hastscript';
 import {
   ArticlePage,
   createArticlePage,
+  extractOgpDescription,
   generateH1AutolinkHrefReplacementTransformer,
   getNextAutomaticArticleId,
 } from '../src/page-generator';
 
 describe('page-generator', function() {
+  describe('extractOgpDescription', function() {
+    it('should pick up only values of type="text"', function() {
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'root',
+          children: [
+            {type: 'text', value: 'a'},
+            {type: 'foo', value: 'X'},
+            {type: 'text', value: 'b'},
+            {type: 'bar', value: 'X'},
+            {type: 'text', value: 'c'},
+          ],
+        }),
+        'a b c'
+      );
+    });
+
+    it('can ignore some specified types', function() {
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'foo',
+          children: [
+            {type: 'text', value: 'a'},
+            {
+              type: 'html',
+              children: [
+                {type: 'text', value: 'X'},
+              ],
+            },
+            {
+              type: 'bar',
+              children: [
+                {type: 'code', value: 'X'},
+                {type: 'text', value: 'b'},
+              ],
+            }
+          ],
+        }),
+        'a b'
+      );
+    });
+
+    it('can return an empty string if there are no matched nodes', function() {
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'root',
+          children: [
+            {type: 'code', value: 'X'},
+          ],
+        }),
+        ''
+      );
+    });
+
+    it('should consider the max-length', function() {
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'text',
+          value: 'a'.repeat(90),
+        }),
+        'a'.repeat(90)
+      );
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'text',
+          value: 'a'.repeat(91),
+        }),
+        'a'.repeat(87) + '...'
+      );
+    });
+
+    it('can collapse /\\s+/ characters', function() {
+      assert.strictEqual(
+        extractOgpDescription({
+          type: 'root',
+          children: [
+            {
+              type: 'text',
+              value: 'a b  c\td\r\ne   '
+            },
+            {
+              type: 'text',
+              value: '  f g'
+            },
+          ],
+        }),
+        'a b c d e f g'
+      );
+    });
+  });
+
   describe('generateH1AutolinkHrefReplacementTransformer', function() {
     it('can empty a href', function() {
       const tree = hast('h1', [

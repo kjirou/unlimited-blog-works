@@ -20,7 +20,6 @@ import {
   generateBlogPaths,
   getPathnameWithoutTailingSlash,
   removeTailingResourceNameFromPath,
-  scanRemarkAstNode,
 } from './utils';
 
 // NOTICE: "unified" set MUST use only in the file
@@ -35,7 +34,8 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
-const visit = require('unist-util-visit');
+const unistUtilRemove = require('unist-util-remove');
+const unistUtilVisit = require('unist-util-visit');
 
 // NOTICE: Its type definition file exists but it is broken.
 const Feed = require('feed').Feed;
@@ -215,23 +215,59 @@ export function fillWithDefaultUbwConfigs(configs: ActualUbwConfigs): UbwConfigs
 
 function findFirstImageUrl(node: RemarkAstNode): string {
   let found = '';
-  scanRemarkAstNode(node, (node_) => {
-    if (node_.type === 'image') {
-      if (node_.url) {
-        found = node_.url;
+  unistUtilVisit(node, (n: any) => {
+    if (n.type === 'image') {
+      if (n.url) {
+        found = n.url;
+        return unistUtilVisit.EXIT;
       }
-      return true;
     }
-    return false;
   });
   return found;
+}
+
+export function extractOgpDescription(node: RemarkAstNode): string {
+  // TODO: This is a temporary fix for an issue which "unist-util-remove" breaks its params.
+  const copied = JSON.parse(JSON.stringify(node));
+
+  const filtered = unistUtilRemove(copied, (n: any) => (
+    n.type === 'yaml' ||
+    n.type === 'heading' && n.depth === 1 ||
+    // NOTE: link を除外しているのは、Slack がチャットでそれを展開してしまうため。
+    n.type === 'link' ||
+    n.type === 'html' ||
+    n.type === 'code'
+  )) as RemarkAstNode | null;
+
+  if (filtered === null) {
+    return '';
+  }
+
+  const words: string[] = [];
+
+  unistUtilVisit(filtered, {type: 'text'}, (n: any) => {
+    if (n.value) {
+      words.push(n.value);
+    }
+  });
+
+  const collapsed = words.join(' ')
+    .replace(/\s+/g, ' ');
+
+  // NOTE: This is a value based on a miscellaneous investigation.
+  const recommendedMaxLength = 90;
+
+  return collapsed.length <= recommendedMaxLength
+    ? collapsed
+    : collapsed.slice(0, recommendedMaxLength - 3) + '...';
 }
 
 function generateOgpNodes(
   title: string,
   image: string,
   url: string,
-  siteName: string
+  siteName: string,
+  description: string,
 ): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
@@ -239,6 +275,7 @@ function generateOgpNodes(
     ...(image !== '' ? [hast('meta', {property: 'og:image', content: image})] : []),
     hast('meta', {property: 'og:url', content: url}),
     hast('meta', {property: 'og:site_name', content: siteName}),
+    ...(description !== '' ? [hast('meta', {property: 'og:description', content: description})] : []),
   ];
 }
 
@@ -255,8 +292,8 @@ export function generateH1AutolinkHrefReplacementTransformer(
   autolinkMarkerAttributeName: string
 ): (tree: HastscriptAst) => void {
   return function transformer(tree: HastscriptAst): void {
-    visit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
-      visit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
+    unistUtilVisit(tree, {type: 'element', tagName: 'h1'}, function(h1Node: HastscriptAst): void {
+      unistUtilVisit(h1Node, {type: 'element', tagName: 'a'}, function(anchorNode: HastscriptAst): void {
         if (anchorNode.properties && anchorNode.properties[autolinkMarkerAttributeName] === true) {
           // NOTE: The empty string will probably work except for IE(<= 10)
           // Ref) https://hail2u.net/blog/coding/empty-href-value.html
@@ -297,7 +334,7 @@ function createRehypePlugins(params: {
       properties: {
         className: 'ubw-heading-slug',
         ariaHidden: true,
-        // NOTICE: Apply to search with `visit`. It is not used in HTML.
+        // NOTICE: Apply to search with `unist-util-*`. It is not used in HTML.
         dataUbwAutolink: true,
       },
     }],
@@ -307,7 +344,7 @@ function createRehypePlugins(params: {
     [rehypeDocument, documentOptions],
     function(): any {
       return function transformer(tree: HastscriptAst): void {
-        visit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
+        unistUtilVisit(tree, {type: 'element', tagName: 'head'}, function(node: HastscriptAst): void {
           params.additionalHeadNodes.forEach(nodeInHead => {
             (node.children || []).push(nodeInHead);
           });
@@ -359,6 +396,7 @@ export interface ArticlePage {
   rootRelativePath: string,
   permalink: string,
   ogpImageUrl: string,  // "" means that it does not exist.
+  ogpDescription: string,  // "" means that it does not exist.
   html: string,
   markdown: string,
   pageTitle: string,
@@ -384,6 +422,7 @@ export function createArticlePage(): ArticlePage {
     rootRelativePath: '',
     permalink: '',
     ogpImageUrl: '',
+    ogpDescription: '',
     html: '',
     markdown: '',
     pageTitle: '',
@@ -471,12 +510,14 @@ export function preprocessArticlePages(
       }
     }
 
+    const ogpDescription = extractOgpDescription(ast);
+
     return Object.assign({}, articlePage, {
-      // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       rootRelativePath,
       permalink,
       ogpImageUrl,
+      ogpDescription,
       pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
@@ -520,7 +561,13 @@ export function generateArticlePages(
     const articleHtml = configs.renderArticle(articlePageProps);
 
     const ogpNodes = configs.ogp
-      ? generateOgpNodes(articlePage.pageTitle, articlePage.ogpImageUrl, articlePage.permalink, configs.blogName)
+      ? generateOgpNodes(
+        articlePage.pageTitle,
+        articlePage.ogpImageUrl,
+        articlePage.permalink,
+        configs.blogName,
+        articlePage.ogpDescription
+      )
       : [];
 
     const unifiedResult = unified()
@@ -619,7 +666,13 @@ export function generateNonArticlePages(
 
     if (nonArticlePage.useLayout) {
       const ogpNodes = configs.ogp
-        ? generateOgpNodes(configs.blogName, configs.defaultOgpImageUrl, nonArticlePage.permalink, configs.blogName)
+        ? generateOgpNodes(
+          configs.blogName,
+          configs.defaultOgpImageUrl,
+          nonArticlePage.permalink,
+          configs.blogName,
+          ''
+        )
         : [];
 
       const unifiedResult = unified()
