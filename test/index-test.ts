@@ -212,7 +212,12 @@ describe('index', function() {
         });
 
         describe('ogp, defaultOgpImageUrl', function() {
+          let articleSource: string;
+
           beforeEach(function() {
+            articleSource = fs.readFileSync(path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'))
+              .toString();
+
             Object.assign(settings.configs, {
               blogName: 'FOO',
               blogUrl: 'https://example.com/bar',
@@ -258,12 +263,26 @@ describe('index', function() {
             ;
           });
 
-          describe('og:image', function() {
-            let articleSource: string;
+          it('og:description', function() {
+            fs.writeFileSync(
+              path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'),
+              articleSource + 'Foo Bar\n\nBaz\n'
+            );
 
+            return executeCompileWithSettings(settings)
+              .then(result => {
+                const dump = dumpDir(workspaceRoot);
+                assert.notStrictEqual(
+                  dump['blog-publication/articles/20190101-0001.html']
+                    .indexOf('<meta property="og:description" content="Foo Bar Baz">'),
+                  -1
+                );
+              })
+            ;
+          });
+
+          describe('og:image', function() {
             beforeEach(function() {
-              articleSource = fs.readFileSync(path.join(workspaceRoot, 'blog-source/articles/20190101-0001.md'))
-                .toString();
               settings.configs.defaultOgpImageUrl = 'https://example.com/default.png';
             });
 
