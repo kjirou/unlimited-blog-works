@@ -122,27 +122,6 @@ export function generateTodayDateString(date: Date, timeZone: string): string {
   return formatToTimeZone(date, 'YYYYMMDD', {timeZone});
 }
 
-export function scanRemarkAstNode(
-  node: RemarkAstNode,
-  callback: (node: RemarkAstNode) => boolean
-): void {
-  function scanNode(
-    node_: RemarkAstNode,
-    callback_: (node: RemarkAstNode) => boolean
-  ): boolean {
-    if (callback_(node_)) {
-      return true;
-    };
-    if (node_.children) {
-      return node_.children.some(childNode => {
-        return scanNode(childNode, callback_);
-      });
-    }
-    return false;
-  }
-  scanNode(node, callback);
-}
-
 export function extractPageTitle(node: RemarkAstNode): string {
   const fragments: string[] = [];
 

@@ -8,7 +8,6 @@ import {
   getPathnameWithoutTailingSlash,
   permalinksToRelativeUrl,
   removeTailingResourceNameFromPath,
-  scanRemarkAstNode,
   toNormalizedAbsolutePath,
 } from '../src/utils';
 
@@ -137,66 +136,6 @@ describe('utils', function() {
       it(`From "${fromPermalink}" to "${toPermalink}" -> "${expected}"`, function() {
         assert.strictEqual(permalinksToRelativeUrl(fromPermalink, toPermalink), expected);
       });
-    });
-  });
-
-  describe('scanRemarkAstNode', function() {
-    it('can evalute children recursively', function() {
-      const results: string[] = [];
-      scanRemarkAstNode(
-        {
-          type: 'foo',
-          children: [
-            {
-              type: 'bar',
-              children: [
-                {type: 'baz'},
-              ],
-            },
-          ],
-        },
-        (node) => {
-          results.push(node.type);
-          return false;
-        }
-      );
-      assert.deepStrictEqual(results, ['foo', 'bar', 'baz']);
-    });
-
-    it('can evalute children\'s siblings', function() {
-      const results: string[] = [];
-      scanRemarkAstNode(
-        {
-          type: 'foo',
-          children: [
-            {type: 'x'},
-            {type: 'y'},
-          ],
-        },
-        (node) => {
-          results.push(node.type);
-          return false;
-        }
-      );
-      assert.deepStrictEqual(results, ['foo', 'x', 'y']);
-    });
-
-    it('can stop scanning if the callback returns true', function() {
-      const results: string[] = [];
-      scanRemarkAstNode(
-        {
-          type: 'x',
-          children: [
-            {type: 'stopper'},
-            {type: 'y'},
-          ],
-        },
-        (node) => {
-          results.push(node.type);
-          return node.type === 'stopper';
-        }
-      );
-      assert.deepStrictEqual(results, ['x', 'stopper']);
     });
   });
 
