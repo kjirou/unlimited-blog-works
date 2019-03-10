@@ -472,7 +472,6 @@ export function preprocessArticlePages(
     }
 
     return Object.assign({}, articlePage, {
-      // TODO: GitHub Pages の仕様で拡張子省略可ならその対応
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       rootRelativePath,
       permalink,
