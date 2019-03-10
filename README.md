@@ -41,7 +41,7 @@ tree .
 .
 ├── blog-publication
 │   ├── articles
-│   │   └── 20190306-0001.html
+│   │   └── 20190310-0001.html
 │   ├── atom-feed.xml
 │   ├── external-resources
 │   │   ├── github-markdown.css
@@ -50,7 +50,7 @@ tree .
 │   └── robots.txt
 ├── blog-source
 │   ├── articles
-│   │   └── 20190306-0001.md
+│   │   └── 20190310-0001.md
 │   └── external-resources
 │       ├── _direct
 │       │   └── robots.txt
@@ -62,17 +62,17 @@ tree .
 ```
 
 ```
-cat blog-source/articles/20190306-0001.md
+cat blog-source/articles/20190310-0001.md
 ---
-publicId: 20190306-0001
-lastUpdatedAt: '2019-03-06 14:27:08+0000'
+publicId: 20190310-0001
+lastUpdatedAt: '2019-03-10 08:23:09+0000'
 ---
 
 # Page Title
 ```
 
 ```
-cat blog-publication/articles/20190306-0001.html
+cat blog-publication/articles/20190310-0001.html
 <!doctype html>
 <html lang="en">
   <head>
@@ -82,7 +82,7 @@ cat blog-publication/articles/20190306-0001.html
     <link rel="stylesheet" href="/external-resources/index.css">
     <meta property="og:title" content="Page Title">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://example.com/articles/20190306-0001.html">
+    <meta property="og:url" content="https://example.com/articles/20190310-0001.html">
     <meta property="og:site_name" content="My Blog">
   </head>
   <body>
@@ -92,7 +92,7 @@ cat blog-publication/articles/20190306-0001.html
       </div>
       <hr class="ubw-end-of-main-content">
       <ul class="ubw-meta-data">
-        <li class="ubw-meta-data-last-updated-at"><span>Last updated at:</span><span>2019-03-06 14:27:08 (UTC)</span></li>
+        <li class="ubw-meta-data-last-updated-at"><span>Last updated at:</span><span>2019-03-10 08:23:09 (UTC)</span></li>
         <li class="ubw-meta-data-back-to-top"><a href="/">Back to the Top</a></li>
       </ul>
     </div>
@@ -144,8 +144,8 @@ Most of the commands reflect the configuration of "ubw-configs.js".
 
 For details of setting, refer to the following source code and its comment at present.
 
-- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/bbb988c06551a4ac69628f828ef253b15d8d6882/src/page-generator.ts#L40-L113)
-- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/bbb988c06551a4ac69628f828ef253b15d8d6882/src/page-generator.ts#L118-L189)
+- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/8fbd923038142856f4606d23292fbad3caef9ebc/src/page-generator.ts#L43-L121)
+- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/8fbd923038142856f4606d23292fbad3caef9ebc/src/page-generator.ts#L127-L198)
 
 
 ## :writing_hand: Markdown Format
