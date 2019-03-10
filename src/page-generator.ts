@@ -35,6 +35,7 @@ const remarkFrontmatter = require('remark-frontmatter');
 const remarkParse = require('remark-parse');
 const remarkRehype = require('remark-rehype');
 const unified = require('unified');
+const unistUtilRemove = require('unist-util-remove');
 const visit = require('unist-util-visit');
 
 // NOTICE: Its type definition file exists but it is broken.
@@ -227,11 +228,45 @@ function findFirstImageUrl(node: RemarkAstNode): string {
   return found;
 }
 
+function extractOgpDescription(node: RemarkAstNode): string {
+  const filtered = unistUtilRemove(node, (n: any) => (
+    n.type === 'yaml' ||
+    n.type === 'heading' && n.depth === 1 ||
+    // NOTE: link を除外しているのは、Slack がチャットでそれを展開してしまうため。
+    n.type === 'link' ||
+    n.type === 'html' ||
+    n.type === 'code'
+  )) as RemarkAstNode | null;
+
+  if (filtered === null) {
+    return '';
+  }
+
+  const words: string[] = [];
+
+  visit(filtered, {type: 'text'}, (n: any) => {
+    if (n.value) {
+      words.push(n.value);
+    }
+  });
+
+  const collapsed = words.join(' ')
+    .replace(/\s+/g, ' ');
+
+  // NOTE: This is a value based on a miscellaneous investigation.
+  const recommendedMaxLength = 90;
+
+  return collapsed.length <= recommendedMaxLength
+    ? collapsed
+    : collapsed.slice(recommendedMaxLength - 3) + '...';
+}
+
 function generateOgpNodes(
   title: string,
   image: string,
   url: string,
-  siteName: string
+  siteName: string,
+  description: string,
 ): HastscriptAst[] {
   return [
     hast('meta', {property: 'og:title', content: title}),
@@ -239,6 +274,7 @@ function generateOgpNodes(
     ...(image !== '' ? [hast('meta', {property: 'og:image', content: image})] : []),
     hast('meta', {property: 'og:url', content: url}),
     hast('meta', {property: 'og:site_name', content: siteName}),
+    ...(description !== '' ? [hast('meta', {property: 'og:description', content: description})] : []),
   ];
 }
 
@@ -359,6 +395,7 @@ export interface ArticlePage {
   rootRelativePath: string,
   permalink: string,
   ogpImageUrl: string,  // "" means that it does not exist.
+  ogpDescription: string,  // "" means that it does not exist.
   html: string,
   markdown: string,
   pageTitle: string,
@@ -384,6 +421,7 @@ export function createArticlePage(): ArticlePage {
     rootRelativePath: '',
     permalink: '',
     ogpImageUrl: '',
+    ogpDescription: '',
     html: '',
     markdown: '',
     pageTitle: '',
@@ -471,11 +509,14 @@ export function preprocessArticlePages(
       }
     }
 
+    const ogpDescription = extractOgpDescription(ast);
+
     return Object.assign({}, articlePage, {
       outputFilePath: path.join(paths.publicationArticlesRoot, frontMatters.publicId + '.html'),
       rootRelativePath,
       permalink,
       ogpImageUrl,
+      ogpDescription,
       pageTitle: extractPageTitle(ast),
       lastUpdatedAt: new Date(frontMatters.lastUpdatedAt),
     });
@@ -519,7 +560,13 @@ export function generateArticlePages(
     const articleHtml = configs.renderArticle(articlePageProps);
 
     const ogpNodes = configs.ogp
-      ? generateOgpNodes(articlePage.pageTitle, articlePage.ogpImageUrl, articlePage.permalink, configs.blogName)
+      ? generateOgpNodes(
+        articlePage.pageTitle,
+        articlePage.ogpImageUrl,
+        articlePage.permalink,
+        configs.blogName,
+        articlePage.ogpDescription
+      )
       : [];
 
     const unifiedResult = unified()
@@ -618,7 +665,13 @@ export function generateNonArticlePages(
 
     if (nonArticlePage.useLayout) {
       const ogpNodes = configs.ogp
-        ? generateOgpNodes(configs.blogName, configs.defaultOgpImageUrl, nonArticlePage.permalink, configs.blogName)
+        ? generateOgpNodes(
+          configs.blogName,
+          configs.defaultOgpImageUrl,
+          nonArticlePage.permalink,
+          configs.blogName,
+          ''
+        )
         : [];
 
       const unifiedResult = unified()
