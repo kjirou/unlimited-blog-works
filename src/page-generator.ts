@@ -75,8 +75,9 @@ export interface UbwConfigs {
   // - og:title = Set the page name by top heading.
   // - og:type = It is always "website".
   // - og:image = The head image of each article or "defaultOgpImageUrl" or not.
-  // - og:url = blogUrl + each page path
-  // - og:site_name = blogName
+  // - og:url = It is automatically generated based on "blogUrl".
+  // - og:site_name = Use "blogName".
+  // - og:description = It is automatically generated if the body is wrote.
   ogp: boolean,
   // An absolute url to use default og:image for each article
   //

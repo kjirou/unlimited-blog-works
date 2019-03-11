@@ -144,8 +144,8 @@ Most of the commands reflect the configuration of "ubw-configs.js".
 
 For details of setting, refer to the following source code and its comment at present.
 
-- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/8fbd923038142856f4606d23292fbad3caef9ebc/src/page-generator.ts#L43-L121)
-- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/8fbd923038142856f4606d23292fbad3caef9ebc/src/page-generator.ts#L127-L198)
+- [Properties](https://github.com/kjirou/unlimited-blog-works/blob/f417f557ceeb164cef66bfc8587da66f0a0fc05e/src/page-generator.ts#L43-L122)
+- [Default values](https://github.com/kjirou/unlimited-blog-works/blob/f417f557ceeb164cef66bfc8587da66f0a0fc05e/src/page-generator.ts#L128-L198)
 
 
 ## :writing_hand: Markdown Format
