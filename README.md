@@ -182,3 +182,5 @@ npm install
   - The parser/generator logics of Markdown and HTML depends on the library.
 - [JS Paint](https://github.com/1j01/jspaint)
   - The above images were created on this site.
+- [それなりブログ](https://kjirou.github.io/blog/)
+  - This is my Japanese blog created in this library.
