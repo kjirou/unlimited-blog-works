@@ -1,5 +1,9 @@
 @import url("./github-markdown.css");
 
+.ubw-page {
+  margin: 20px;
+}
+
 .ubw-heading-slug {
   margin-left: 0.25em;
   font-weight: normal;
