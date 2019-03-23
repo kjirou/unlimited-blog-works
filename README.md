@@ -103,6 +103,8 @@ cat blog-publication/articles/20190310-0001.html
 
 ## :cat: Concept
 
+- Save sentences with the Markdown format
+  - Because it is the simplest form that can express sentence structure.
 - **NO** Article Status Management
   - Manage drafts and editing history via VCS such as **Git**.
 - **NO** Posting Comments
