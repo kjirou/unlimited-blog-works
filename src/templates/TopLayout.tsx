@@ -7,7 +7,7 @@ export default class TopLayout extends React.Component<NonArticlePageProps> {
     const atomFeedPage = this.props.nonArticles.find(nonArticle => nonArticle.id === 'atom-feed') as any;
 
     return (
-      <div className="ubw-non-article ubw-top">
+      <div className="ubw-page ubw-non-article ubw-top">
         <div className="markdown-body ubw-main-content">
           <h1>{this.props.blogName}</h1>
           <ul className="ubw-articles">

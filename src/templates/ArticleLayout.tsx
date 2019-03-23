@@ -5,7 +5,7 @@ import {ArticlePageProps} from './shared';
 export default class ArticleLayout extends React.Component<ArticlePageProps> {
   render(): JSX.Element {
     return (
-      <div className="ubw-article">
+      <div className="ubw-page ubw-article">
         <div className="markdown-body ubw-main-content" dangerouslySetInnerHTML={{__html: this.props.contentHtml}} />
         <hr className="ubw-end-of-main-content" />
         <ul className="ubw-meta-data">
