@@ -1,6 +1,6 @@
 {
   "name": "unlimited-blog-works",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A simple static blog generator for publishing on GitHub Pages",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
