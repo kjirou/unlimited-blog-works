@@ -55,6 +55,7 @@
     "clear-module": "^3.2.0",
     "klaw-sync": "^6.0.0",
     "mocha": "^6.1.4",
+    "serve": "^14.2.1",
     "sinon": "^7.3.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
