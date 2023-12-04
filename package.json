@@ -9,7 +9,7 @@
     "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
     "serve:docs": "npm run serve:docs:prepare && npm run serve:docs:run",
     "serve:docs:prepare": "rm -rf ./test-serving && mkdir test-serving && cp -r docs test-serving/unlimited-blog-works",
-    "serve:docs:run": "http-server test-serving",
+    "serve:docs:run": "serve test-serving",
     "test": "mocha --require './setup/ts-node-reigister-for-test.js' './test/**/*-test.ts'",
     "tsc": "tsc --project ./tsconfigs/test.json"
   },
