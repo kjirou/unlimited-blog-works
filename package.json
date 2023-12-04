@@ -11,7 +11,7 @@
     "serve:docs:prepare": "rm -rf ./test-serving && mkdir test-serving && cp -r docs test-serving/unlimited-blog-works",
     "serve:docs:run": "http-server test-serving",
     "test": "mocha --require './setup/ts-node-reigister-for-test.js' './test/**/*-test.ts'",
-    "typecheck": "tsc --project ./tsconfigs/test.json"
+    "tsc": "tsc --project ./tsconfigs/test.json"
   },
   "repository": {
     "type": "git",
