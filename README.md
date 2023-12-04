@@ -1,4 +1,4 @@
-# <img src="https://github.com/kjirou/unlimited-blog-works/raw/master/documents/ubw-icon.png" width="32" height="32" /> unlimited-blog-works
+# <img src="https://github.com/kjirou/unlimited-blog-works/raw/main/documents/ubw-icon.png" width="32" height="32" /> unlimited-blog-works
 
 [![npm version](https://badge.fury.io/js/unlimited-blog-works.svg)](https://badge.fury.io/js/unlimited-blog-works)
 [![Build Status](https://travis-ci.org/kjirou/unlimited-blog-works.svg?branch=master)](https://travis-ci.org/kjirou/unlimited-blog-works)
