@@ -19,19 +19,19 @@ npm install -g unlimited-blog-works
 
 ## :eyes: Overview
 
-- Generate blog source by command.
+- Generate blog source with CLI
   - Sample blog source => [/exapmles/docs](/examples/docs)
-- Edit the Markdown formed article with your text editor or GitHub Web's editor.
+- Edit Markdown formed articles with your text editor or the editor of GitHub Web
   - Sample article source => [/examples/docs/blog-source/articles/20190212-0002.md](/examples/docs/blog-source/articles/20190212-0002.md)
-- Compile from Markdown to HTML by command and host it by [GitHub Pages](https://pages.github.com/).
-  - Sample hosting => `git push` compilation results to [/docs](/docs) and is hosted to [https://kjirou.github.io/unlimited-blog-works/](https://kjirou.github.io/unlimited-blog-works/) by [the feature of GitHub](https://help.github.com/en/articles/configuring-a-publishing-source-for-github-pages#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
+- Compile from Markdown to HTML and deploy it onto GitHub Pages
+  - Sample deployment => [/docs](/docs) using [the feature of GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#publishing-sources-for-github-pages-sites)
 
 
 ## :world_map: Overall View of the Structure
 
 ![](/documents/ubw-overall-view.png)
 
-Execute the following command at arbitrary place as a trial.
+Execute the following command at any place as a trial.
 ```bash
 ubw init my-blog
 cd ./my-blog
@@ -110,38 +110,38 @@ cat blog-publication/articles/20190310-0001.html
 - Save sentences with the Markdown format
   - Because it is the simplest form that can express sentence structure.
 - **NO** Article Status Management
-  - Manage drafts and editing history via VCS such as **Git**.
+  - Manage drafts and editing history with VCS such as **Git**.
 - **NO** Posting Comments
-  - It is more interesting to talk on external SNS such as [Twitter](https://twitter.com/).
+  - It is more interesting to talk on external SNS.
 - **NO** Text Editor
   - I think it would be better to **use the text editor you are using routinely**.
   - Also, if you want to write easily, I recommend **using the WYSIWYG editor on GitHub Web**.
 - **NO** JS/CSS Preprocessor
-  - Generation such as JS/CSS used on the client side should be managed independently using software such as [webpack](https://webpack.js.org/) in modern times.
+  - Because it's hard work...
 
 
 ## :books: CLI API Reference
 
 - `ubw article new [OPTIONS]`
-  - Create an empty article.
+  - Create an empty article
   - `OPTIONS`
     - `--config-file, -c`
-      - Pass the path of `ubw-configs.js`. If not specified, use the one in the current directory.
+      - A path of `ubw-configs.js` file, default is `"./ubw-configs.js"`
 - `ubw compile [OPTIONS]`
-  - Compile Markdown articles into HTML.
+  - Compile Markdown articles into HTML
   - `OPTIONS`
     - `--config-file, -c`
-      - Pass the path of `ubw-configs.js`. If not specified, use the one in the current directory.
+      - A path of `ubw-configs.js` file, default is `"./ubw-configs.js"`
 - `ubw help`
-  - Display the help. Currently just display the URL to here.
+  - Display help
 - `ubw init BLOG_SOURCE_DIR`
-  - Initialize a blog repository.
+  - Initialize a new blog
   - `BLOG_SOURCE_DIR`
-    - Specify a location to generate a blog repository.
+    - A location to generate
 - `ubw now`
-  - Display current time by "YYYY-MM-DD HH:ii:ss+0000" format. This value can be used as `lastUpdatedAt` in the article.
+  - Display current time by "YYYY-MM-DD HH:ii:ss+0000" format. It can be used to configure `lastUpdatedAt` in articles.
 - `ubw version`
-  - Display the version.
+  - Display version of npm package
 
 
 ## :scroll: ubw-configs.js
@@ -165,13 +165,12 @@ However, for example, the following functions are not yet available.
 
 - [Emoji](https://help.github.com/articles/basic-writing-and-formatting-syntax/#using-emoji)
 - [Syntax highlighting](https://help.github.com/articles/creating-and-highlighting-code-blocks/#syntax-highlighting)
-- (There will be many other)
 
 
 ## :wrench: Development
 ### Softwares that needs to be locally installed
 
-- [Node.js](https://nodejs.org/) `== 10`
+- [Node.js](https://nodejs.org/), version is defined in [.nvmrc](/.nvmrc)
 
 ### Install this application
 
@@ -185,8 +184,8 @@ npm install
 ## :link: Reference Urls
 
 - [unified](https://github.com/unifiedjs)
-  - The parser/generator logics of Markdown and HTML depends on the library.
+  - The parser/generator logics of Markdown/HTML depends on the packages.
 - [JS Paint](https://github.com/1j01/jspaint)
   - The above images were created on this site.
 - [それなりブログ](https://kjirou.github.io/blog/)
-  - This is my Japanese blog created in this library.
+  - This is my Japanese blog created in this package.
