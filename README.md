@@ -7,6 +7,11 @@ A simple static blog generator for publishing on GitHub Pages
 
 
 ## :rocket: Installation
+### Software Preparation
+
+- [Node.js](https://nodejs.org/) version 18 or higher
+
+### Package Installation
 
 ```bash
 npm install -g unlimited-blog-works

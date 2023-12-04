@@ -29,8 +29,8 @@
   },
   "homepage": "https://github.com/kjirou/unlimited-blog-works#readme",
   "engines": {
-    "node": ">=8",
-    "npm": ">=6"
+    "node": ">=18",
+    "npm": ">=10"
   },
   "files": [
     "LICENSE",
