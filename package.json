@@ -2,16 +2,16 @@
   "name": "unlimited-blog-works",
   "version": "0.0.7",
   "description": "A simple static blog generator for publishing on GitHub Pages",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.js",
   "scripts": {
-    "build": "tsc --project ./tsconfigs/build.json",
+    "build": "tsc",
     "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
     "serve:docs": "npm run serve:docs:prepare && npm run serve:docs:run",
     "serve:docs:prepare": "rm -rf ./test-serving && mkdir test-serving && cp -r docs test-serving/unlimited-blog-works",
     "serve:docs:run": "serve test-serving",
     "test": "mocha --require './setup/ts-node-reigister-for-test.js' './test/**/*-test.ts'",
-    "tsc": "tsc --project ./tsconfigs/test.json"
+    "tsc": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "LICENSE",
     "README.md",
     "bin",
-    "dist",
+    "dist/src",
     "package.json",
     "presets"
   ],
@@ -58,7 +58,7 @@
     "serve": "^14.2.1",
     "sinon": "^7.3.2",
     "ts-node": "^8.3.0",
-    "typescript": "^3.5.2"
+    "typescript": "^5.4.2"
   },
   "dependencies": {
     "date-fns": "^1.30.1",

@@ -1,9 +1,9 @@
 /*
  * MUST NOT import this file except under the "test" directory.
  */
-import * as fs from 'fs-extra';
-import * as klawSync from 'klaw-sync';
-import * as path from 'path';
+import fs from 'fs-extra';
+import klawSync from 'klaw-sync';
+import path from 'path';
 
 import {PROJECT_ROOT} from './utils';
 

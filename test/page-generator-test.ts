@@ -1,5 +1,5 @@
-import * as assert from 'assert';
-import * as hast from 'hastscript';
+import assert from 'assert';
+import hast from 'hastscript';
 
 import {
   ArticlePage,
