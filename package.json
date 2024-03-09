@@ -68,6 +68,8 @@
     "js-yaml": "^3.13.1",
     "minimist": "^1.2.8",
     "minimist-subcommand": "^3.0.2",
+    "preact": "^10.19.6",
+    "preact-render-to-string": "^6.4.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "rehype-autolink-headings": "^2.0.5",
