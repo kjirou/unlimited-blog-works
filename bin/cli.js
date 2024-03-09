@@ -7,10 +7,10 @@ const path = require('path');
 
 let ubw;
 
-if (fs.existsSync(path.join(__dirname, '../dist/index.js'))) {
-  ubw = require('../dist');
+if (fs.existsSync(path.join(__dirname, '../dist/src/index.js'))) {
+  ubw = require('../dist/src');
 } else {
-  require('../setup/ts-node-reigister-for-cli-debug');
+  require('../setup/ts-node-reigister-for-test');
   ubw = require('../src');
 }
 

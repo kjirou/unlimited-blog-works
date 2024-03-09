@@ -1,9 +1,9 @@
-import * as hast from 'hastscript';
-import * as yaml from 'js-yaml';
-import * as path from 'path';
-import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
-import * as urlModule from 'url';
+import hast from 'hastscript';
+import yaml from 'js-yaml';
+import path from 'path';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import urlModule from 'url';
 
 import ArticleLayout from './templates/ArticleLayout';
 import TopLayout from './templates/TopLayout';
