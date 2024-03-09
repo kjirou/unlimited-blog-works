@@ -27,8 +27,6 @@ import {
   generateTodayDateString,
   toNormalizedAbsolutePath,
 } from './utils';
-import TopLayout from './templates/TopLayout';
-import {NonArticlePageProps} from './templates/shared';
 
 export interface CommandResult {
   exitCode: number,

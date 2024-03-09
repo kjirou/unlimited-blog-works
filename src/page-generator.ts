@@ -1,13 +1,13 @@
 import hast from 'hastscript';
 import yaml from 'js-yaml';
 import path from 'path';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { h } from 'preact';
+import render from 'preact-render-to-string';
 import urlModule from 'url';
 
 import ArticleLayout from './templates/ArticleLayout';
 import TopLayout from './templates/TopLayout';
-import {
+import type {
   ArticlePageProps,
   NonArticlePageProps,
 } from './templates/shared';
@@ -151,7 +151,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
       return [];
     },
     renderArticle(props: ArticlePageProps): string {
-      return ReactDOMServer.renderToStaticMarkup(React.createElement(ArticleLayout, props));
+      return render(h(ArticleLayout, props));
     },
     nonArticles: [
       {
@@ -160,7 +160,7 @@ export function createDefaultUbwConfigs(): UbwConfigs {
         pathIsNormalizedToSlash: true,
         useLayout: true,
         render(props: NonArticlePageProps): string {
-          return ReactDOMServer.renderToStaticMarkup(React.createElement(TopLayout, props));
+          return render(h(TopLayout, props));
         },
       },
       {
