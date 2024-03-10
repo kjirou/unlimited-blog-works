@@ -7,6 +7,8 @@
   "scripts": {
     "build": "tsc",
     "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier --write .",
     "serve:docs": "npm run serve:docs:prepare && npm run serve:docs:run",
     "serve:docs:prepare": "rm -rf ./test-serving && mkdir test-serving && cp -r docs test-serving/unlimited-blog-works",
     "serve:docs:run": "serve test-serving",
