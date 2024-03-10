@@ -12,3 +12,4 @@ testem.*.*.*.json
 /test-serving/
 /test/tmp/
 /tmp/
+**/__tests__/tmp/

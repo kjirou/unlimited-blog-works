@@ -7,7 +7,7 @@ import path from 'path';
 
 import {PROJECT_ROOT} from './utils';
 
-const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'test/tmp');
+const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'src/__tests__/tmp');
 
 export function prepareWorkspace(subDir: string = 'default'): string {
   const workspaceRoot = path.join(TEST_TMP_ROOT, subDir);
