@@ -1,9 +1,5 @@
 name: run-checks
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: push
 jobs:
   run-checks:
     runs-on: ubuntu-22.04
@@ -18,4 +14,5 @@ jobs:
           key: npm-${{ hashFiles('package-lock.json') }}
       - run: npm ci
       - run: npm run tsc
+      - run: npm run prettier:check
       - run: npm run test

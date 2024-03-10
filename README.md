@@ -4,8 +4,8 @@
 
 A simple static blog generator for publishing on GitHub Pages
 
-
 ## :rocket: Installation
+
 ### Software Preparation
 
 - [Node.js](https://nodejs.org/) version 18 or higher
@@ -16,7 +16,6 @@ A simple static blog generator for publishing on GitHub Pages
 npm install -g unlimited-blog-works
 ```
 
-
 ## :eyes: Overview
 
 - Generate blog source with CLI
@@ -26,12 +25,12 @@ npm install -g unlimited-blog-works
 - Compile from Markdown to HTML and deploy it onto GitHub Pages
   - Sample deployment => [/docs](/docs) using [the feature of GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#publishing-sources-for-github-pages-sites)
 
-
 ## :world_map: Overall View of the Structure
 
 ![](/documents/ubw-overall-view.png)
 
 Execute the following command at any place as a trial.
+
 ```bash
 ubw init my-blog
 cd ./my-blog
@@ -40,6 +39,7 @@ ubw compile
 ```
 
 The following files will be generated.
+
 ```
 tree .
 .
@@ -104,7 +104,6 @@ cat blog-publication/articles/20190310-0001.html
 </html>
 ```
 
-
 ## :cat: Concept
 
 - Save sentences with the Markdown format
@@ -118,7 +117,6 @@ cat blog-publication/articles/20190310-0001.html
   - Also, if you want to write easily, I recommend **using the WYSIWYG editor on GitHub Web**.
 - **NO** JS/CSS Preprocessor
   - Because it's hard work...
-
 
 ## :books: CLI API Reference
 
@@ -143,7 +141,6 @@ cat blog-publication/articles/20190310-0001.html
 - `ubw version`
   - Display version of npm package
 
-
 ## :scroll: ubw-configs.js
 
 Most of the commands reflect the configuration of "ubw-configs.js".
@@ -152,7 +149,6 @@ For details of setting, refer to the following source code and its comment at pr
 
 - [Properties](https://github.com/kjirou/unlimited-blog-works/blob/f417f557ceeb164cef66bfc8587da66f0a0fc05e/src/page-generator.ts#L43-L122)
 - [Default values](https://github.com/kjirou/unlimited-blog-works/blob/f417f557ceeb164cef66bfc8587da66f0a0fc05e/src/page-generator.ts#L128-L198)
-
 
 ## :writing_hand: Markdown Format
 
@@ -166,8 +162,8 @@ However, for example, the following functions are not yet available.
 - [Emoji](https://help.github.com/articles/basic-writing-and-formatting-syntax/#using-emoji)
 - [Syntax highlighting](https://help.github.com/articles/creating-and-highlighting-code-blocks/#syntax-highlighting)
 
-
 ## :wrench: Development
+
 ### Softwares that needs to be locally installed
 
 - [Node.js](https://nodejs.org/), version is defined in [.nvmrc](/.nvmrc)
@@ -179,7 +175,6 @@ git clone git@github.com:kjirou/unlimited-blog-works.git
 cd ./unlimited-blog-works
 npm install
 ```
-
 
 ## :link: Reference Urls
 

@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const minimist = require('minimist');
-const {parseCommands} = require('minimist-subcommand');
-const path = require('path');
+const fs = require("fs");
+const minimist = require("minimist");
+const { parseCommands } = require("minimist-subcommand");
+const path = require("path");
 
 let ubw;
 
-if (fs.existsSync(path.join(__dirname, '../dist/src/index.js'))) {
-  ubw = require('../dist/src');
+if (fs.existsSync(path.join(__dirname, "../dist/src/index.js"))) {
+  ubw = require("../dist/src");
 } else {
-  require('../setup/ts-node-reigister-for-test');
-  ubw = require('../src');
+  require("../setup/ts-node-reigister-for-test");
+  ubw = require("../src");
 }
 
 //
@@ -19,17 +19,23 @@ if (fs.existsSync(path.join(__dirname, '../dist/src/index.js'))) {
 //
 
 function printErrorMessage(message) {
-  const ansiEscapeColorRed = '\x1b[31m';
-  const ansiEscapeColorReset = '\x1b[0m';
-  process.stderr.write(`${ansiEscapeColorRed}${message}${ansiEscapeColorReset}\n`);
+  const ansiEscapeColorRed = "\x1b[31m";
+  const ansiEscapeColorReset = "\x1b[0m";
+  process.stderr.write(
+    `${ansiEscapeColorRed}${message}${ansiEscapeColorReset}\n`,
+  );
 }
 
 function appendConfigFileParser(minimistOptions) {
   return Object.assign({
     boolean: minimistOptions.boolean || [],
-    string: (minimistOptions.string || []).concat(['config-file']),
-    default: Object.assign({}, {'config-file': ''}, minimistOptions.default || {}),
-    alias: Object.assign({}, {c: 'config-file'}, minimistOptions.alias || {}),
+    string: (minimistOptions.string || []).concat(["config-file"]),
+    default: Object.assign(
+      {},
+      { "config-file": "" },
+      minimistOptions.default || {},
+    ),
+    alias: Object.assign({}, { c: "config-file" }, minimistOptions.alias || {}),
   });
 }
 
@@ -38,39 +44,42 @@ function appendConfigFileParser(minimistOptions) {
 //
 
 const commands = {
-  'article--new': ({argv, cwd, defaultConfigFilePath}) => {
+  "article--new": ({ argv, cwd, defaultConfigFilePath }) => {
     const options = minimist(argv, appendConfigFileParser({}));
-    const configFilePath = options['config-file']
-      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
+    const configFilePath = options["config-file"]
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options["config-file"], cwd)
       : defaultConfigFilePath;
     return ubw.executeArticleNew(configFilePath);
   },
-  'compile': ({argv, cwd, defaultConfigFilePath}) => {
+  compile: ({ argv, cwd, defaultConfigFilePath }) => {
     const options = minimist(argv, appendConfigFileParser({}));
-    const configFilePath = options['config-file']
-      ? ubw.cliUtils.toNormalizedAbsolutePath(options['config-file'], cwd)
+    const configFilePath = options["config-file"]
+      ? ubw.cliUtils.toNormalizedAbsolutePath(options["config-file"], cwd)
       : defaultConfigFilePath;
     return ubw.executeCompile(configFilePath);
   },
-  'help': () => {
+  help: () => {
     return ubw.executeHelp();
   },
-  'init': ({argv, cwd}) => {
+  init: ({ argv, cwd }) => {
     const options = minimist(argv);
     const [destinationDirPathInput] = options._;
-    const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(destinationDirPathInput, cwd);
+    const destinationDirPath = ubw.cliUtils.toNormalizedAbsolutePath(
+      destinationDirPathInput,
+      cwd,
+    );
     return ubw.executeInit(destinationDirPath);
   },
-  'now': () => {
+  now: () => {
     return ubw.executeNow();
   },
-  'unknown': () => {
+  unknown: () => {
     return Promise.resolve({
       exitCode: 1,
-      message: 'Unknown subcommand.',
+      message: "Unknown subcommand.",
     });
   },
-  'version': () => {
+  version: () => {
     return ubw.executeVersion();
   },
 };
@@ -94,9 +103,9 @@ const parsedSubCommands = parseCommands(
       version: null,
     },
   },
-  process.argv.slice(2)
+  process.argv.slice(2),
 );
-const commandId = parsedSubCommands.commands.join('--');
+const commandId = parsedSubCommands.commands.join("--");
 const command = commands[commandId] || commands.unknown;
 const cwd = process.cwd();
 
@@ -106,7 +115,7 @@ const promise = command({
   defaultConfigFilePath: path.join(cwd, ubw.cliUtils.CONFIG_FILE_NAME),
 });
 
-promise.then(result => {
+promise.then((result) => {
   if (result.message) {
     if (result.exitCode === 0) {
       process.stderr.write(`${result.message}\n`);
