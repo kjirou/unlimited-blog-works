@@ -18,10 +18,11 @@ import { dumpDir, prepareWorkspace } from "../test-helper";
 const clearModule = require("clear-module");
 const hast = require("hastscript");
 
+const testTmpDir = "index";
 let workspaceRoot: string;
 
 beforeEach(() => {
-  workspaceRoot = prepareWorkspace();
+  workspaceRoot = prepareWorkspace(testTmpDir);
 });
 
 describe("executeVersion", () => {
