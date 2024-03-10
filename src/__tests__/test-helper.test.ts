@@ -1,24 +1,23 @@
-import assert from "assert";
 import fs from "fs-extra";
 import path from "path";
 
 import { dumpDir, prepareWorkspace } from "../test-helper";
 
-describe("prepareWorkspace", function () {
-  describe("when there are no dirs", function () {
-    it("can ensure a default dir", function () {
+describe("prepareWorkspace", () => {
+  describe("when there are no directories", () => {
+    it("can ensure a default directory", () => {
       const workspaceRoot = prepareWorkspace();
       const stats = fs.statSync(workspaceRoot);
-      assert.strictEqual(stats.isDirectory(), true);
+      expect(stats.isDirectory()).toBe(true);
     });
   });
 
-  describe("when there is the same dir with containing any files", function () {
+  describe("when there is a directory containing files at the same path as the default directory", () => {
     let workspaceRoot: string;
     let fooFilePath: string;
     let barFilePath: string;
 
-    beforeEach(function () {
+    beforeEach(() => {
       workspaceRoot = prepareWorkspace();
       fooFilePath = path.join(workspaceRoot, "foo");
       barFilePath = path.join(workspaceRoot, "bar");
@@ -26,18 +25,18 @@ describe("prepareWorkspace", function () {
       fs.writeFileSync(barFilePath, "");
     });
 
-    it("can ensure an empty default dir", function () {
+    it("can ensure an empty default directory", () => {
       const workspaceRoot = prepareWorkspace();
       const stats = fs.statSync(workspaceRoot);
-      assert.strictEqual(stats.isDirectory(), true);
-      assert.strictEqual(fs.existsSync(fooFilePath), false);
-      assert.strictEqual(fs.existsSync(barFilePath), false);
+      expect(stats.isDirectory()).toBe(true);
+      expect(fs.existsSync(fooFilePath)).toBe(false);
+      expect(fs.existsSync(barFilePath)).toBe(false);
     });
   });
 });
 
-describe("dumpDir", function () {
-  it("can get a simple file list", function () {
+describe("dumpDir", () => {
+  it("can get a list of files as an object", () => {
     const workspaceRoot = prepareWorkspace();
     fs.ensureDirSync(path.join(workspaceRoot, "x/y"));
     fs.writeFileSync(path.join(workspaceRoot, "foo"), "FOO");
@@ -45,7 +44,7 @@ describe("dumpDir", function () {
     fs.writeFileSync(path.join(workspaceRoot, "x/y", "baz"), "BAZ");
 
     const dump = dumpDir(workspaceRoot);
-    assert.deepStrictEqual(dump, {
+    expect(dump).toStrictEqual({
       foo: "FOO",
       bar: "BAR",
       "x/y/baz": "BAZ",
