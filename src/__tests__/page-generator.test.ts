@@ -1,4 +1,3 @@
-import assert from "assert";
 import hast from "hastscript";
 
 import {
@@ -11,7 +10,7 @@ import {
 
 describe("extractOgpDescription", function () {
   it('should pick up only values of type="text"', function () {
-    assert.strictEqual(
+    expect(
       extractOgpDescription({
         type: "root",
         children: [
@@ -22,12 +21,11 @@ describe("extractOgpDescription", function () {
           { type: "text", value: "c" },
         ],
       }),
-      "a b c",
-    );
+    ).toBe("a b c");
   });
 
   it("can ignore some specified types", function () {
-    assert.strictEqual(
+    expect(
       extractOgpDescription({
         type: "foo",
         children: [
@@ -45,39 +43,35 @@ describe("extractOgpDescription", function () {
           },
         ],
       }),
-      "a b",
-    );
+    ).toBe("a b");
   });
 
   it("can return an empty string if there are no matched nodes", function () {
-    assert.strictEqual(
+    expect(
       extractOgpDescription({
         type: "root",
         children: [{ type: "code", value: "X" }],
       }),
-      "",
-    );
+    ).toBe("");
   });
 
   it("should consider the max-length", function () {
-    assert.strictEqual(
+    expect(
       extractOgpDescription({
         type: "text",
         value: "a".repeat(90),
       }),
-      "a".repeat(90),
-    );
-    assert.strictEqual(
+    ).toBe("a".repeat(90));
+    expect(
       extractOgpDescription({
         type: "text",
         value: "a".repeat(91),
       }),
-      "a".repeat(87) + "...",
-    );
+    ).toBe("a".repeat(87) + "...");
   });
 
   it("can collapse /\\s+/ characters", function () {
-    assert.strictEqual(
+    expect(
       extractOgpDescription({
         type: "root",
         children: [
@@ -91,8 +85,7 @@ describe("extractOgpDescription", function () {
           },
         ],
       }),
-      "a b c d e f g",
-    );
+    ).toBe("a b c d e f g");
   });
 });
 
@@ -105,7 +98,7 @@ describe("generateH1AutolinkHrefReplacementTransformer", function () {
       }),
     ]);
     generateH1AutolinkHrefReplacementTransformer("dataUbwAutolink")(tree);
-    assert.deepStrictEqual(tree, {
+    expect(tree).toStrictEqual({
       type: "element",
       tagName: "h1",
       properties: {},
@@ -157,29 +150,16 @@ describe("generateH1AutolinkHrefReplacementTransformer", function () {
       ]),
     ]);
     generateH1AutolinkHrefReplacementTransformer("dataUbwAutolink")(tree);
-    assert.strictEqual(
-      (tree as any).children[0].children[0].properties.href,
-      "#one",
-    );
-    assert.strictEqual(
-      (tree as any).children[1].children[0].properties.href,
-      "",
-    );
-    assert.strictEqual(
-      (tree as any).children[2].children[0].properties.href,
+    expect((tree as any).children[0].children[0].properties.href).toBe("#one");
+    expect((tree as any).children[1].children[0].properties.href).toBe("");
+    expect((tree as any).children[2].children[0].properties.href).toBe(
       "#three",
     );
-    assert.strictEqual(
-      (tree as any).children[3].children[0].properties.href,
-      "",
-    );
-    assert.strictEqual(
-      (tree as any).children[4].children[0].properties.href,
-      "#five",
-    );
+    expect((tree as any).children[3].children[0].properties.href).toBe("");
+    expect((tree as any).children[4].children[0].properties.href).toBe("#five");
   });
 
-  it("should only replace nodes with marker attributes", function () {
+  it("should only replace nodes marked with specified attributes", function () {
     const tree = hast("div", [
       hast("h1", [
         hast("a", {
@@ -201,18 +181,9 @@ describe("generateH1AutolinkHrefReplacementTransformer", function () {
       ]),
     ]);
     generateH1AutolinkHrefReplacementTransformer("foo")(tree);
-    assert.strictEqual(
-      (tree as any).children[0].children[0].properties.href,
-      "",
-    );
-    assert.strictEqual(
-      (tree as any).children[1].children[0].properties.href,
-      "#two",
-    );
-    assert.strictEqual(
-      (tree as any).children[2].children[0].properties.href,
-      "",
-    );
+    expect((tree as any).children[0].children[0].properties.href).toBe("");
+    expect((tree as any).children[1].children[0].properties.href).toBe("#two");
+    expect((tree as any).children[2].children[0].properties.href).toBe("");
   });
 });
 
@@ -221,8 +192,7 @@ describe("getNextAutomaticArticleId", function () {
     const articlePages: ArticlePage[] = [
       Object.assign(createArticlePage(), { articleId: "20190101-0001" }),
     ];
-    assert.strictEqual(
-      getNextAutomaticArticleId(articlePages, "20190101"),
+    expect(getNextAutomaticArticleId(articlePages, "20190101")).toBe(
       "20190101-0002",
     );
   });
@@ -232,26 +202,21 @@ describe("getNextAutomaticArticleId", function () {
       Object.assign(createArticlePage(), { articleId: "20190101-0002" }),
       Object.assign(createArticlePage(), { articleId: "20190101-9998" }),
     ];
-    assert.strictEqual(
-      getNextAutomaticArticleId(articlePages, "20190101"),
+    expect(getNextAutomaticArticleId(articlePages, "20190101")).toBe(
       "20190101-9999",
     );
   });
 
-  it('can get the "0001" number when there are no articles', function () {
-    assert.strictEqual(
-      getNextAutomaticArticleId([], "20190101"),
-      "20190101-0001",
-    );
+  it('can get "0001" when there are no articles', function () {
+    expect(getNextAutomaticArticleId([], "20190101")).toBe("20190101-0001");
   });
 
-  it("should ignore articles not equal date", function () {
+  it("should ignore articleIds that can't be parsed as a date", function () {
     const articlePages: ArticlePage[] = [
       Object.assign(createArticlePage(), { articleId: "20190102-0001" }),
       Object.assign(createArticlePage(), { articleId: "2019010X-0001" }),
     ];
-    assert.strictEqual(
-      getNextAutomaticArticleId(articlePages, "20190101"),
+    expect(getNextAutomaticArticleId(articlePages, "20190101")).toBe(
       "20190101-0001",
     );
   });

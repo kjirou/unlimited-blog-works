@@ -1,7 +1,5 @@
-import assert from "assert";
 import fs from "fs-extra";
 import path from "path";
-import sinon from "sinon";
 
 import {
   UbwSettings,
@@ -22,88 +20,82 @@ const hast = require("hastscript");
 
 let workspaceRoot: string;
 
-beforeEach(function () {
+beforeEach(() => {
   workspaceRoot = prepareWorkspace();
 });
 
-describe("executeVersion", function () {
-  it("can return a string that seems to be version", function () {
+describe("executeVersion", () => {
+  it("can return a string that seems to be a version", () => {
     return executeVersion().then((result) => {
-      assert.strictEqual(result.exitCode, 0);
-      assert.strictEqual(/^\d+\.\d+\.\d+$/.test(result.message), true);
+      expect(result.exitCode).toBe(0);
+      expect(/^\d+\.\d+\.\d+$/.test(result.message)).toBe(true);
     });
   });
 });
 
-describe("executeHelp", function () {
-  it("can return a sentence of something", function () {
+describe("executeHelp", () => {
+  it("can return a sentence", () => {
     return executeHelp().then((result) => {
-      assert.strictEqual(result.exitCode, 0);
-      assert.strictEqual(result.message.length > 0, true);
+      expect(result.exitCode).toBe(0);
+      expect(result.message.length > 0).toBe(true);
     });
   });
 });
 
-describe("executeNow", function () {
-  let clock: any;
-
-  beforeEach(function () {
-    clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
+describe("executeNow", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
   });
 
-  afterEach(function () {
-    clock.restore();
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
-  it("should return an UTC formatted date-time string", function () {
+  it("should return a date-time string formatted with UTC", () => {
     return executeNow().then((result) => {
-      assert.strictEqual(result.exitCode, 0);
-      assert.strictEqual(result.message, "2019-01-01 00:00:00+0000");
+      expect(result.exitCode).toBe(0);
+      expect(result.message).toBe("2019-01-01 00:00:00+0000");
     });
   });
 });
 
-describe("executeInit", function () {
-  it("can create some files", function () {
+describe("executeInit", () => {
+  it("can create some files", () => {
     return executeInit(workspaceRoot).then((result) => {
-      assert.strictEqual(result.exitCode, 0);
+      expect(result.exitCode).toBe(0);
 
       const dump = dumpDir(workspaceRoot);
-      assert.strictEqual(typeof dump["ubw-configs.js"], "string");
-      assert.strictEqual(
-        typeof dump["blog-source/external-resources/index.css"],
+      expect(typeof dump["ubw-configs.js"]).toBe("string");
+      expect(typeof dump["blog-source/external-resources/index.css"]).toBe(
         "string",
       );
-      assert.strictEqual(
+      expect(
         typeof dump["blog-source/external-resources/github-markdown.css"],
-        "string",
-      );
+      ).toBe("string");
     });
   });
 });
 
-describe("executeArticleNew", function () {
-  describe("when after `executeInit`", function () {
-    let clock: any;
-
-    beforeEach(function () {
-      clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
-
+describe("executeArticleNew", () => {
+  describe("when after `executeInit`", () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
       return executeInit(workspaceRoot);
     });
 
-    afterEach(function () {
-      clock.restore();
+    afterEach(() => {
+      jest.useRealTimers();
     });
 
-    it("can create an article source file", function () {
+    it("can create a source file of an article", () => {
       return executeArticleNew(path.join(workspaceRoot, "ubw-configs.js")).then(
         (result) => {
-          assert.strictEqual(result.exitCode, 0);
+          expect(result.exitCode).toBe(0);
 
           const dump = dumpDir(workspaceRoot);
-          assert.strictEqual(
-            typeof dump["blog-source/articles/20190101-0001.md"],
+          expect(typeof dump["blog-source/articles/20190101-0001.md"]).toBe(
             "string",
           );
         },
@@ -112,13 +104,13 @@ describe("executeArticleNew", function () {
   });
 });
 
-describe("executeCompile, executeCompileWithSettings", function () {
-  describe("when after `executeInit` and `executeArticleNew`", function () {
-    let clock: any;
+describe("executeCompile, executeCompileWithSettings", () => {
+  describe("when after `executeInit` and `executeArticleNew`", () => {
     let configFilePath: string;
 
-    beforeEach(function () {
-      clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
       configFilePath = path.join(workspaceRoot, "ubw-configs.js");
 
       return executeInit(workspaceRoot)
@@ -131,114 +123,88 @@ describe("executeCompile, executeCompileWithSettings", function () {
         });
     });
 
-    afterEach(function () {
-      clock.restore();
+    afterEach(() => {
+      jest.useRealTimers();
     });
 
-    describe("Basic specification of `executeCompile`", function () {
-      it("can create some files into the publication dir", function () {
+    describe("basic specification of `executeCompile`", () => {
+      it("can create some files into the publication directory", () => {
         return executeCompile(configFilePath).then((result) => {
-          assert.strictEqual(result.exitCode, 0);
+          expect(result.exitCode).toBe(0);
 
           const dump = dumpDir(workspaceRoot);
-          assert.strictEqual(
-            typeof dump["blog-publication/index.html"],
-            "string",
-          );
-          assert.strictEqual(
-            typeof dump["blog-publication/atom-feed.xml"],
-            "string",
-          );
-          assert.strictEqual(
-            typeof dump["blog-publication/robots.txt"],
-            "string",
-          );
-          assert.strictEqual(
+          expect(typeof dump["blog-publication/index.html"]).toBe("string");
+          expect(typeof dump["blog-publication/atom-feed.xml"]).toBe("string");
+          expect(typeof dump["blog-publication/robots.txt"]).toBe("string");
+          expect(
             typeof dump["blog-publication/external-resources/index.css"],
-            "string",
-          );
-          assert.strictEqual(
+          ).toBe("string");
+          expect(
             typeof dump[
               "blog-publication/external-resources/github-markdown.css"
             ],
-            "string",
-          );
-          assert.strictEqual(
+          ).toBe("string");
+          expect(
             typeof dump["blog-publication/articles/20190101-0001.html"],
-            "string",
-          );
+          ).toBe("string");
         });
       });
 
-      it("should add hyperlinks that refer the same page to page-title autolinks", function () {
+      it("should set an empty href attribute for the title of each page", () => {
         return executeCompile(configFilePath).then((result) => {
-          assert.strictEqual(result.exitCode, 0);
+          expect(result.exitCode).toBe(0);
 
           const dump = dumpDir(workspaceRoot);
-          assert.strictEqual(
+          expect(
             /<h1 .+href="".+<\/h1>/.test(dump["blog-publication/index.html"]),
-            true,
-          );
-          assert.strictEqual(
+          ).toBe(true);
+          expect(
             /<h1 .+href="".+<\/h1>/.test(
               dump["blog-publication/articles/20190101-0001.html"],
             ),
-            true,
-          );
+          ).toBe(true);
         });
       });
     });
 
-    describe('"_direct" directory', function () {
-      it('should succeed even if there is no "_direct" dir', function () {
+    describe('"_direct" directory', () => {
+      it('should succeed even if there is no "_direct" directory', () => {
         fs.removeSync(
           path.join(workspaceRoot, "blog-source/external-resources/_direct"),
         );
 
         return executeCompile(configFilePath).then((result) => {
           const dump = dumpDir(workspaceRoot);
-          assert.strictEqual(
-            typeof dump["blog-publication/index.html"],
-            "string",
-          );
-          assert.strictEqual(
-            typeof dump["blog-publication/robots.txt"],
-            "undefined",
-          );
+          expect(typeof dump["blog-publication/index.html"]).toBe("string");
+          expect(typeof dump["blog-publication/robots.txt"]).toBe("undefined");
         });
       });
 
-      it('should succeed even if the "_direct" dir is empty', function () {
+      it('should succeed even if the "_direct" directory is empty', () => {
         fs.emptyDirSync(
           path.join(workspaceRoot, "blog-source/external-resources/_direct"),
         );
 
         return executeCompile(configFilePath).then((result) => {
           const dump = dumpDir(workspaceRoot);
-          assert.strictEqual(
-            typeof dump["blog-publication/index.html"],
-            "string",
-          );
-          assert.strictEqual(
-            typeof dump["blog-publication/robots.txt"],
-            "undefined",
-          );
+          expect(typeof dump["blog-publication/index.html"]).toBe("string");
+          expect(typeof dump["blog-publication/robots.txt"]).toBe("undefined");
         });
       });
     });
 
-    describe("Change due to each setting", function () {
+    describe("use settings", () => {
       let settings: UbwSettings;
 
-      beforeEach(function () {
+      beforeEach(() => {
         clearModule(configFilePath);
         settings = requireSettings(configFilePath);
       });
 
-      describe("ogp, defaultOgpImageUrl", function () {
+      describe("ogp, defaultOgpImageUrl", () => {
         let articleSource: string;
 
-        beforeEach(function () {
+        beforeEach(() => {
           articleSource = fs
             .readFileSync(
               path.join(workspaceRoot, "blog-source/articles/20190101-0001.md"),
@@ -251,50 +217,44 @@ describe("executeCompile, executeCompileWithSettings", function () {
           });
         });
 
-        it("og:title, og:url, og:site_name, og:type", function () {
+        it("og:title, og:url, og:site_name, og:type", () => {
           return executeCompileWithSettings(settings).then((result) => {
             const dump = dumpDir(workspaceRoot);
-            assert.notStrictEqual(
+            expect(
               dump["blog-publication/articles/20190101-0001.html"].indexOf(
                 '<meta property="og:type" content="website">',
               ),
-              -1,
-            );
-            assert.notStrictEqual(
+            ).not.toBe(-1);
+            expect(
               dump["blog-publication/articles/20190101-0001.html"].indexOf(
                 '<meta property="og:url" content="https://example.com/bar/articles/20190101-0001.html">',
               ),
-              -1,
-            );
-            assert.notStrictEqual(
+            ).not.toBe(-1);
+            expect(
               dump["blog-publication/articles/20190101-0001.html"].indexOf(
                 '<meta property="og:site_name" content="FOO">',
               ),
-              -1,
-            );
+            ).not.toBe(-1);
 
-            assert.notStrictEqual(
+            expect(
               dump["blog-publication/index.html"].indexOf(
                 '<meta property="og:type" content="website">',
               ),
-              -1,
-            );
-            assert.notStrictEqual(
+            ).not.toBe(-1);
+            expect(
               dump["blog-publication/index.html"].indexOf(
                 '<meta property="og:url" content="https://example.com/bar/">',
               ),
-              -1,
-            );
-            assert.notStrictEqual(
+            ).not.toBe(-1);
+            expect(
               dump["blog-publication/index.html"].indexOf(
                 '<meta property="og:site_name" content="FOO">',
               ),
-              -1,
-            );
+            ).not.toBe(-1);
           });
         });
 
-        it("og:description", function () {
+        it("og:description", () => {
           fs.writeFileSync(
             path.join(workspaceRoot, "blog-source/articles/20190101-0001.md"),
             articleSource + "Foo Bar\n\nBaz\n",
@@ -302,47 +262,44 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
           return executeCompileWithSettings(settings).then((result) => {
             const dump = dumpDir(workspaceRoot);
-            assert.notStrictEqual(
+            expect(
               dump["blog-publication/articles/20190101-0001.html"].indexOf(
                 '<meta property="og:description" content="Foo Bar Baz">',
               ),
-              -1,
-            );
+            ).not.toBe(-1);
           });
         });
 
-        describe("og:image", function () {
-          beforeEach(function () {
+        describe("og:image", () => {
+          beforeEach(() => {
             settings.configs.defaultOgpImageUrl =
               "https://example.com/default.png";
           });
 
-          it("should use defaultOgpImageUrl when the article does not have any images", function () {
+          it("should use defaultOgpImageUrl when the article does not have any images", () => {
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<meta property="og:image" content="https://example.com/default.png">',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it('should not render "og:image" when the article does not have any images and defaultOgpImageUrl is an empty', function () {
+          it('should not render "og:image" when the article does not have any images and defaultOgpImageUrl is an empty', () => {
             settings.configs.defaultOgpImageUrl = "";
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.strictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   "og:image",
                 ),
-                -1,
-              );
+              ).toBe(-1);
             });
           });
 
-          it('should use the first "![](url)" of the article', function () {
+          it('should use the first "![](url)" of the article', () => {
             fs.writeFileSync(
               path.join(workspaceRoot, "blog-source/articles/20190101-0001.md"),
               articleSource +
@@ -351,16 +308,15 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<meta property="og:image" content="http://foo.com/a.png">',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it('should resolve the "![](relative-url)" of the article', function () {
+          it('should resolve the "![](relative-url)" of the article', () => {
             fs.writeFileSync(
               path.join(workspaceRoot, "blog-source/articles/20190101-0001.md"),
               articleSource + "![](./a.png)",
@@ -368,16 +324,15 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<meta property="og:image" content="https://example.com/bar/articles/a.png">',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it('should resolve the "![](root-relative-url)" of the article', function () {
+          it('should resolve the "![](root-relative-url)" of the article', () => {
             fs.writeFileSync(
               path.join(workspaceRoot, "blog-source/articles/20190101-0001.md"),
               articleSource + "![](/a.png)",
@@ -385,41 +340,38 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<meta property="og:image" content="https://example.com/bar/a.png">',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it("should use defaultOgpImageUrl in non-articles", function () {
+          it("should use defaultOgpImageUrl in non-articles", () => {
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/index.html"].indexOf(
                   '<meta property="og:image" content="https://example.com/default.png">',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it('should not render "og:image" in non-articles when defaultOgpImageUrl is an empty', function () {
+          it('should not render "og:image" in non-articles when defaultOgpImageUrl is an empty', () => {
             settings.configs.defaultOgpImageUrl = "";
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.strictEqual(
+              expect(
                 dump["blog-publication/index.html"].indexOf("og:image"),
-                -1,
-              );
+              ).toBe(-1);
             });
           });
         });
       });
 
-      it("generateArticleHeadNodes", function () {
+      it("generateArticleHeadNodes", () => {
         settings.configs.generateArticleHeadNodes = function (
           props: ArticlePageProps,
         ): HastscriptAst[] {
@@ -431,22 +383,20 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
         return executeCompileWithSettings(settings).then((result) => {
           const dump = dumpDir(workspaceRoot);
-          assert.notStrictEqual(
+          expect(
             dump["blog-publication/articles/20190101-0001.html"].indexOf(
               '<script src="/path/to/foo.js"></script>',
             ),
-            -1,
-          );
-          assert.notStrictEqual(
+          ).not.toBe(-1);
+          expect(
             dump["blog-publication/articles/20190101-0001.html"].indexOf(
               '<link rel="/path/to/bar.css">',
             ),
-            -1,
-          );
+          ).not.toBe(-1);
         });
       });
 
-      it("generateNonArticleHeadNodes", function () {
+      it("generateNonArticleHeadNodes", () => {
         settings.configs.generateNonArticleHeadNodes = function (
           props: NonArticlePageProps,
         ): HastscriptAst[] {
@@ -458,23 +408,21 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
         return executeCompileWithSettings(settings).then((result) => {
           const dump = dumpDir(workspaceRoot);
-          assert.notStrictEqual(
+          expect(
             dump["blog-publication/index.html"].indexOf(
               '<script src="/path/to/foo.js"></script>',
             ),
-            -1,
-          );
-          assert.notStrictEqual(
+          ).not.toBe(-1);
+          expect(
             dump["blog-publication/index.html"].indexOf(
               '<link rel="/path/to/bar.css">',
             ),
-            -1,
-          );
+          ).not.toBe(-1);
         });
       });
 
-      describe("additionalTopPageLinks", function () {
-        it("can render as anchor tags", function () {
+      describe("additionalTopPageLinks", () => {
+        it("can render the value as anchor tags", () => {
           settings.configs.additionalTopPageLinks = [
             { linkText: "FOOOO", href: "https://example.com/aaa" },
             { linkText: "BARRR", href: "https://example.com/bbb" },
@@ -482,25 +430,23 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
           return executeCompileWithSettings(settings).then((result) => {
             const dump = dumpDir(workspaceRoot);
-            assert.notStrictEqual(
+            expect(
               dump["blog-publication/index.html"].indexOf(
                 '<a href="https://example.com/aaa">FOOOO</a>',
               ),
-              -1,
-            );
-            assert.notStrictEqual(
+            ).not.toBe(-1);
+            expect(
               dump["blog-publication/index.html"].indexOf(
                 '<a href="https://example.com/bbb">BARRR</a>',
               ),
-              -1,
-            );
+            ).not.toBe(-1);
           });
         });
       });
 
-      describe("nonArticles", function () {
-        describe("pathIsNormalizedToSlash", function () {
-          it("should render the link normalized to slash when the value is true", function () {
+      describe("nonArticles", () => {
+        describe("pathIsNormalizedToSlash", () => {
+          it('should normalize the value of href attribute linking to the top page to "/" when the value is true', () => {
             const topPageConfigs = settings.configs.nonArticles.find(
               (nonArticle) => nonArticle.nonArticlePageId === "top",
             ) as any;
@@ -508,16 +454,15 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<a href="/">Back to the Top</a>',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
 
-          it("should render the link not normalized to slash when the value is false", function () {
+          it('should render the value of href attribute linking to the top page as "/{filename}.html" when the value is false', () => {
             const topPageConfigs = settings.configs.nonArticles.find(
               (nonArticle) => nonArticle.nonArticlePageId === "top",
             ) as any;
@@ -525,12 +470,11 @@ describe("executeCompile, executeCompileWithSettings", function () {
 
             return executeCompileWithSettings(settings).then((result) => {
               const dump = dumpDir(workspaceRoot);
-              assert.notStrictEqual(
+              expect(
                 dump["blog-publication/articles/20190101-0001.html"].indexOf(
                   '<a href="/index.html">Back to the Top</a>',
                 ),
-                -1,
-              );
+              ).not.toBe(-1);
             });
           });
         });

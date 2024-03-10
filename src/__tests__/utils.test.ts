@@ -1,5 +1,3 @@
-import assert from "assert";
-
 import {
   classifyUrl,
   extractPageTitle,
@@ -12,150 +10,152 @@ import {
 } from "../utils";
 
 describe("generateDateTimeString", () => {
-  [
-    ["2019-01-01 00:00:00+0000", "UTC", "2019-01-01 00:00:00"],
-    ["2019-12-31 23:59:59+0000", "UTC", "2019-12-31 23:59:59"],
-    ["2019-01-01 00:00:00+0000", "GMT", "2019-01-01 00:00:00"],
-    ["2019-01-01 00:00:00+0000", "Asia/Tokyo", "2019-01-01 09:00:00"],
-    ["2019-01-01 00:00:00+0000", "America/New_York", "2018-12-31 19:00:00"],
-  ].forEach(([actual, expectedTimeZone, expected]) => {
-    it(`${actual} -> (${expectedTimeZone}) ${expected}`, () => {
-      assert.strictEqual(
-        generateDateTimeString(new Date(actual), expectedTimeZone),
-        expected,
-      );
-    });
-  });
-
-  describe("timeZoneSuffix option", () => {
+  test.each<
     [
-      ["2019-01-01 00:00:00+0000", "UTC", "2019-01-01 00:00:00+0000"],
-      ["2019-01-01 00:00:00+0000", "Asia/Tokyo", "2019-01-01 09:00:00+0900"],
-    ].forEach(([actual, expectedTimeZone, expected]) => {
-      it(`${actual} -> (${expectedTimeZone}) ${expected}`, () => {
-        assert.strictEqual(
-          generateDateTimeString(new Date(actual), expectedTimeZone, {
-            timeZoneSuffix: true,
-          }),
-          expected,
-        );
-      });
-    });
+      Parameters<typeof generateDateTimeString>,
+      ReturnType<typeof generateDateTimeString>,
+    ]
+  >([
+    [[new Date("2019-01-01 00:00:00+0000"), "UTC"], "2019-01-01 00:00:00"],
+    [[new Date("2019-12-31 23:59:59+0000"), "UTC"], "2019-12-31 23:59:59"],
+    [[new Date("2019-01-01 00:00:00+0000"), "GMT"], "2019-01-01 00:00:00"],
+    [
+      [new Date("2019-01-01 00:00:00+0000"), "Asia/Tokyo"],
+      "2019-01-01 09:00:00",
+    ],
+    [
+      [new Date("2019-01-01 00:00:00+0000"), "America/New_York"],
+      "2018-12-31 19:00:00",
+    ],
+    [
+      [new Date("2019-01-01 00:00:00+0000"), "UTC", { timeZoneSuffix: true }],
+      "2019-01-01 00:00:00+0000",
+    ],
+    [
+      [
+        new Date("2019-01-01 00:00:00+0000"),
+        "Asia/Tokyo",
+        { timeZoneSuffix: true },
+      ],
+      "2019-01-01 09:00:00+0900",
+    ],
+  ])("%s -> %s", (args, expected) => {
+    expect(generateDateTimeString(...args)).toBe(expected);
   });
 });
 
 describe("generateTodayDateString", () => {
-  [
-    ["2019-01-01 00:00:00+0000", "UTC", "20190101"],
-    ["2019-12-31 23:59:59+0000", "UTC", "20191231"],
-    ["2019-01-01 00:00:00+0000", "GMT", "20190101"],
-    ["2019-01-01 00:00:00+0000", "Asia/Tokyo", "20190101"],
-    ["2019-01-01 00:00:00+0000", "America/New_York", "20181231"],
-  ].forEach(([actual, expectedTimeZone, expected]) => {
-    it(`${actual} -> (${expectedTimeZone}) ${expected}`, () => {
-      assert.strictEqual(
-        generateTodayDateString(new Date(actual), expectedTimeZone),
-        expected,
-      );
-    });
+  test.each<
+    [
+      Parameters<typeof generateTodayDateString>,
+      ReturnType<typeof generateTodayDateString>,
+    ]
+  >([
+    [[new Date("2019-01-01 00:00:00+0000"), "UTC"], "20190101"],
+    [[new Date("2019-12-31 23:59:59+0000"), "UTC"], "20191231"],
+    [[new Date("2019-01-01 00:00:00+0000"), "GMT"], "20190101"],
+    [[new Date("2019-01-01 00:00:00+0000"), "Asia/Tokyo"], "20190101"],
+    [[new Date("2019-01-01 00:00:00+0000"), "America/New_York"], "20181231"],
+  ])("%s -> %s", (args, expected) => {
+    expect(generateTodayDateString(...args)).toBe(expected);
   });
 });
 
 describe("toNormalizedAbsolutePath", () => {
-  [
-    ["foo", "/base/foo"],
-    ["./foo", "/base/foo"],
-    ["foo/bar", "/base/foo/bar"],
-    ["foo/bar/baz/../..", "/base/foo"],
-    ["/abs", "/abs"],
-  ].forEach(([pathInput, expected]) => {
-    it(`"${pathInput}" -> "${expected}"`, () => {
-      assert.strictEqual(
-        toNormalizedAbsolutePath(pathInput, "/base"),
-        expected,
-      );
-    });
+  test.each<
+    [
+      Parameters<typeof toNormalizedAbsolutePath>,
+      ReturnType<typeof toNormalizedAbsolutePath>,
+    ]
+  >([
+    [["foo", "/base"], "/base/foo"],
+    [["./foo", "/base"], "/base/foo"],
+    [["foo/bar", "/base"], "/base/foo/bar"],
+    [["foo/bar/baz/../..", "/base"], "/base/foo"],
+    [["/abs", "/base"], "/abs"],
+  ])("%s -> %s", (args, expected) => {
+    expect(toNormalizedAbsolutePath(...args)).toBe(expected);
   });
 });
 
 describe("classifyUrl", () => {
-  [
-    ["https://example.com", "absolute"],
-    ["http://example.com", "absolute"],
-    ["https://example.com/", "absolute"],
-    ["/foo", "root-relative"],
-    ["/foo/bar", "root-relative"],
-    ["foo", "relative"],
-    ["./foo", "relative"],
-    ["../foo", "relative"],
-    ["", "unknown"],
-  ].forEach(([urlLikeInput, expected]) => {
-    it(`"${urlLikeInput}" -> "${expected}"`, () => {
-      assert.strictEqual(classifyUrl(urlLikeInput), expected);
-    });
+  test.each<[Parameters<typeof classifyUrl>, ReturnType<typeof classifyUrl>]>([
+    [["https://example.com"], "absolute"],
+    [["http://example.com"], "absolute"],
+    [["https://example.com/"], "absolute"],
+    [["/foo"], "root-relative"],
+    [["/foo/bar"], "root-relative"],
+    [["foo"], "relative"],
+    [["./foo"], "relative"],
+    [["../foo"], "relative"],
+    [[""], "unknown"],
+  ])("%s -> %s", (args, expected) => {
+    expect(classifyUrl(...args)).toBe(expected);
   });
 });
 
 describe("getPathnameWithoutTailingSlash", () => {
-  [
-    ["https://example.com", ""],
-    ["https://example.com/", ""],
-    ["https://example.com/foo", "/foo"],
-    ["https://example.com/foo/", "/foo"],
-    ["https://example.com/foo/bar", "/foo/bar"],
-    ["https://example.com/foo/bar/", "/foo/bar"],
-  ].forEach(([urlInput, expected]) => {
-    it(`"${urlInput}" -> "${expected}"`, () => {
-      assert.strictEqual(getPathnameWithoutTailingSlash(urlInput), expected);
-    });
+  test.each<
+    [
+      Parameters<typeof getPathnameWithoutTailingSlash>,
+      ReturnType<typeof getPathnameWithoutTailingSlash>,
+    ]
+  >([
+    [["https://example.com"], ""],
+    [["https://example.com/"], ""],
+    [["https://example.com/foo"], "/foo"],
+    [["https://example.com/foo/"], "/foo"],
+    [["https://example.com/foo/bar"], "/foo/bar"],
+    [["https://example.com/foo/bar/"], "/foo/bar"],
+  ])("%s -> %s", (args, expected) => {
+    expect(getPathnameWithoutTailingSlash(...args)).toBe(expected);
   });
 });
 
 describe("removeTailingResourceNameFromPath", () => {
-  [
-    ["index.html", ""],
-    ["foo", ""],
-    ["./foo", "./"],
-    ["/foo", "/"],
-    ["/foo/bar", "/foo/"],
-  ].forEach(([pathInput, expected]) => {
-    it(`"${pathInput}" -> "${expected}"`, () => {
-      assert.strictEqual(
-        removeTailingResourceNameFromPath(pathInput),
-        expected,
-      );
-    });
+  test.each<
+    [
+      Parameters<typeof removeTailingResourceNameFromPath>,
+      ReturnType<typeof removeTailingResourceNameFromPath>,
+    ]
+  >([
+    [["index.html"], ""],
+    [["foo"], ""],
+    [["./foo"], "./"],
+    [["/foo"], "/"],
+    [["/foo/bar"], "/foo/"],
+  ])("%s -> %s", (args, expected) => {
+    expect(removeTailingResourceNameFromPath(...args)).toBe(expected);
   });
 });
 
 describe("permalinksToRelativeUrl", () => {
-  [
+  test.each<
     [
-      "/index.html",
-      "/articles/20190101-0001.html",
+      Parameters<typeof permalinksToRelativeUrl>,
+      ReturnType<typeof permalinksToRelativeUrl>,
+    ]
+  >([
+    [
+      ["/index.html", "/articles/20190101-0001.html"],
       "articles/20190101-0001.html",
     ],
-    ["/articles/20190101-0001.html", "/index.html", "../index.html"],
-    ["/", "/index", "index"],
-    ["/index", "/", "."],
-    ["/", "/", "."],
-    ["/same", "/same", "same"],
-    ["/samedir/same", "/samedir/same", "same"],
-    ["/samedir/foo", "/samedir/bar", "bar"],
-    ["/samedir/foo", "/samedir/bar/x", "bar/x"],
-  ].forEach(([fromPermalink, toPermalink, expected]) => {
-    it(`From "${fromPermalink}" to "${toPermalink}" -> "${expected}"`, () => {
-      assert.strictEqual(
-        permalinksToRelativeUrl(fromPermalink, toPermalink),
-        expected,
-      );
-    });
+    [["/articles/20190101-0001.html", "/index.html"], "../index.html"],
+    [["/", "/index"], "index"],
+    [["/index", "/"], "."],
+    [["/", "/"], "."],
+    [["/same", "/same"], "same"],
+    [["/samedir/same", "/samedir/same"], "same"],
+    [["/samedir/foo", "/samedir/bar"], "bar"],
+    [["/samedir/foo", "/samedir/bar/x"], "bar/x"],
+  ])("%s -> %s", (args, expected) => {
+    expect(permalinksToRelativeUrl(...args)).toBe(expected);
   });
 });
 
 describe("extractPageTitle", () => {
-  it('can exact type="heading" and depth=1 only', () => {
-    assert.strictEqual(
+  it('can only extract type="heading" and depth=1', () => {
+    expect(
       extractPageTitle({
         type: "root",
         children: [
@@ -181,12 +181,11 @@ describe("extractPageTitle", () => {
           },
         ],
       }),
-      "FOO",
-    );
+    ).toBe("FOO");
   });
 
   it("should trim the value", () => {
-    assert.strictEqual(
+    expect(
       extractPageTitle({
         type: "root",
         children: [
@@ -197,12 +196,11 @@ describe("extractPageTitle", () => {
           },
         ],
       }),
-      "FOO",
-    );
+    ).toBe("FOO");
   });
 
-  it("should join children's values recursively", () => {
-    assert.strictEqual(
+  it("should recursively join children's values", () => {
+    expect(
       extractPageTitle({
         type: "root",
         children: [
@@ -233,7 +231,6 @@ describe("extractPageTitle", () => {
           },
         ],
       }),
-      "X A B FOO C",
-    );
+    ).toBe("X A B FOO C");
   });
 });
