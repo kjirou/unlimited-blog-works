@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import sinon from "sinon";
 
 import {
   UbwSettings,
@@ -44,14 +43,13 @@ describe("executeHelp", () => {
 });
 
 describe("executeNow", () => {
-  let clock: any;
-
   beforeEach(() => {
-    clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
   });
 
   afterEach(() => {
-    clock.restore();
+    jest.useRealTimers();
   });
 
   it("should return a date-time string formatted with UTC", () => {
@@ -81,16 +79,14 @@ describe("executeInit", () => {
 
 describe("executeArticleNew", () => {
   describe("when after `executeInit`", () => {
-    let clock: any;
-
     beforeEach(() => {
-      clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
-
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
       return executeInit(workspaceRoot);
     });
 
     afterEach(() => {
-      clock.restore();
+      jest.useRealTimers();
     });
 
     it("can create a source file of an article", () => {
@@ -110,11 +106,11 @@ describe("executeArticleNew", () => {
 
 describe("executeCompile, executeCompileWithSettings", () => {
   describe("when after `executeInit` and `executeArticleNew`", () => {
-    let clock: any;
     let configFilePath: string;
 
     beforeEach(() => {
-      clock = sinon.useFakeTimers(new Date("2019-01-01 00:00:00+0000"));
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
       configFilePath = path.join(workspaceRoot, "ubw-configs.js");
 
       return executeInit(workspaceRoot)
@@ -128,7 +124,7 @@ describe("executeCompile, executeCompileWithSettings", () => {
     });
 
     afterEach(() => {
-      clock.restore();
+      jest.useRealTimers();
     });
 
     describe("basic specification of `executeCompile`", () => {
