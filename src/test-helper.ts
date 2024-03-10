@@ -1,12 +1,12 @@
-import fs from 'fs-extra';
-import klawSync from 'klaw-sync';
-import path from 'path';
+import fs from "fs-extra";
+import klawSync from "klaw-sync";
+import path from "path";
 
-import {PROJECT_ROOT} from './utils';
+import { PROJECT_ROOT } from "./utils";
 
-const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'tmp/jest-test');
+const TEST_TMP_ROOT = path.join(PROJECT_ROOT, "tmp/jest-test");
 
-export function prepareWorkspace(subDir: string = 'default'): string {
+export function prepareWorkspace(subDir: string = "default"): string {
   const workspaceRoot = path.join(TEST_TMP_ROOT, subDir);
   fs.ensureDirSync(workspaceRoot);
   fs.emptyDirSync(workspaceRoot);
@@ -14,16 +14,16 @@ export function prepareWorkspace(subDir: string = 'default'): string {
 }
 
 export interface DumpedDir {
-  [relativePath: string]: string,
+  [relativePath: string]: string;
 }
 
 export function dumpDir(root: string): DumpedDir {
   const dumped: DumpedDir = {};
-  klawSync(root, {nodir: true}).forEach(result => {
-    const rootIncludedSlash = root + '/';
+  klawSync(root, { nodir: true }).forEach((result) => {
+    const rootIncludedSlash = root + "/";
     const relativePathStart = result.path.indexOf(rootIncludedSlash);
     if (relativePathStart !== 0) {
-      throw new Error('The root dir must be included in the path.');
+      throw new Error("The root dir must be included in the path.");
     }
     const relativePath = result.path.slice(rootIncludedSlash.length);
     dumped[relativePath] = fs.readFileSync(result.path).toString();
