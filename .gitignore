@@ -10,6 +10,4 @@ testem.*.*.*.json
 
 /dist/
 /test-serving/
-/test/tmp/
 /tmp/
-**/__tests__/tmp/

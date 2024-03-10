@@ -1,13 +1,10 @@
-/*
- * MUST NOT import this file except under the "test" directory.
- */
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
 import {PROJECT_ROOT} from './utils';
 
-const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'src/__tests__/tmp');
+const TEST_TMP_ROOT = path.join(PROJECT_ROOT, 'tmp/jest-test');
 
 export function prepareWorkspace(subDir: string = 'default'): string {
   const workspaceRoot = path.join(TEST_TMP_ROOT, subDir);
