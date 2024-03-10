@@ -6,7 +6,7 @@ import { PROJECT_ROOT } from "./utils";
 
 const TEST_TMP_ROOT = path.join(PROJECT_ROOT, "tmp/jest-test");
 
-export function prepareWorkspace(subDir: string = "default"): string {
+export function prepareWorkspace(subDir: string): string {
   const workspaceRoot = path.join(TEST_TMP_ROOT, subDir);
   fs.ensureDirSync(workspaceRoot);
   fs.emptyDirSync(workspaceRoot);
