@@ -68,6 +68,12 @@ const commandList: Record<string, Command> = {
   init: ({ subCommandArgv, cwd }) => {
     const options = minimist(subCommandArgv);
     const [destinationDirPathInput] = options._;
+    if (!destinationDirPathInput) {
+      return Promise.resolve({
+        exitCode: 1,
+        message: "Destination directory path is required.",
+      });
+    }
     const destinationDirPath = cliUtils.toNormalizedAbsolutePath(
       destinationDirPathInput,
       cwd,
