@@ -168,12 +168,30 @@ However, for example, the following functions are not yet available.
 
 - [Node.js](https://nodejs.org/), version is defined in [.nvmrc](/.nvmrc)
 
-### Install this application
+### Installation
 
 ```bash
 git clone git@github.com:kjirou/unlimited-blog-works.git
 cd ./unlimited-blog-works
 npm install
+```
+
+### Integration Test
+
+> [!NOTE]
+> Defining test commands as npm scripts changes the result of `process.cwd()`, causing it to not work properly.
+
+#### Execute TypeScript code directly
+
+```
+npx tsx src/cli-runner.ts {ubw commands}
+```
+
+#### Execute built JavaScript code
+
+```
+npm run build
+./bin/cli.js {ubw commands}
 ```
 
 ## :link: Reference Urls
