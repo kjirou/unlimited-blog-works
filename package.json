@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
     "develop": "npx tsx ./src/cli-runner.ts",
     "prettier:check": "prettier --check .",
