@@ -518,7 +518,7 @@ export function preprocessArticlePages(
     if (frontMattersNode.type !== "yaml") {
       throw new Error("Can not find a Front-matter block in an articlePage.");
     }
-    const actualFrontMatters = yaml.safeLoad(
+    const actualFrontMatters = yaml.load(
       frontMattersNode.value,
     ) as ActualArticleFrontMatters;
     const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
