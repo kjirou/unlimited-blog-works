@@ -59,8 +59,8 @@
     "prettier": "^3.2.5",
     "serve": "^14.2.1",
     "ts-jest": "^29.1.2",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.2"
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.4"
   },
   "dependencies": {
     "date-fns": "^1.30.1",
