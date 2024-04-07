@@ -1,3 +1,4 @@
+import { Feed } from "feed";
 import hast from "hastscript";
 import yaml from "js-yaml";
 import path from "path";
@@ -33,9 +34,6 @@ const remarkRehype = require("remark-rehype");
 const unified = require("unified");
 const unistUtilRemove = require("unist-util-remove");
 const unistUtilVisit = require("unist-util-visit");
-
-// NOTICE: Its type definition file exists but it is broken.
-const Feed = require("feed").Feed;
 
 export interface UbwConfigs {
   // The name of your blog
@@ -168,6 +166,8 @@ export function createDefaultUbwConfigs(): UbwConfigs {
         useLayout: false,
         render(props: NonArticlePageProps): string {
           const feed = new Feed({
+            // TODO: Make it configurable
+            copyright: "All rights reserved",
             title: props.blogName,
             id: props.blogUrl,
           });
@@ -518,7 +518,7 @@ export function preprocessArticlePages(
     if (frontMattersNode.type !== "yaml") {
       throw new Error("Can not find a Front-matter block in an articlePage.");
     }
-    const actualFrontMatters = yaml.safeLoad(
+    const actualFrontMatters = yaml.load(
       frontMattersNode.value,
     ) as ActualArticleFrontMatters;
     const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);

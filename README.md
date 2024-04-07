@@ -183,6 +183,8 @@ npm install
 
 #### Execute TypeScript code directly
 
+The reason this command was not added as one of the npm scripts is that `process.cwd()` points to the wrong directory.
+
 ```
 npx tsx src/cli-runner.ts {ubw commands}
 ```

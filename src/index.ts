@@ -89,7 +89,7 @@ export function executeArticleNew(
     path.join(paths.sourceArticlesRoot, articleId + ".md"),
     [
       // TODO: Want to wrap string variables with double quotes always.
-      "---\n" + yaml.safeDump(frontMatters) + "---",
+      "---\n" + yaml.dump(frontMatters) + "---",
       "",
       "# Page Title\n",
     ].join("\n"),
