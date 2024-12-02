@@ -9,19 +9,24 @@ import {
 } from "../page-generator";
 
 describe("extractOgpDescription", function () {
-  it('should pick up only values of type="text"', function () {
+  it('少なくとも、typeが"text"と"link"と"list"の要素は抽出する', function () {
     expect(
       extractOgpDescription({
         type: "root",
         children: [
           { type: "text", value: "a" },
-          { type: "foo", value: "X" },
           { type: "text", value: "b" },
-          { type: "bar", value: "X" },
-          { type: "text", value: "c" },
+          { type: "link", children: [{ type: "text", value: "c" }] },
+          {
+            type: "list",
+            children: [
+              { type: "listItem", children: [{ type: "text", value: "d" }] },
+            ],
+          },
+          { type: "text", value: "e" },
         ],
       }),
-    ).toBe("a b c");
+    ).toBe("a b c d e");
   });
 
   it("can ignore some specified types", function () {

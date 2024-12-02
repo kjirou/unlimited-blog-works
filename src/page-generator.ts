@@ -236,8 +236,6 @@ export function extractOgpDescription(node: RemarkAstNode): string {
     (n: any) =>
       n.type === "yaml" ||
       (n.type === "heading" && n.depth === 1) ||
-      // NOTE: link を除外しているのは、Slack がチャットでそれを展開してしまうため。
-      n.type === "link" ||
       n.type === "html" ||
       n.type === "code",
   ) as RemarkAstNode | null;
