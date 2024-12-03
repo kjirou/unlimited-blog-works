@@ -331,7 +331,6 @@ function createRehypePlugins(params: {
   };
   documentOptions.css = params.cssUrls;
   documentOptions.js = params.jsUrls;
-  const additionalHeadNodes = params.additionalHeadNodes;
 
   const autolinkContent: HastscriptAst = {
     type: "text",
