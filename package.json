@@ -2,8 +2,8 @@
   "name": "unlimited-blog-works",
   "version": "0.0.9",
   "description": "A simple static blog generator for publishing on GitHub Pages",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "prettier:check": "prettier --check .",
