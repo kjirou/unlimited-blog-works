@@ -37,7 +37,7 @@
     "LICENSE",
     "README.md",
     "bin",
-    "dist/src",
+    "dist",
     "package.json",
     "presets"
   ],
