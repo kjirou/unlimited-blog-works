@@ -44,20 +44,19 @@ describe("executeHelp", () => {
 });
 
 describe("executeNow", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
-  });
-
   afterEach(() => {
     jest.useRealTimers();
   });
-
-  it("should return a date-time string formatted with UTC", () => {
-    return executeNow().then((result) => {
-      expect(result.exitCode).toBe(0);
-      expect(result.message).toBe("2019-01-01 00:00:00+0000");
-    });
+  test("タイムゾーンを考慮したDateTime文字列を返す", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2019-01-01 00:00:00+0000"));
+    await executeInit(workspaceRoot);
+    const configFilePath = path.join(workspaceRoot, "ubw-configs.js");
+    const result = await executeNow(configFilePath);
+    expect(result.exitCode).toBe(0);
+    // TODO: ubw-configs.js が Pure Object ではなく関数を返すので、timezone の値を Asia/Tokyo などにできない
+    //       他のタイムゾーンでテストしたい時は、現状は `createDefaultUbwConfigs` の戻り値を直接書き換える必要がある
+    expect(result.message).toBe("2019-01-01 00:00:00+0000");
   });
 });
 

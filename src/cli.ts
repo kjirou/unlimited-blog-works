@@ -80,8 +80,12 @@ const commandList: Record<string, Command> = {
     );
     return executeInit(destinationDirPath);
   },
-  now: () => {
-    return executeNow();
+  now: ({ subCommandArgv, cwd, defaultConfigFilePath }) => {
+    const options = minimist(subCommandArgv);
+    const configFilePath = options["config-file"]
+      ? cliUtils.toNormalizedAbsolutePath(options["config-file"], cwd)
+      : defaultConfigFilePath;
+    return executeNow(configFilePath);
   },
   unknown: () => {
     return Promise.resolve({
