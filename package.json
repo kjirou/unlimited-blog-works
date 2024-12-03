@@ -6,7 +6,6 @@
   "types": "dist/src/index.d.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "serve:docs": "npm run serve:docs:prepare && npm run serve:docs:run",
