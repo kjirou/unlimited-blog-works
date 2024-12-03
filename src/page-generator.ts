@@ -418,7 +418,9 @@ export interface ArticlePage {
   publicId: string;
   inputFilePath: string;
   outputFilePath: string;
+  // e.g. "/articles/20191231-0001"
   rootRelativePath: string;
+  // e.g. "https://{YOUR_DOMAIN}/articles/20191231-0001"
   permalink: string;
   ogpImageUrl: string; // "" means that it does not exist.
   ogpDescription: string; // "" means that it does not exist.
@@ -521,8 +523,9 @@ export function preprocessArticlePages(
     const frontMatters = fillWithDefaultArticleFrontMatters(actualFrontMatters);
 
     const basePath = getPathnameWithoutTailingSlash(configs.blogUrl);
-    const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
-    const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}.html`;
+    // NOTE: ".html" は付与しない。GitHub Pages は、とても昔から ".html" の有無を考慮していない。また、npm package の serve も ".html" なしで動作する。
+    const rootRelativePath = `${basePath}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}`;
+    const permalink = `${configs.blogUrl}/${RELATIVE_ARTICLES_DIR_PATH}/${frontMatters.publicId}`;
 
     let ogpImageUrl = "";
     if (configs.ogp) {
