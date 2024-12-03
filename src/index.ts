@@ -202,6 +202,7 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   const initialConfigs = createInitialUbwConfigs();
   const configs = fillWithDefaultUbwConfigs(initialConfigs);
 
+  // TODO: 関数にしている理由が不明。ユニットテストで値を書き換えられなくて不便。
   const configFileSource = [
     "module.exports = function ubwConfigs() {",
     `return ${JSON.stringify(initialConfigs, null, 2)};`
@@ -229,10 +230,11 @@ export function executeInit(blogRoot: string): Promise<CommandResult> {
   });
 }
 
-export function executeNow(): Promise<CommandResult> {
+export function executeNow(configFilePath: string): Promise<CommandResult> {
+  const settings = requireSettings(configFilePath);
   return Promise.resolve({
     exitCode: 0,
-    message: generateDateTimeString(new Date(), "UTC", {
+    message: generateDateTimeString(new Date(), settings.configs.timeZone, {
       timeZoneSuffix: true,
     }),
   });
