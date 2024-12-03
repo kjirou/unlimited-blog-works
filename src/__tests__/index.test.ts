@@ -228,7 +228,7 @@ describe("executeCompile, executeCompileWithSettings", () => {
             ).not.toBe(-1);
             expect(
               dump["blog-publication/articles/20190101-0001.html"].indexOf(
-                '<meta property="og:url" content="https://example.com/bar/articles/20190101-0001.html">',
+                '<meta property="og:url" content="https://example.com/bar/articles/20190101-0001">',
               ),
             ).not.toBe(-1);
             expect(
